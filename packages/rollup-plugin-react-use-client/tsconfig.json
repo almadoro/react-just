@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "paths": {
+      "rollup-plugin-react-use-client": ["./src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}
