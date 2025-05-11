@@ -1,8 +1,8 @@
 import { TransformPluginContext } from "rollup";
-import useClient from "rollup-plugin-react-use-client";
+import reactUseClient from "rollup-plugin-react-use-client";
 import { parseAst } from "rollup/parseAst";
 
-const plugin = useClient({
+const plugin = reactUseClient({
   getModuleId: (id) => id,
   registerClientReference: { import: "registerClientReference", from: "react" },
 });

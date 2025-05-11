@@ -7,14 +7,14 @@ import transformExportNamedDeclaration from "./transforms/export-named-declarati
 import transformExportNamedFromSource from "./transforms/export-named-from-source";
 import transformExportNamedSpecifiers from "./transforms/export-named-specifiers";
 
-export type UseClientOptions = {
+export type ReactUseClientOptions = {
   getModuleId: (id: string) => string;
   registerClientReference: ImportOptions;
 };
 
 type ImportOptions = { import: string; as?: string; from: string };
 
-export default function useClient(options: UseClientOptions) {
+export default function reactUseClient(options: ReactUseClientOptions) {
   const implementationPrefix = IMPLEMENTATION_PREFIX;
 
   const { registerClientReference } = options;
