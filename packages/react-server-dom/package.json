@@ -1,0 +1,28 @@
+{
+  "name": "react-server-dom",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dist && rollup -c"
+  },
+  "exports": {
+    "./client.browser": {
+      "types": "./types/client.browser.d.ts",
+      "default": "./dist/client.browser.js"
+    },
+    "./client.node": {
+      "types": "./types/client.node.d.ts",
+      "default": "./dist/client.node.js"
+    },
+    "./server.node": {
+      "types": "./types/server.node.d.ts",
+      "default": "./dist/server.node.js"
+    }
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "react-server-dom-webpack": "^19.1.0",
+    "rollup": "^4.40.2"
+  }
+}
