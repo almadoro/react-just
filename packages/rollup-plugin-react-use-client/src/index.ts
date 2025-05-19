@@ -78,9 +78,27 @@ export default function reactUseClient(options: ReactUseClientOptions) {
 
       addRegisterClientReferenceImport(ast, registerClientReference);
 
-      return generate(ast);
+      return {
+        code: generate(ast),
+        meta: { reactUseClient: { transformed: true } },
+      };
+    },
+    moduleParsed(moduleInfo) {
+      if (!moduleInfo.meta.reactUseClient)
+        moduleInfo.meta.reactUseClient = { transformed: false };
     },
   } satisfies Plugin;
+}
+
+declare module "rollup" {
+  interface CustomPluginOptions {
+    reactUseClient: {
+      /**
+       * The use client directive was found and the file was transformed.
+       */
+      transformed: boolean;
+    };
+  }
 }
 
 const IMPLEMENTATION_PREFIX = "__Impl__";
