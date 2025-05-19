@@ -5,6 +5,11 @@ export function createFromFetch<T>(
   options?: Options,
 ): Thenable<T>;
 
+export function createFromReadableStream<T>(
+  stream: ReadableStream,
+  options?: Options,
+): Thenable<T>;
+
 type Options = {
   callServer?: CallServerCallback;
   temporaryReferences?: TemporaryReferenceSet;
