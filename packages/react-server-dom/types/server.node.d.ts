@@ -33,7 +33,7 @@ type TemporaryReferenceSet = WeakMap<TemporaryReference<any>, string>;
 interface TemporaryReference<T> {}
 
 export function registerClientReference<T>(
-  proxyImplementation: React.Component,
+  proxyImplementation: unknown,
   id: string,
   exportName: string,
 ): ClientReference<T>;
