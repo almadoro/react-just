@@ -1,8 +1,9 @@
+import { Writable } from "node:stream";
 import { ClientReferenceManifestEntry } from "./shared";
 
 type PipeableStream = {
   abort(reason: unknown): void;
-  pipe<T extends NodeJS.WritableStream>(destination: T): T;
+  pipe<T extends Writable>(destination: T): T;
 };
 
 export function renderToPipeableStream(
