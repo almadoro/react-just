@@ -10,7 +10,7 @@ export default function useClient(): Plugin {
       import: "registerClientReference",
       from: "react-just/server",
     },
-    async moduleId(_, id) {
+    async moduleId(id) {
       // In development use the original id since it will be used to load the
       // module from the client.
       if (config.mode === "development") return id;
