@@ -1,4 +1,4 @@
-import {
+import type {
   ArrowFunctionExpression,
   FunctionDeclaration,
   FunctionExpression,
@@ -10,7 +10,9 @@ import type { Plugin } from "rollup";
 export default function reactUseServer() {
   return {
     name: "react-use-server",
-    async transform(code) {
+    async transform(code, id) {
+      if (!EXTENSIONS.some((ext) => id.endsWith(ext))) return;
+
       const ast = this.parse(code);
 
       traverse(ast, {
@@ -36,6 +38,14 @@ export default function reactUseServer() {
     },
   } satisfies Plugin;
 }
+
+// prettier-ignore
+const EXTENSIONS = [
+  ".js", ".jsx", ".mjs", ".cjs",
+  ".ts", ".tsx", ".mts", ".cts",
+];
+
+const USE_SERVER_DIRECTIVE = "use server";
 
 function FunctionLike(
   path: NodePath<
@@ -69,5 +79,3 @@ function getIsUseServerDirective(node: Node) {
     node.expression.value === USE_SERVER_DIRECTIVE
   );
 }
-
-const USE_SERVER_DIRECTIVE = "use server";
