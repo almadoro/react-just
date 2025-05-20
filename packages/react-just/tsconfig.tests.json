@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve"
+  },
+  "include": ["src", "__tests__"]
+}
