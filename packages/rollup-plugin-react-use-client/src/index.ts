@@ -19,6 +19,8 @@ export default function reactUseClient(options: ReactUseClientOptions) {
   return {
     name: "react-use-client",
     async transform(code, id) {
+      if (!EXTENSIONS.some((ext) => id.endsWith(ext))) return;
+
       const ast = this.parse(code);
 
       const useClientDirective = getUseClientDirective(ast);
@@ -85,6 +87,12 @@ export default function reactUseClient(options: ReactUseClientOptions) {
     },
   } satisfies Plugin;
 }
+
+// prettier-ignore
+const EXTENSIONS = [
+  ".js", ".jsx", ".mjs", ".cjs",
+  ".ts", ".tsx", ".mts", ".cts",
+];
 
 const IMPLEMENTATION_PREFIX = "__Impl__";
 
