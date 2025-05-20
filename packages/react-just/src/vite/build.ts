@@ -1,5 +1,6 @@
 import path from "node:path";
 import type { Plugin } from "vite";
+import { getRegisterModuleIdFromPath } from "./utils/client";
 
 type BuildOptions = { entry: string };
 
@@ -72,9 +73,10 @@ function getClientEntryCode(entries: string[]) {
   let code = `import { hydrateFromWindowFlight, registerModule } from "react-just/client";`;
 
   for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
-    code += `import * as entry_${i} from "${entry}";`;
-    code += `registerModule("${entry}", entry_${i});`;
+    const entryPath = entries[i];
+    const moduleId = getRegisterModuleIdFromPath(entryPath);
+    code += `import * as entry_${i} from "${entryPath}";`;
+    code += `registerModule("${moduleId}", entry_${i});`;
   }
 
   code += "hydrateFromWindowFlight();";
