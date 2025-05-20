@@ -39,7 +39,6 @@
     "@types/react-dom": "^19.1.5",
     "react-server-dom": "workspace:^",
     "rollup": "^4.40.2",
-    "rollup-plugin-dts": "^6.2.1",
     "vite": "^6.3.5"
   },
   "peerDependencies": {
