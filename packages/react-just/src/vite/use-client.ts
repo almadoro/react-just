@@ -19,6 +19,11 @@ export default function useClient(): Plugin {
     },
   });
 
+  if (typeof transform !== "function")
+    throw new Error(
+      "Expected rollup-plugin-react-use-client transform to be a function",
+    );
+
   return {
     ...plugin,
     name: "react-just:use-client",
