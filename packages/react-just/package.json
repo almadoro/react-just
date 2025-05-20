@@ -22,7 +22,10 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --outDir .temp --declaration --emitDeclarationOnly -p tsconfig.build.json && rollup -c && rm -rf .temp"
+    "build": "rm -rf dist && rollup -c && pnpm build:types:client && pnpm build:types:server && pnpm build:types:vite",
+    "build:types:client": "cp src/client/types.d.ts dist/client.d.ts",
+    "build:types:server": "cp src/server/types.d.ts dist/server.d.ts",
+    "build:types:vite": "cp src/vite/types.d.ts dist/vite.d.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",
