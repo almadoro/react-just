@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import transform from "./transform";
+import { transform } from "./plugin";
 
 describe("transforms", () => {
   describe("export default declarations", () => {

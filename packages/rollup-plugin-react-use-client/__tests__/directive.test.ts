@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import transform from "./transform";
+import { transform } from "./plugin";
 
 describe("use client directive", () => {
   test("returns undefined when no directive is found", () => {
