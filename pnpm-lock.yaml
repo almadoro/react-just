@@ -29,6 +29,9 @@ importers:
       rollup-plugin-react-use-client:
         specifier: workspace:^
         version: link:../rollup-plugin-react-use-client
+      rollup-plugin-react-use-server:
+        specifier: workspace:^
+        version: link:../rollup-plugin-react-use-server
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^28.0.3

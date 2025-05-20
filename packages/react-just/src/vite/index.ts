@@ -4,6 +4,7 @@ import build from "./build";
 import dev from "./dev";
 import { ReactJustOptions } from "./types";
 import useClient from "./use-client";
+import useServer from "./use-server";
 
 export default function reactJust(options: ReactJustOptions): PluginOption {
   return [
@@ -11,5 +12,6 @@ export default function reactJust(options: ReactJustOptions): PluginOption {
     dev({ entry: options.entry }),
     react(),
     useClient(),
+    useServer(),
   ];
 }

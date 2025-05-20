@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",
-    "rollup-plugin-react-use-client": "workspace:^"
+    "rollup-plugin-react-use-client": "workspace:^",
+    "rollup-plugin-react-use-server": "workspace:^"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
