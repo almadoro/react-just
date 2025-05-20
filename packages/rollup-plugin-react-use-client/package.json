@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --outDir .temp --declaration --emitDeclarationOnly -p tsconfig.build.json && rollup -c && rm -rf .temp",
+    "build": "rm -rf dist && rollup -c && cp src/types.d.ts dist/index.d.ts",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:open": "xdg-open coverage/index.html",

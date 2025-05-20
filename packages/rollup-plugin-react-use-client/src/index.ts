@@ -6,13 +6,7 @@ import transformExportDefaultDeclaration from "./transforms/export-default-decla
 import transformExportNamedDeclaration from "./transforms/export-named-declaration";
 import transformExportNamedFromSource from "./transforms/export-named-from-source";
 import transformExportNamedSpecifiers from "./transforms/export-named-specifiers";
-
-export type ReactUseClientOptions = {
-  moduleId: (code: string, id: string) => string;
-  registerClientReference: ImportOptions;
-};
-
-type ImportOptions = { import: string; as?: string; from: string };
+import { ReactUseClientOptions } from "./types";
 
 export default function reactUseClient(options: ReactUseClientOptions) {
   const implementationPrefix = IMPLEMENTATION_PREFIX;
@@ -90,17 +84,6 @@ export default function reactUseClient(options: ReactUseClientOptions) {
   } satisfies Plugin;
 }
 
-declare module "rollup" {
-  interface CustomPluginOptions {
-    reactUseClient: {
-      /**
-       * The use client directive was found and the file was transformed.
-       */
-      transformed: boolean;
-    };
-  }
-}
-
 const IMPLEMENTATION_PREFIX = "__Impl__";
 
 const USE_CLIENT_DIRECTIVE = "use client";
@@ -123,7 +106,7 @@ function getUseClientDirective(ast: ProgramNode) {
 
 function addRegisterClientReferenceImport(
   ast: ProgramNode,
-  importOptions: ImportOptions,
+  importOptions: ReactUseClientOptions["registerClientReference"],
 ) {
   ast.body.unshift(
     builders.importDeclaration(
