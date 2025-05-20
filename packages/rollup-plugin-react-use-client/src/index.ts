@@ -18,7 +18,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
 
   return {
     name: "react-use-client",
-    transform(code, id) {
+    async transform(code, id) {
       const ast = this.parse(code);
 
       const useClientDirective = getUseClientDirective(ast);
@@ -26,6 +26,8 @@ export default function reactUseClient(options: ReactUseClientOptions) {
       if (!useClientDirective) return;
 
       ast.body.splice(ast.body.indexOf(useClientDirective), 1);
+
+      const moduleId = await options.moduleId(code, id);
 
       traverse(ast, {
         $: { scope: true },
@@ -43,7 +45,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
             scope,
             implementationPrefix,
             registerClientReferenceIdentifier,
-            moduleId: options.moduleId(code, id),
+            moduleId,
           };
 
           if (node.source) {
@@ -63,7 +65,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
             scope,
             implementationPrefix,
             registerClientReferenceIdentifier,
-            moduleId: options.moduleId(code, id),
+            moduleId,
           };
 
           transformExportDefaultDeclaration(node, context);

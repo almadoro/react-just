@@ -3,8 +3,8 @@ import { describe, expect, test } from "vitest";
 import { moduleParsed, transform } from "./plugin";
 
 describe("plugin meta", () => {
-  test("adds meta information to the module when transformed", () => {
-    const { code, meta } = getMeta(
+  test("adds meta information to the module when transformed", async () => {
+    const { code, meta } = await getMeta(
       "'use client'; export default function A() {}",
     );
 
@@ -12,16 +12,16 @@ describe("plugin meta", () => {
     expect(meta).toMatchObject({ reactUseClient: { transformed: true } });
   });
 
-  test("adds meta information to the module when not transformed", () => {
-    const { code, meta } = getMeta("export default function A() {}");
+  test("adds meta information to the module when not transformed", async () => {
+    const { code, meta } = await getMeta("export default function A() {}");
 
     expect(code).not.toBeDefined();
     expect(meta).toMatchObject({ reactUseClient: { transformed: false } });
   });
 });
 
-function getMeta(code: string) {
-  const output = transform(code, "moduleId");
+async function getMeta(code: string) {
+  const output = await transform(code, "moduleId");
 
   const meta: Record<string, any> = output?.meta ?? {};
 

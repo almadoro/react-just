@@ -62,9 +62,9 @@ describe("transforms", () => {
   test("export named specifiers", transformTest("export-named-specifiers.js"));
 
   test("export all declarations not supported", () => {
-    expect(() =>
+    expect(
       transform("'use client'; export * from 'pkg';", "moduleId"),
-    ).toThrowError();
+    ).rejects.toThrowError();
   });
 });
 
@@ -75,7 +75,7 @@ function transformTest(filePath: string) {
       "utf-8",
     );
 
-    const output = transform(input, "moduleId");
+    const output = await transform(input, "moduleId");
 
     expect(output?.code).toMatchSnapshot();
   };
