@@ -1,7 +1,7 @@
 import { generate } from "astring";
 import { builders, traverse } from "estree-toolkit";
 import type { Plugin, ProgramNode } from "rollup";
-import type { TransformationContext } from "./transforms/context";
+import { TransformationContext } from "./transforms/context";
 import transformExportDefaultDeclaration from "./transforms/export-default-declaration";
 import transformExportNamedDeclaration from "./transforms/export-named-declaration";
 import transformExportNamedFromSource from "./transforms/export-named-from-source";

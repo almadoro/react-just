@@ -1,6 +1,6 @@
 import type { ExportNamedDeclaration, ImportSpecifier } from "estree";
 import { builders } from "estree-toolkit";
-import type { TransformationContext } from "./context";
+import { TransformationContext } from "./context";
 import { createExportNamedClientReference } from "./utils";
 
 /**

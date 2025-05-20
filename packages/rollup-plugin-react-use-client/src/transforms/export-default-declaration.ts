@@ -4,7 +4,7 @@ import type {
   FunctionDeclaration,
 } from "estree";
 import { builders } from "estree-toolkit";
-import type { TransformationContext } from "./context";
+import { TransformationContext } from "./context";
 import { createExportDefaultClientReference } from "./utils";
 
 /**

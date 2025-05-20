@@ -5,7 +5,7 @@ import type {
   ObjectPattern,
   RestElement,
 } from "estree";
-import type { TransformationContext } from "./context";
+import { TransformationContext } from "./context";
 import { createExportNamedClientReference } from "./utils";
 
 /**

@@ -1,5 +1,5 @@
 import { builders } from "estree-toolkit";
-import type { TransformationContext } from "./context";
+import { TransformationContext } from "./context";
 
 /**
  * Creates an export default declaration node with the following form:

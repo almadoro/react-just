@@ -1,5 +1,5 @@
 import type { ExportNamedDeclaration } from "estree";
-import type { TransformationContext } from "./context";
+import { TransformationContext } from "./context";
 import { createExportNamedClientReference } from "./utils";
 
 /**
