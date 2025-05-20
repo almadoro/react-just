@@ -8,7 +8,7 @@ import transformExportNamedFromSource from "./transforms/export-named-from-sourc
 import transformExportNamedSpecifiers from "./transforms/export-named-specifiers";
 
 export type ReactUseClientOptions = {
-  getModuleId: (id: string) => string;
+  moduleId: (code: string, id: string) => string;
   registerClientReference: ImportOptions;
 };
 
@@ -49,7 +49,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
             scope,
             implementationPrefix,
             registerClientReferenceIdentifier,
-            moduleId: options.getModuleId(id),
+            moduleId: options.moduleId(code, id),
           };
 
           if (node.source) {
@@ -69,7 +69,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
             scope,
             implementationPrefix,
             registerClientReferenceIdentifier,
-            moduleId: options.getModuleId(id),
+            moduleId: options.moduleId(code, id),
           };
 
           transformExportDefaultDeclaration(node, context);

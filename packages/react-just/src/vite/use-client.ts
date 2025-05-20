@@ -9,7 +9,7 @@ export default function useClient(): Plugin {
       import: "registerClientReference",
       from: "react-just/server",
     },
-    getModuleId: (id) => {
+    moduleId: (_, id) => {
       if (config.mode === "development") return id;
       // TODO: handle this properly
       return id;

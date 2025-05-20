@@ -77,6 +77,6 @@ function transformTest(filePath: string) {
 
     const output = transform(input, "moduleId");
 
-    expect(output).toMatchSnapshot();
+    expect(output?.code).toMatchSnapshot();
   };
 }

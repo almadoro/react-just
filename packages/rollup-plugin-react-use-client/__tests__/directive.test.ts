@@ -12,7 +12,7 @@ describe("use client directive", () => {
     const output = transform("'use client'; export default a;", "moduleId");
 
     expect(output).toBeDefined();
-    expect(output).not.toContain("use client");
+    expect(output!.code).not.toContain("use client");
   });
 
   test("directive is ignored if not at the top of the file", () => {
