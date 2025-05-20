@@ -27,7 +27,7 @@ export default function reactUseClient(options: ReactUseClientOptions) {
 
       ast.body.splice(ast.body.indexOf(useClientDirective), 1);
 
-      const moduleId = await options.moduleId(code, id);
+      const moduleId = await options.moduleId(id);
 
       traverse(ast, {
         $: { scope: true },

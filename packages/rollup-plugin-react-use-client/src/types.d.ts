@@ -7,7 +7,7 @@ export type ReactUseClientOptions = {
    * Returns the module ID that will be used in the registerClientReference
    * call.
    */
-  moduleId: (code: string, id: string) => string | Promise<string>;
+  moduleId: (id: string) => string | Promise<string>;
   /**
    * Specifies the import to be used when registering client references.
    */

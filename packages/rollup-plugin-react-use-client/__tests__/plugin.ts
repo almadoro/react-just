@@ -3,7 +3,7 @@ import reactUseClient from "rollup-plugin-react-use-client";
 import { parseAst } from "rollup/parseAst";
 
 const plugin = reactUseClient({
-  moduleId: (_, id) => id,
+  moduleId: (id) => id,
   registerClientReference: { import: "registerClientReference", from: "react" },
 });
 
