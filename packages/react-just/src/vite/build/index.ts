@@ -1,36 +1,51 @@
 import path from "node:path";
 import type { Plugin } from "vite";
-import { getRegisterModuleIdFromPath } from "./utils/client";
+import { getRegisterModuleIdFromPath } from "../utils/client";
+import buildApp from "./build-app";
 
 type BuildOptions = { entry: string };
 
+// TODO: handle chunks and code splitting
 export default function build(options: BuildOptions): Plugin {
+  /**
+   * This is used to collect all the client entries found during the server
+   * build and build a client entry.
+   */
   const clientEntries: string[] = [];
 
   return {
     name: "react-just:build",
     apply: "build",
-    config() {
+    config(config) {
+      const outDir = config.build?.outDir ?? "dist";
+      const serverOutDir = path.join(outDir, ".temp-server");
+      const clientOutDir = path.join(outDir, ".temp-client");
+
+      // Server and client must use the same relative path to point to the same
+      // asset
+      const assetFileNames = path.join(ASSETS_DIR, "[hash].[ext]");
+
       return {
         appType: "custom",
-        builder: {
-          sharedConfigBuild: true,
-          async buildApp(builder) {
-            await builder.build(builder.environments.server);
-            // It is required that the server build is executed first to catch all
-            // the client entries.
-            await builder.build(builder.environments.client);
-          },
-        },
+        builder: { sharedConfigBuild: true, buildApp },
         environments: {
           server: {
             consumer: "server",
             define: { "process.env.NODE_ENV": JSON.stringify("production") },
             build: {
-              outDir: "dist/server",
+              copyPublicDir: false, // Public dir is manually handled
+              // Assets must be emitted by the server build since it can see
+              // all references to them while the client can only see the
+              // referenced by client components.
+              emitAssets: true,
+              outDir: serverOutDir,
+              manifest: "manifest.json",
               rollupOptions: {
-                input: { index: path.resolve(options.entry) },
-                output: { entryFileNames: "index.js" },
+                input: path.resolve(options.entry),
+                output: {
+                  entryFileNames: "[name].js",
+                  assetFileNames,
+                },
               },
             },
           },
@@ -38,11 +53,16 @@ export default function build(options: BuildOptions): Plugin {
             consumer: "client",
             define: { "process.env.NODE_ENV": JSON.stringify("production") },
             build: {
-              minify: false,
-              outDir: "dist/client",
+              copyPublicDir: false, // Public dir is manually handled
+              emitAssets: false, // Assets are handled in the server build
+              outDir: clientOutDir,
+              manifest: "manifest.json",
               rollupOptions: {
-                input: { index: ENTRY_MODULE_ID },
-                output: { entryFileNames: "index.js" },
+                input: ENTRY_MODULE_ID,
+                output: {
+                  entryFileNames: path.join(ASSETS_DIR, "[hash].js"),
+                  assetFileNames,
+                },
               },
             },
           },
@@ -53,6 +73,7 @@ export default function build(options: BuildOptions): Plugin {
       if (this.environment.name !== "server") return;
 
       const isClientFile = moduleInfo.meta.reactUseClient?.transformed;
+
       if (isClientFile) clientEntries.push(moduleInfo.id);
     },
     resolveId(id) {
@@ -65,8 +86,9 @@ export default function build(options: BuildOptions): Plugin {
   };
 }
 
-export const ENTRY_MODULE_ID = "/virtual:client-entry";
+const ASSETS_DIR = "assets";
 
+const ENTRY_MODULE_ID = "/virtual:client-entry";
 const RESOLVED_ENTRY_MODULE_ID = "\0" + ENTRY_MODULE_ID;
 
 function getClientEntryCode(entries: string[]) {

@@ -15,3 +15,16 @@ export type PipeableStream = {
   abort(reason: unknown): void;
   pipe<T extends Writable>(destination: T): T;
 };
+
+export interface Manifest {
+  version: "1";
+  publicDir: string;
+  flight: { mimeType: string };
+  app: ManifestEntry;
+}
+
+interface ManifestEntry {
+  server: string;
+  css: string[];
+  js: string[];
+}
