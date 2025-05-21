@@ -8,7 +8,8 @@
     "react-just-node": "dist/bin"
   },
   "scripts": {
-    "build": "rm -rf dist && rollup -c"
+    "build": "rm -rf dist && pnpm check && rollup -c && cp src/types.d.ts dist/index.d.ts",
+    "check": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
     "commander": "^14.0.0",

@@ -20,7 +20,8 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && rollup -c && cp src/types.d.ts dist/index.d.ts",
+    "build": "rm -rf dist && pnpm check && rollup -c && cp src/types.d.ts dist/index.d.ts",
+    "check": "tsc --noEmit -p tsconfig.build.json",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:open": "xdg-open coverage/index.html",
