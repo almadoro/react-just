@@ -1,5 +1,5 @@
 import reactUseClient from "rollup-plugin-react-use-client";
-import { Plugin, ResolvedConfig } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 import { getRegisterModuleIdFromPath } from "./utils/client";
 
 export default function useClient(): Plugin {
