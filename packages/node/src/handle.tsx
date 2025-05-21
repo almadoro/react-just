@@ -8,13 +8,21 @@ import {
   renderToHtmlPipeableStream,
 } from "react-just/server";
 
-export async function createHandleFunction(manifestPath: string) {
-  const rootDir = path.resolve(path.dirname(manifestPath));
+export async function createHandleFunction(buildPath: string) {
+  try {
+    await fs.access(path.resolve(buildPath), fs.constants.F_OK);
+  } catch {
+    throw new Error("Invalid build path: directory does not exist");
+  }
 
-  const manifest = await readManifest(manifestPath);
+  const build = await fs.stat(path.resolve(buildPath));
+  if (!build.isDirectory())
+    throw new Error("Invalid build path: not a directory");
+
+  const manifest = await readManifest(path.resolve(buildPath, "manifest.json"));
 
   const { app } = manifest;
-  const { default: App } = await import(path.resolve(rootDir, app.server));
+  const { default: App } = await import(path.resolve(buildPath, app.server));
 
   const AppRoot = () => (
     <>
@@ -31,7 +39,11 @@ export async function createHandleFunction(manifestPath: string) {
   return async (req: IncomingMessage, res: ServerResponse) => {
     const pathname = req.url?.replace(/^\/|\/$/g, "") ?? "";
 
-    const staticFilePath = path.resolve(rootDir, manifest.publicDir, pathname);
+    const staticFilePath = path.resolve(
+      buildPath,
+      manifest.publicDir,
+      pathname,
+    );
     const staticFile = await getStaticFile(staticFilePath);
 
     if (staticFile) {
@@ -59,18 +71,26 @@ export async function createHandleFunction(manifestPath: string) {
 }
 
 async function readManifest(manifestPath: string) {
+  let manifestStr: string;
   let manifest: Manifest;
 
   try {
-    const manifestStr = await fs.readFile(manifestPath, "utf-8");
-
-    manifest = JSON.parse(manifestStr) as Manifest;
+    manifestStr = await fs.readFile(manifestPath, "utf-8");
   } catch {
-    throw new Error("Invalid manifest file");
+    throw new Error("Invalid manifest: file does not exist");
   }
 
-  if (!("version" in manifest) || manifest.version !== "1")
-    throw new Error("Invalid manifest version");
+  try {
+    manifest = JSON.parse(manifestStr) as Manifest;
+  } catch {
+    throw new Error("Invalid manifest: not a json file");
+  }
+
+  if (!("version" in manifest))
+    throw new Error("Invalid manifest: missing version");
+
+  if (manifest.version !== "1")
+    throw new Error("Invalid manifest: unsupported version");
 
   return manifest;
 }

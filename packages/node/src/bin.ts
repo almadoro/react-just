@@ -10,17 +10,24 @@ if (!process.env.NODE_ENV) process.env.NODE_ENV = "production";
 
 program
   .requiredOption("-p, --port <port>", "Port to listen on")
-  .argument("<app>", "App folder. Must contain a manifest.json file");
+  .argument("<build>", "Build directory. Must contain a manifest.json file");
 
 program.parse(process.argv);
 
-const [appPath] = program.args;
+const [buildPath] = program.args;
 const { port } = program.opts();
 
-const middleware = await createRequestListener(appPath);
+try {
+  const middleware = await createRequestListener(buildPath);
 
-const server = http.createServer(middleware);
+  const server = http.createServer(middleware);
 
-server.listen(port, () => {
-  console.log(`React Just server running on port ${port}`);
-});
+  server.listen(port, () => {
+    console.log(`react-just server running on port ${port}`);
+  });
+} catch (error) {
+  if (error instanceof Error) console.error(error.message);
+  else console.error(error);
+
+  process.exit(1);
+}
