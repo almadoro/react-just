@@ -6,14 +6,15 @@ import type {
   ViteDevServer,
 } from "vite";
 
-type DevOptions = { app: string };
+type DevOptions = { app: string; flightMimeType: string };
 
 export default function dev(options: DevOptions): PluginOption {
   return {
     name: "react-just:dev",
     apply: "serve",
     configureServer(server) {
-      return () => server.middlewares.use(middleware(server));
+      return () =>
+        server.middlewares.use(middleware(server, options.flightMimeType));
     },
     resolveId(id) {
       if (id === CLIENT_ENTRY_MODULE_ID) return RESOLVED_CLIENT_ENTRY_MODULE_ID;
@@ -49,9 +50,10 @@ const SERVER_ENTRY_MODULE_ID = "/virtual:server-entry";
 
 const RESOLVED_SERVER_ENTRY_MODULE_ID = "\0" + SERVER_ENTRY_MODULE_ID;
 
-const FLIGHT_STREAM_MIME_TYPE = "text/x-component";
-
-function middleware(server: ViteDevServer): Connect.NextHandleFunction {
+function middleware(
+  server: ViteDevServer,
+  flightMimeType: string,
+): Connect.NextHandleFunction {
   return async (req, res) => {
     const ssr = server.environments.ssr as RunnableDevEnvironment;
 
@@ -67,9 +69,9 @@ function middleware(server: ViteDevServer): Connect.NextHandleFunction {
       </>
     );
 
-    if (req.headers.accept?.includes(FLIGHT_STREAM_MIME_TYPE)) {
+    if (req.headers.accept?.includes(flightMimeType)) {
       res.statusCode = 200;
-      res.setHeader("content-type", FLIGHT_STREAM_MIME_TYPE);
+      res.setHeader("content-type", flightMimeType);
       const flightStream = renderToFlightPipeableStream(<AppRoot />);
       flightStream.pipe(res);
       return;

@@ -3,7 +3,7 @@ import type { Plugin } from "vite";
 import { getRegisterModuleIdFromPath } from "../utils/client";
 import buildApp from "./build-app";
 
-type BuildOptions = { app: string };
+type BuildOptions = { app: string; flightMimeType: string };
 
 // TODO: handle chunks and code splitting
 export default function build(options: BuildOptions): Plugin {
@@ -28,7 +28,10 @@ export default function build(options: BuildOptions): Plugin {
 
       return {
         appType: "custom",
-        builder: { sharedConfigBuild: true, buildApp },
+        builder: {
+          sharedConfigBuild: true,
+          buildApp: (builder) => buildApp(builder, options.flightMimeType),
+        },
         environments: {
           server: {
             consumer: "server",

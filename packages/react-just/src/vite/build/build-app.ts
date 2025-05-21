@@ -9,10 +9,12 @@ import type { Manifest as ReactJustManifest } from "../../server/types";
 
 const OUTPUT_PUBLIC_DIR = "public";
 const OUTPUT_SERVER_DIR = "server";
-const FLIGHT_MIME_TYPE = "text/x-component";
 const MANIFEST_FILE_NAME = "manifest.json";
 
-export default async function buildApp(builder: ViteBuilder) {
+export default async function buildApp(
+  builder: ViteBuilder,
+  flightMimeType: string,
+) {
   const serverEnv = builder.environments.server;
   const clientEnv = builder.environments.client;
 
@@ -58,7 +60,7 @@ export default async function buildApp(builder: ViteBuilder) {
       version: "1",
       app: { server, css, js },
       publicDir: OUTPUT_PUBLIC_DIR,
-      flight: { mimeType: FLIGHT_MIME_TYPE },
+      flight: { mimeType: flightMimeType },
     },
     outputPath,
   );
