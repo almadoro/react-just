@@ -6,7 +6,7 @@ import type {
   ViteDevServer,
 } from "vite";
 
-type DevOptions = { entry: string };
+type DevOptions = { app: string };
 
 export default function dev(options: DevOptions): PluginOption {
   return {
@@ -22,7 +22,9 @@ export default function dev(options: DevOptions): PluginOption {
     load(id) {
       if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID) return CLIENT_ENTRY;
       if (id === RESOLVED_SERVER_ENTRY_MODULE_ID)
-        return getServerEntry(options.entry);
+        return getServerEntry(
+          path.resolve(this.environment.config.root, options.app),
+        );
     },
   };
 }
@@ -55,35 +57,35 @@ function middleware(server: ViteDevServer): Connect.NextHandleFunction {
 
     const serverModule = await ssr.runner.import(SERVER_ENTRY_MODULE_ID);
 
-    const { renderToFlightPipeableStream, renderToHtmlPipeableStream, Entry } =
+    const { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } =
       serverModule;
 
-    const App = () => (
+    const AppRoot = () => (
       <>
         <script async type="module" src={CLIENT_ENTRY_MODULE_ID} />
-        <Entry />
+        <App />
       </>
     );
 
     if (req.headers.accept?.includes(FLIGHT_STREAM_MIME_TYPE)) {
       res.statusCode = 200;
       res.setHeader("content-type", FLIGHT_STREAM_MIME_TYPE);
-      const flightStream = renderToFlightPipeableStream(<App />);
+      const flightStream = renderToFlightPipeableStream(<AppRoot />);
       flightStream.pipe(res);
       return;
     }
 
     res.statusCode = 200;
     res.setHeader("content-type", "text/html");
-    const htmlStream = renderToHtmlPipeableStream(<App />);
+    const htmlStream = renderToHtmlPipeableStream(<AppRoot />);
     htmlStream.pipe(res);
   };
 }
 
-function getServerEntry(entry: string) {
+function getServerEntry(appPath: string) {
   return (
     `import { renderToFlightPipeableStream, renderToHtmlPipeableStream } from "react-just/server";` +
-    `import Entry from "${path.resolve(entry)}";` +
-    `export { renderToFlightPipeableStream, renderToHtmlPipeableStream, Entry } `
+    `import App from "${path.resolve(appPath)}";` +
+    `export { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } `
   );
 }

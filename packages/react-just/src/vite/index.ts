@@ -8,8 +8,8 @@ import useServer from "./use-server";
 
 export default function reactJust(options: ReactJustOptions): PluginOption {
   return [
-    build({ entry: options.entry }),
-    dev({ entry: options.entry }),
+    build({ app: options.app }),
+    dev({ app: options.app }),
     react(),
     useClient(),
     useServer(),

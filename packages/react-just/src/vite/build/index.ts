@@ -3,7 +3,7 @@ import type { Plugin } from "vite";
 import { getRegisterModuleIdFromPath } from "../utils/client";
 import buildApp from "./build-app";
 
-type BuildOptions = { entry: string };
+type BuildOptions = { app: string };
 
 // TODO: handle chunks and code splitting
 export default function build(options: BuildOptions): Plugin {
@@ -17,6 +17,7 @@ export default function build(options: BuildOptions): Plugin {
     name: "react-just:build",
     apply: "build",
     config(config) {
+      const root = config.root ?? process.cwd();
       const outDir = config.build?.outDir ?? "dist";
       const serverOutDir = path.join(outDir, ".temp-server");
       const clientOutDir = path.join(outDir, ".temp-client");
@@ -41,7 +42,7 @@ export default function build(options: BuildOptions): Plugin {
               outDir: serverOutDir,
               manifest: "manifest.json",
               rollupOptions: {
-                input: path.resolve(options.entry),
+                input: path.resolve(root, options.app),
                 output: {
                   entryFileNames: "[name].js",
                   assetFileNames,
