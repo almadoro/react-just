@@ -21,7 +21,7 @@ describe("plugin meta", () => {
 });
 
 async function getMeta(code: string) {
-  const output = await transform(code, "moduleId");
+  const output = await transform(code, "module.js");
 
   const meta: Record<string, any> = output?.meta ?? {};
 

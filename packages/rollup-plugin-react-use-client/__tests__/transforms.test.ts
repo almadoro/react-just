@@ -63,7 +63,7 @@ describe("transforms", () => {
 
   test("export all declarations not supported", () => {
     expect(
-      transform("'use client'; export * from 'pkg';", "moduleId"),
+      transform("'use client'; export * from 'pkg';", "module.js"),
     ).rejects.toThrowError();
   });
 });
@@ -75,7 +75,7 @@ function transformTest(filePath: string) {
       "utf-8",
     );
 
-    const output = await transform(input, "moduleId");
+    const output = await transform(input, "module.js");
 
     expect(output?.code).toMatchSnapshot();
   };

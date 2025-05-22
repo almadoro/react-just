@@ -3,7 +3,7 @@ import { transform } from "./plugin";
 
 describe("use client directive", () => {
   test("returns undefined when no directive is found", async () => {
-    const output = await transform("export default a;", "moduleId");
+    const output = await transform("export default a;", "module.js");
 
     expect(output).toBeUndefined();
   });
@@ -11,7 +11,7 @@ describe("use client directive", () => {
   test("removes the directive when found", async () => {
     const output = await transform(
       "'use client'; export default a;",
-      "moduleId",
+      "module.js",
     );
 
     expect(output).toBeDefined();
@@ -21,7 +21,7 @@ describe("use client directive", () => {
   test("directive is ignored if not at the top of the file", async () => {
     const output = await transform(
       "export default a; 'use client';",
-      "moduleId",
+      "module.js",
     );
 
     expect(output).toBeUndefined();
