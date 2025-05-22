@@ -2,11 +2,11 @@ import mime from "mime/lite";
 import fs from "node:fs/promises";
 import { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
+import type { Manifest } from "react-just/server";
 import {
-  Manifest,
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,
-} from "react-just/server";
+} from "react-just/server.node";
 
 export async function createHandleFunction(buildPath: string) {
   try {
