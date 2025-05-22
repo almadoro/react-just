@@ -2,11 +2,6 @@
 
 import { program } from "commander";
 import http from "node:http";
-import { createHandleFunction as createRequestListener } from "./handle";
-
-// React specs NODE_ENV to be set to "production" when using a production
-// client build.
-if (!process.env.NODE_ENV) process.env.NODE_ENV = "production";
 
 program
   .requiredOption("-p, --port <port>", "Port to listen on")
@@ -17,8 +12,16 @@ program.parse(process.argv);
 const [buildPath] = program.args;
 const { port } = program.opts();
 
+// React specs NODE_ENV to be set to "production" when using a production
+// client build.
+if (!process.env.NODE_ENV) process.env.NODE_ENV = "production";
+
 try {
-  const middleware = await createRequestListener(buildPath);
+  // We need to modify the process.env before importing any react package
+  // to properly set NODE_ENV.
+  const { createHandleFunction } = await import("./handle");
+
+  const middleware = await createHandleFunction(buildPath);
 
   const server = http.createServer(middleware);
 

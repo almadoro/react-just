@@ -5,7 +5,7 @@
     "dist"
   ],
   "bin": {
-    "react-just-node": "dist/bin"
+    "react-just-node": "dist/bin.js"
   },
   "scripts": {
     "build": "rm -rf dist && pnpm check && rollup -c",

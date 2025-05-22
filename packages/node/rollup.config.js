@@ -8,8 +8,8 @@ const EXTERNAL = (id) =>
 
 export default defineConfig([
   {
-    input: "src/bin.ts",
-    output: [{ file: "dist/bin", format: "esm" }],
+    input: { bin: "src/bin.ts" },
+    output: [{ dir: "dist", format: "esm" }],
     external: EXTERNAL,
     plugins: [typescript({ tsconfig: "tsconfig.build.json" }), nodeResolve()],
   },
