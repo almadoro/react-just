@@ -2,30 +2,28 @@
   "name": "react-just",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "exports": {
     "./vite": {
-      "types": "./dist/vite.d.ts",
+      "types": "./types/vite.d.ts",
       "import": "./dist/vite.mjs",
       "require": "./dist/vite.cjs"
     },
     "./server": {
-      "types": "./dist/server.d.ts",
+      "types": "./types/server.d.ts",
       "import": "./dist/server.mjs",
       "require": "./dist/server.cjs"
     },
     "./client": {
-      "types": "./dist/client.d.ts",
+      "types": "./types/client.d.ts",
       "import": "./dist/client.mjs",
       "require": "./dist/client.cjs"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && pnpm check && rollup -c && pnpm build:types:client && pnpm build:types:server && pnpm build:types:vite",
-    "build:types:client": "cp src/client/types.d.ts dist/client.d.ts",
-    "build:types:server": "cp src/server/types.d.ts dist/server.d.ts",
-    "build:types:vite": "cp src/vite/types.d.ts dist/vite.d.ts",
+    "build": "rm -rf dist && pnpm check && rollup -c",
     "check": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {

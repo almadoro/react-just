@@ -8,10 +8,7 @@ import type {
 import {
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,
-} from "../server/types";
-
-type RenderToHtmlPipeableStream = typeof renderToHtmlPipeableStream;
-type RenderToFlightPipeableStream = typeof renderToFlightPipeableStream;
+} from "../../types/server";
 
 type DevOptions = { app: string; flightMimeType: string };
 
@@ -56,6 +53,9 @@ const CLIENT_ENTRY =
 const SERVER_ENTRY_MODULE_ID = "/virtual:server-entry";
 
 const RESOLVED_SERVER_ENTRY_MODULE_ID = "\0" + SERVER_ENTRY_MODULE_ID;
+
+type RenderToHtmlPipeableStream = typeof renderToHtmlPipeableStream;
+type RenderToFlightPipeableStream = typeof renderToFlightPipeableStream;
 
 function middleware(
   server: ViteDevServer,

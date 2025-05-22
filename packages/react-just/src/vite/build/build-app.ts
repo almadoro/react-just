@@ -5,7 +5,7 @@ import type {
   ViteBuilder,
   Manifest as ViteManifest,
 } from "vite";
-import type { Manifest as ReactJustManifest } from "../../server/types";
+import { Manifest as ReactJustManifest } from "../../../types/server";
 
 const OUTPUT_PUBLIC_DIR = "public";
 const OUTPUT_SERVER_DIR = "server";

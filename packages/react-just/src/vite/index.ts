@@ -1,8 +1,8 @@
 import react from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
+import { ReactJustOptions } from "../../types/vite";
 import build from "./build";
 import dev from "./dev";
-import { ReactJustOptions } from "./types";
 import useClient from "./use-client";
 import useServer from "./use-server";
 
