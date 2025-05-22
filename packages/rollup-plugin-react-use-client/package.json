@@ -7,20 +7,21 @@
     "use client"
   ],
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./types/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && pnpm check && rollup -c && cp src/types.d.ts dist/index.d.ts",
+    "build": "rm -rf dist && pnpm check && rollup -c",
     "check": "tsc --noEmit -p tsconfig.build.json",
     "test": "vitest",
     "test:coverage": "vitest --coverage",

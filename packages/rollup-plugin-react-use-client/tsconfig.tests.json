@@ -7,8 +7,8 @@
     "moduleResolution": "bundler",
     "types": ["node"],
     "paths": {
-      "rollup-plugin-react-use-client": ["./src/index.ts"]
+      "rollup-plugin-react-use-client": ["./types/index.d.ts"]
     }
   },
-  "include": ["src", "__tests__", "vitest.config.ts"]
+  "include": ["types", "__tests__", "vitest.config.ts"]
 }
