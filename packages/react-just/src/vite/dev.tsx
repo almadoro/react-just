@@ -8,7 +8,7 @@ import type {
 import {
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,
-} from "../../types/server";
+} from "../../types/server.node";
 
 type DevOptions = { app: string; flightMimeType: string };
 
@@ -97,7 +97,7 @@ function middleware(
 
 function getServerEntry(appPath: string) {
   return (
-    `import { renderToFlightPipeableStream, renderToHtmlPipeableStream } from "react-just/server";` +
+    `import { renderToFlightPipeableStream, renderToHtmlPipeableStream } from "react-just/server.node";` +
     `import App from "${path.resolve(appPath)}";` +
     `export { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } `
   );

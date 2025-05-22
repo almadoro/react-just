@@ -31,6 +31,15 @@ export default defineConfig([
     plugins: [typescript({ tsconfig: "tsconfig.build.json" }), nodeResolve()],
   },
   {
+    input: "src/server/node/index.ts",
+    output: [
+      { file: "dist/server.node.cjs", format: "cjs" },
+      { file: "dist/server.node.mjs", format: "esm" },
+    ],
+    external: EXTERNAL,
+    plugins: [typescript({ tsconfig: "tsconfig.build.json" }), nodeResolve()],
+  },
+  {
     input: "src/client/index.ts",
     output: [
       { file: "dist/client.cjs", format: "cjs" },

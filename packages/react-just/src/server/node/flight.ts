@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
     {
       get(_, prop) {
         if (typeof prop !== "string") return null;
-        const [file, name] = prop.split("#");
+        const [, name] = prop.split("#");
 
         return { id: prop, chunks: [], name, async: false };
       },
