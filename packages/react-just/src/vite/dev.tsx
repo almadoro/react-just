@@ -5,6 +5,13 @@ import type {
   RunnableDevEnvironment,
   ViteDevServer,
 } from "vite";
+import {
+  renderToFlightPipeableStream,
+  renderToHtmlPipeableStream,
+} from "../server/types";
+
+type RenderToHtmlPipeableStream = typeof renderToHtmlPipeableStream;
+type RenderToFlightPipeableStream = typeof renderToFlightPipeableStream;
 
 type DevOptions = { app: string; flightMimeType: string };
 
@@ -60,7 +67,11 @@ function middleware(
     const serverModule = await ssr.runner.import(SERVER_ENTRY_MODULE_ID);
 
     const { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } =
-      serverModule;
+      serverModule as {
+        renderToFlightPipeableStream: RenderToFlightPipeableStream;
+        renderToHtmlPipeableStream: RenderToHtmlPipeableStream;
+        App: React.ComponentType;
+      };
 
     const AppRoot = () => (
       <>
