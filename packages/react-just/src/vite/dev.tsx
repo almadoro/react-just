@@ -13,10 +13,13 @@ import {
 type DevOptions = { app: string; flightMimeType: string };
 
 export default function dev(options: DevOptions): PluginOption {
+  let server: ViteDevServer;
+
   return {
     name: "react-just:dev",
     apply: "serve",
-    configureServer(server) {
+    configureServer(s) {
+      server = s;
       return () =>
         server.middlewares.use(middleware(server, options.flightMimeType));
     },
@@ -25,7 +28,10 @@ export default function dev(options: DevOptions): PluginOption {
       if (id === SERVER_ENTRY_MODULE_ID) return RESOLVED_SERVER_ENTRY_MODULE_ID;
     },
     load(id) {
-      if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID) return CLIENT_ENTRY;
+      if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID)
+        // It doesn't matter if we get some client imported css modules.
+        // Vite will automatically dedupe them.
+        return getClientEntry(getServerCssModulesUrls(server));
       if (id === RESOLVED_SERVER_ENTRY_MODULE_ID)
         return getServerEntry(
           path.resolve(this.environment.config.root, options.app),
@@ -33,26 +39,6 @@ export default function dev(options: DevOptions): PluginOption {
     },
   };
 }
-
-const CLIENT_ENTRY_MODULE_ID = "/virtual:client-entry";
-
-const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
-
-const HMR_CODE =
-  // Taken from: https://github.com/vitejs/vite-plugin-react/blob/main/packages/common/refresh-utils.ts
-  `import { injectIntoGlobalHook } from "/@react-refresh";` +
-  `injectIntoGlobalHook(window);` +
-  `window.$RefreshReg$ = () => {};` +
-  `window.$RefreshSig$ = () => (type) => type;`;
-
-const CLIENT_ENTRY =
-  HMR_CODE +
-  `import { hydrateFromWindowFlight } from "react-just/client";` +
-  `hydrateFromWindowFlight();`;
-
-const SERVER_ENTRY_MODULE_ID = "/virtual:server-entry";
-
-const RESOLVED_SERVER_ENTRY_MODULE_ID = "\0" + SERVER_ENTRY_MODULE_ID;
 
 type RenderToHtmlPipeableStream = typeof renderToHtmlPipeableStream;
 type RenderToFlightPipeableStream = typeof renderToFlightPipeableStream;
@@ -94,6 +80,46 @@ function middleware(
     htmlStream.pipe(res);
   };
 }
+
+// Taken from: https://github.com/vitejs/vite/blob/main/packages/vite/src/node/constants.ts#L92
+const CSS_EXTENSIONS_RE =
+  /\.(css|less|sass|scss|styl|stylus|pcss|postcss|sss)($|\?)/;
+
+function getServerCssModulesUrls(server: ViteDevServer) {
+  const { urlToModuleMap } = server.environments.ssr.moduleGraph;
+
+  const urls = [...urlToModuleMap.keys()];
+
+  const cssModulesUrls = urls.filter((url) => CSS_EXTENSIONS_RE.test(url));
+
+  return cssModulesUrls;
+}
+
+const CLIENT_ENTRY_MODULE_ID = "/virtual:client-entry";
+const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
+
+function getClientEntry(cssModulesUrls: string[]) {
+  // Taken from: https://github.com/vitejs/vite-plugin-react/blob/main/packages/common/refresh-utils.ts
+  const HMR_CODE =
+    `import { injectIntoGlobalHook } from "/@react-refresh";` +
+    `injectIntoGlobalHook(window);` +
+    `window.$RefreshReg$ = () => {};` +
+    `window.$RefreshSig$ = () => (type) => type;`;
+
+  let code =
+    HMR_CODE +
+    `import { hydrateFromWindowFlight } from "react-just/client";` +
+    `hydrateFromWindowFlight();`;
+
+  for (const cssModuleUrl of cssModulesUrls) {
+    code += `import "${cssModuleUrl}";`;
+  }
+
+  return code;
+}
+
+const SERVER_ENTRY_MODULE_ID = "/virtual:server-entry";
+const RESOLVED_SERVER_ENTRY_MODULE_ID = "\0" + SERVER_ENTRY_MODULE_ID;
 
 function getServerEntry(appPath: string) {
   return (
