@@ -5,7 +5,11 @@ import http from "node:http";
 
 program
   .requiredOption("-p, --port <port>", "Port to listen on")
-  .argument("<build>", "Build directory. Must contain a manifest.json file");
+  .argument(
+    "[build-path]",
+    "Build directory. Must contain a manifest.json file",
+    "dist",
+  );
 
 program.parse(process.argv);
 
