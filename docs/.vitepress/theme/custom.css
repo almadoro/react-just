@@ -1,0 +1,18 @@
+:root {
+  --vp-c-brand-1: #087ea4;
+  --vp-c-brand-2: #087ea4;
+  --vp-c-brand-3: #087ea4;
+  --vp-c-brand-soft: #087ea4;
+}
+
+.dark {
+  --vp-c-brand-1: #58c4dc;
+  --vp-c-brand-2: #58c4dc;
+  --vp-c-brand-3: #58c4dc;
+  --vp-c-brand-soft: #58c4dc;
+  --vp-button-brand-bg: #087ea4;
+  --vp-c-bg: #16181d;
+  --vp-c-bg-alt: #111316;
+  --vp-c-divider: #343a46;
+  --vp-c-gutter: #343a46;
+}
