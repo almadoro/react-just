@@ -61,10 +61,14 @@ function middleware(
         App: React.ComponentType<AppEntryProps>;
       };
 
+    const request = incomingMessageToRequest(req);
+
+    if (req.originalUrl) request.url.pathname = req.originalUrl;
+
     const AppRoot = () => (
       <>
         <script async type="module" src={CLIENT_ENTRY_MODULE_ID} />
-        <App req={incomingMessageToRequest(req)} />
+        <App req={request} />
       </>
     );
 
