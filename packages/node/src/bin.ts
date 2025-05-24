@@ -4,16 +4,17 @@ import { program } from "commander";
 import http from "node:http";
 
 program
-  .requiredOption("-p, --port <port>", "Port to listen on")
+  .requiredOption("-p, --port [port]", "Port to listen on", "3000")
   .argument(
     "[build-path]",
     "Build directory. Must contain a manifest.json file",
+    "dist",
   );
 
 program.parse(process.argv);
 
 const [buildPath = "dist"] = program.args;
-const { port } = program.opts();
+const { port = "3000" } = program.opts();
 
 // React specs NODE_ENV to be set to "production" when using a production
 // client build.
