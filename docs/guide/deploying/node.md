@@ -27,44 +27,67 @@ You can start the server using the following command:
 ::: code-group
 
 ```bash [npm]
-$ npx react-just-node [build-path] -p <port>
+$ npx react-just-node [build-path] -p [port]
 ```
 
 ```bash [pnpm]
-$ pnpm react-just-node [build-path] -p <port>
+$ pnpm react-just-node [build-path] -p [port]
 ```
 
 ```bash [bun]
-$ bun react-just-node [build-path] -p <port>
+$ bun react-just-node [build-path] -p [port]
 ```
 
 :::
 
 Where:
 
-- `build-path` (optional): Path to the build output directory. Defaults to dist if not specified.
-- `port` (required): The port on which to run the server.
+- `build-path` (optional): Path to the build output directory. Defaults to `./dist`.
+- `port` (optional): The port on which to run the server. Defaults to `3000`.
 
 ## Example
 
-To start the server on port 3000 with the build located in the default ./dist directory:
+### Default configuration
+
+To start the server with the default configuration run:
 
 ::: code-group
 
 ```bash [npm]
-$ npx react-just-node -p 3000
+$ npx react-just-node
 ```
 
 ```bash [pnpm]
-$ pnpm react-just-node -p 3000
+$ pnpm react-just-node
 ```
 
 ```bash [bun]
-$ bun react-just-node -p 3000
+$ bun react-just-node
 ```
 
 :::
-Now, you can access your app at `http://localhost:3000`.
+
+This will serve the app in the `./dist` directory on port `3000` (accessible at [`http://localhost:3000`](http://localhost:3000)).
+
+### Custom configuration
+
+To server the app in the `./build` directory on port `5000`:
+
+::: code-group
+
+```bash [npm]
+$ npx react-just-node build -p 5000
+```
+
+```bash [pnpm]
+$ pnpm react-just-node build -p 5000
+```
+
+```bash [bun]
+$ bun react-just-node build -p 5000
+```
+
+:::
 
 ## Using a script
 
@@ -75,7 +98,7 @@ You can also add a script to your `package.json` for convenience:
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "react-just-node -p 3000"
+    "start": "react-just-node"
   }
 }
 ```
