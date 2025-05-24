@@ -14,12 +14,14 @@ export async function createHandleFunction(buildPath: string) {
   try {
     await fs.access(path.resolve(buildPath), fs.constants.F_OK);
   } catch {
-    throw new Error("Invalid build path: directory does not exist");
+    throw new Error(
+      `Invalid build path: ${buildPath} directory does not exist`,
+    );
   }
 
   const build = await fs.stat(path.resolve(buildPath));
   if (!build.isDirectory())
-    throw new Error("Invalid build path: not a directory");
+    throw new Error(`Invalid build path: ${buildPath} not a directory`);
 
   const manifest = await readManifest(path.resolve(buildPath, "manifest.json"));
 
@@ -90,20 +92,22 @@ async function readManifest(manifestPath: string) {
   try {
     manifestStr = await fs.readFile(manifestPath, "utf-8");
   } catch {
-    throw new Error("Invalid manifest: file does not exist");
+    throw new Error(`Invalid manifest: ${manifestPath} file does not exist`);
   }
 
   try {
     manifest = JSON.parse(manifestStr) as Manifest;
   } catch {
-    throw new Error("Invalid manifest: not a json file");
+    throw new Error(`Invalid manifest: ${manifestPath} not a json file`);
   }
 
   if (!("version" in manifest))
-    throw new Error("Invalid manifest: missing version");
+    throw new Error(`Invalid manifest: ${manifestPath} missing version`);
 
   if (manifest.version !== "1")
-    throw new Error("Invalid manifest: unsupported version");
+    throw new Error(
+      `Invalid manifest: unsupported version (${JSON.stringify(manifest.version)})`,
+    );
 
   return manifest;
 }
