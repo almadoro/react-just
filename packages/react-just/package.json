@@ -1,6 +1,25 @@
 {
   "name": "react-just",
   "type": "module",
+  "description": "React Server Components without a framework. Powered by Vite",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almadoro/react-just.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almadoro/react-just/issues"
+  },
+  "keywords": [
+    "vite",
+    "vite plugin",
+    "plugin",
+    "react",
+    "react server components",
+    "server components",
+    "use client",
+    "use server"
+  ],
   "files": [
     "dist",
     "types"

@@ -1,6 +1,21 @@
 {
   "name": "@react-just/node",
   "type": "module",
+  "description": "CLI to serve React Just apps with Node.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almadoro/react-just.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almadoro/react-just/issues"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "react",
+    "react just"
+  ],
   "files": [
     "dist"
   ],

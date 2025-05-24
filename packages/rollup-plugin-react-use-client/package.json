@@ -1,9 +1,21 @@
 {
   "name": "rollup-plugin-react-use-client",
   "type": "module",
+  "description": "Rollup plugin to transform use client directives following react specs.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almadoro/react-just.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almadoro/react-just/issues"
+  },
   "keywords": [
+    "rollup",
     "rollup-plugin",
     "react",
+    "react server components",
+    "server components",
     "use client"
   ],
   "files": [
