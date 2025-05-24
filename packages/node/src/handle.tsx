@@ -2,8 +2,10 @@ import mime from "mime/lite";
 import fs from "node:fs/promises";
 import { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
+import type { AppEntryProps } from "react-just/client";
 import type { Manifest } from "react-just/server";
 import {
+  incomingMessageToRequest,
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,
 } from "react-just/server.node";
@@ -24,7 +26,7 @@ export async function createHandleFunction(buildPath: string) {
   const { app } = manifest;
   const { default: App } = await import(path.resolve(buildPath, app.server));
 
-  const AppRoot = () => (
+  const AppRoot = (props: AppEntryProps) => (
     <>
       {app.js.map((src) => (
         <script key={src} src={src} async />
@@ -32,7 +34,7 @@ export async function createHandleFunction(buildPath: string) {
       {app.css.map((href) => (
         <link key={href} rel="stylesheet" href={href} />
       ))}
-      <App />
+      <App {...props} />
     </>
   );
 
@@ -44,6 +46,7 @@ export async function createHandleFunction(buildPath: string) {
       manifest.publicDir,
       pathname,
     );
+
     const staticFile = await getStaticFile(staticFilePath);
 
     if (staticFile) {
@@ -55,17 +58,21 @@ export async function createHandleFunction(buildPath: string) {
       return;
     }
 
+    const request = incomingMessageToRequest(req);
+
     if (req.headers.accept?.includes(manifest.flight.mimeType)) {
       res.statusCode = 200;
       res.setHeader("content-type", manifest.flight.mimeType);
-      const flightStream = renderToFlightPipeableStream(<AppRoot />);
+      const flightStream = renderToFlightPipeableStream(
+        <AppRoot req={request} />,
+      );
       flightStream.pipe(res);
       return;
     }
 
     res.statusCode = 200;
     res.setHeader("content-type", "text/html");
-    const htmlStream = renderToHtmlPipeableStream(<AppRoot />);
+    const htmlStream = renderToHtmlPipeableStream(<AppRoot req={request} />);
     htmlStream.pipe(res);
   };
 }
