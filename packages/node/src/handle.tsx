@@ -39,6 +39,12 @@ export async function createHandleFunction(buildPath: string) {
   );
 
   return async (req: IncomingMessage, res: ServerResponse) => {
+    if (req.method !== "GET") {
+      res.statusCode = 405;
+      res.end("Method not allowed");
+      return;
+    }
+
     const pathname = req.url?.replace(/^\/|\/$/g, "") ?? "";
 
     const staticFilePath = path.resolve(
