@@ -5,10 +5,12 @@ import type {
   RunnableDevEnvironment,
   ViteDevServer,
 } from "vite";
+import { AppEntryProps } from "../../types/client";
 import {
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,
 } from "../../types/server.node";
+import { incomingMessageToRequest } from "../server/node/transform";
 
 type DevOptions = { app: string; flightMimeType: string };
 
@@ -56,13 +58,13 @@ function middleware(
       serverModule as {
         renderToFlightPipeableStream: RenderToFlightPipeableStream;
         renderToHtmlPipeableStream: RenderToHtmlPipeableStream;
-        App: React.ComponentType;
+        App: React.ComponentType<AppEntryProps>;
       };
 
     const AppRoot = () => (
       <>
         <script async type="module" src={CLIENT_ENTRY_MODULE_ID} />
-        <App />
+        <App req={incomingMessageToRequest(req)} />
       </>
     );
 
