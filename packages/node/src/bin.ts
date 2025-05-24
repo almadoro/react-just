@@ -8,12 +8,11 @@ program
   .argument(
     "[build-path]",
     "Build directory. Must contain a manifest.json file",
-    "dist",
   );
 
 program.parse(process.argv);
 
-const [buildPath] = program.args;
+const [buildPath = "dist"] = program.args;
 const { port } = program.opts();
 
 // React specs NODE_ENV to be set to "production" when using a production
