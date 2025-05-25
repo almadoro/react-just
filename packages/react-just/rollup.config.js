@@ -11,8 +11,18 @@ export default defineConfig([
       vite: "src/vite/index.ts",
     },
     output: [
-      { dir: "dist/esm", format: "esm" },
-      { dir: "dist/cjs", format: "cjs" },
+      {
+        dir: "dist",
+        format: "cjs",
+        entryFileNames: "[name].cjs",
+        chunkFileNames: "[name].cjs",
+      },
+      {
+        dir: "dist",
+        format: "esm",
+        entryFileNames: "[name].mjs",
+        chunkFileNames: "[name].mjs",
+      },
     ],
     external: (id) =>
       /node_modules/.test(id) || id === "rollup-plugin-react-use-client",
