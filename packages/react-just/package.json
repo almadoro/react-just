@@ -27,23 +27,23 @@
   "exports": {
     "./vite": {
       "types": "./types/vite.d.ts",
-      "import": "./dist/vite.mjs",
-      "require": "./dist/vite.cjs"
+      "import": "./dist/esm/vite.js",
+      "require": "./dist/cjs/vite.js"
     },
     "./server": {
       "types": "./types/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.cjs"
+      "import": "./dist/esm/server.js",
+      "require": "./dist/cjs/server.js"
     },
     "./server.node": {
       "types": "./types/server.node.d.ts",
-      "import": "./dist/server.node.mjs",
-      "require": "./dist/server.node.cjs"
+      "import": "./dist/esm/server.node.js",
+      "require": "./dist/cjs/server.node.js"
     },
     "./client": {
       "types": "./types/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.cjs"
+      "import": "./dist/esm/client.js",
+      "require": "./dist/cjs/client.js"
     }
   },
   "scripts": {
