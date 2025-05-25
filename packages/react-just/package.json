@@ -53,8 +53,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",
-    "rollup-plugin-react-use-client": "workspace:^",
-    "rollup-plugin-react-use-server": "workspace:^"
+    "rollup-plugin-react-use-client": "workspace:^"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
@@ -64,6 +63,7 @@
     "@types/react-dom": "^19.1.5",
     "react-server-dom": "workspace:^",
     "rollup": "^4.40.2",
+    "rollup-plugin-react-use-server": "workspace:^",
     "vite": "^6.3.5"
   },
   "peerDependencies": {
