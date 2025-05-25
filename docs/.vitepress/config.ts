@@ -37,4 +37,5 @@ export default defineConfig({
   vite: {
     plugins: [groupIconVitePlugin()],
   },
+  ignoreDeadLinks: ["http://localhost:3000", "http://localhost:5173"],
 });
