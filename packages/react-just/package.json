@@ -1,5 +1,6 @@
 {
   "name": "react-just",
+  "version": "0.1.0",
   "type": "module",
   "description": "React Server Components without a framework. Powered by Vite",
   "license": "MIT",

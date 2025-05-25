@@ -1,5 +1,6 @@
 {
   "name": "@react-just/node",
+  "version": "0.1.0",
   "type": "module",
   "description": "CLI to serve React Just apps with Node.js",
   "license": "MIT",
