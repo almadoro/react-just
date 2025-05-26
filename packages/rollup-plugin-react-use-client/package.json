@@ -21,7 +21,8 @@
   ],
   "files": [
     "dist",
-    "types"
+    "types",
+    "README.md"
   ],
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
