@@ -47,7 +47,8 @@ export default function build(options: BuildOptions): Plugin {
               rollupOptions: {
                 input: path.resolve(root, options.app),
                 output: {
-                  entryFileNames: "[name].js",
+                  format: "esm",
+                  entryFileNames: "[name].mjs",
                   assetFileNames,
                 },
               },
@@ -64,7 +65,8 @@ export default function build(options: BuildOptions): Plugin {
               rollupOptions: {
                 input: ENTRY_MODULE_ID,
                 output: {
-                  entryFileNames: path.join(ASSETS_DIR, "[hash].js"),
+                  format: "esm",
+                  entryFileNames: path.join(ASSETS_DIR, "[hash].mjs"),
                   assetFileNames,
                 },
               },
