@@ -30,7 +30,7 @@ try {
   const server = http.createServer(middleware);
 
   server.listen(port, () => {
-    console.log(`react-just server running on port ${port}`);
+    console.log(`ReactJust server running on port ${port}`);
   });
 } catch (error) {
   if (error instanceof Error) console.error(error.message);
