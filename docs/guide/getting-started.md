@@ -65,10 +65,10 @@ Create a Vite config that uses the plugin:
 
 ```js [vite.config.js]
 import { defineConfig } from "vite";
-import reactJust from "react-just/vite";
+import react from "react-just/vite";
 
 export default defineConfig({
-  plugins: [reactJust({ app: "src/index.jsx" })],
+  plugins: [react({ app: "src/index.jsx" })],
 });
 ```
 
