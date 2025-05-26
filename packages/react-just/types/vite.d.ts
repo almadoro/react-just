@@ -7,4 +7,4 @@ export type ReactJustOptions = {
   app: string;
 };
 
-export default function reactJust(options: ReactJustOptions): PluginOption;
+export default function react(options: ReactJustOptions): PluginOption;

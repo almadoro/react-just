@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react";
+import vitejsReact from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
 import { ReactJustOptions } from "../../types/vite";
 import build from "./build";
@@ -8,11 +8,11 @@ import useServer from "./use-server";
 
 const FLIGHT_MIME_TYPE = "text/x-component";
 
-export default function reactJust(options: ReactJustOptions): PluginOption {
+export default function react(options: ReactJustOptions): PluginOption {
   return [
     build({ app: options.app, flightMimeType: FLIGHT_MIME_TYPE }),
     dev({ app: options.app, flightMimeType: FLIGHT_MIME_TYPE }),
-    react(),
+    vitejsReact(),
     useClient(),
     useServer(),
   ];
