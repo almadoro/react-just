@@ -34,9 +34,9 @@ The plugin accepts the following options:
 A function that determines how the registered module ids are generated. It receives the module id as a parameter and should return either a string or a Promise that resolves to a string.
 
 ```js
-moduleId: (id) => id; // Simple pass-through
+({ moduleId: (id) => id }); // Simple pass-through
 // or
-moduleId: async (id) => await someAsyncTransformation(id);
+({ moduleId: async (id) => await someAsyncTransformation(id) });
 ```
 
 ### `registerClientReference` (required)
@@ -48,17 +48,19 @@ Specifies how to import the function to register client references. It accepts a
 - `as` (optional): An alias for the imported function
 
 ```js
-registerClientReference: {
-  import: 'registerClientReference',
-  from: 'react-server-dom-BUNDLER/server'
-}
+({
+  registerClientReference: {
+    import: "registerClientReference",
+    from: "react-server-dom-BUNDLER/server",
+  },
+});
 ```
 
 ## Plugin Metadata
 
 The plugin adds metadata to the Rollup module (`meta`) through the `reactUseClient` property:
 
-```js
+```ts
 {
   reactUseClient: {
     // Indicates if the file was transformed due to "use client" directive
