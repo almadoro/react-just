@@ -3,7 +3,6 @@ import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "rollup";
 
 const EXTERNAL = (id) =>
-  // TODO: should we remove this once we publish?
   /node_modules/.test(id) || id.startsWith("react-just");
 
 export default defineConfig([
