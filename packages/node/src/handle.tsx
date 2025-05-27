@@ -2,8 +2,7 @@ import mime from "mime/lite";
 import fs from "node:fs/promises";
 import { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
-import type { AppEntryProps } from "react-just/client";
-import type { Manifest } from "react-just/server";
+import type { AppEntryProps, Manifest } from "react-just/server";
 import {
   incomingMessageToRequest,
   renderToFlightPipeableStream,
