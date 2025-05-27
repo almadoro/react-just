@@ -19,3 +19,7 @@
   --vp-c-divider: #343a46;
   --vp-c-gutter: #343a46;
 }
+
+html {
+  scroll-behavior: smooth;
+}
