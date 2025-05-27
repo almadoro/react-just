@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "react-just-node"
+  },
+  "dependencies": {
+    "@react-just/node": "^0.1.0",
+    "react": "19.1",
+    "react-dom": "19.1",
+    "react-just": "^0.1.1"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
