@@ -7,7 +7,9 @@ import {
 export default defineConfig({
   title: "ReactJust",
   description: "React Server Components enabled by Vite",
+  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   themeConfig: {
+    logo: "/logo.svg",
     nav: [
       { text: "Home", link: "/" },
       { text: "Guide", link: "/guide/getting-started" },
