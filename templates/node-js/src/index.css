@@ -1,0 +1,54 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: #ffffff;
+  background-color: #16181d;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+a {
+  font-weight: 500;
+  color: #00a67d;
+}
+a:hover {
+  color: #00bc8d;
+}
+
+.app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+  text-align: center;
+}
+
+.react-just-logo {
+  animation: spin 8s linear infinite;
+  width: 140px;
+  height: 140px;
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vite-logo {
+  width: 40px;
+  height: 40px;
+}
