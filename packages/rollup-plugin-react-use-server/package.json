@@ -1,6 +1,7 @@
 {
   "name": "rollup-plugin-react-use-server",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
   "description": "Rollup plugin to transform use server directives following react specs.",
   "license": "MIT",
