@@ -11,8 +11,9 @@ import {
   renderToHtmlPipeableStream,
 } from "../../types/server.node";
 import { incomingMessageToRequest } from "../server/node/transform";
+import { resolveAppEntry } from "./utils/resolve-entry";
 
-type DevOptions = { app: string; flightMimeType: string };
+type DevOptions = { app?: string; flightMimeType: string };
 
 export default function dev(options: DevOptions): PluginOption {
   let server: ViteDevServer;
@@ -29,14 +30,14 @@ export default function dev(options: DevOptions): PluginOption {
       if (id === CLIENT_ENTRY_MODULE_ID) return RESOLVED_CLIENT_ENTRY_MODULE_ID;
       if (id === SERVER_ENTRY_MODULE_ID) return RESOLVED_SERVER_ENTRY_MODULE_ID;
     },
-    load(id) {
+    async load(id) {
       if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID)
         // It doesn't matter if we get some client imported css modules.
         // Vite will automatically dedupe them.
         return getClientEntry(getServerCssModulesUrls(server));
       if (id === RESOLVED_SERVER_ENTRY_MODULE_ID)
         return getServerEntry(
-          path.resolve(this.environment.config.root, options.app),
+          await resolveAppEntry(this.environment.config.root, options.app),
         );
     },
   };

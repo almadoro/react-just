@@ -1,9 +1,10 @@
 import path from "node:path";
 import type { Plugin } from "vite";
 import { getRegisterModuleIdFromPath } from "../utils/client";
+import { resolveAppEntry } from "../utils/resolve-entry";
 import buildApp from "./build-app";
 
-type BuildOptions = { app: string; flightMimeType: string };
+type BuildOptions = { app?: string; flightMimeType: string };
 
 // TODO: handle chunks and code splitting
 export default function build(options: BuildOptions): Plugin {
@@ -16,7 +17,7 @@ export default function build(options: BuildOptions): Plugin {
   return {
     name: "react-just:build",
     apply: "build",
-    config(config) {
+    async config(config) {
       const root = config.root ?? process.cwd();
       const outDir = config.build?.outDir ?? "dist";
       const serverOutDir = path.join(outDir, ".temp-server");
@@ -45,7 +46,7 @@ export default function build(options: BuildOptions): Plugin {
               outDir: serverOutDir,
               manifest: "manifest.json",
               rollupOptions: {
-                input: path.resolve(root, options.app),
+                input: await resolveAppEntry(root, options.app),
                 output: {
                   format: "esm",
                   entryFileNames: "[name].mjs",
