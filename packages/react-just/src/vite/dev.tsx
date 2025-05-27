@@ -5,7 +5,7 @@ import type {
   RunnableDevEnvironment,
   ViteDevServer,
 } from "vite";
-import { AppEntryProps } from "../../types/client";
+import { AppEntryProps } from "../../types/server";
 import {
   renderToFlightPipeableStream,
   renderToHtmlPipeableStream,

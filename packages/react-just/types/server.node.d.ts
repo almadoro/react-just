@@ -1,7 +1,7 @@
 import { IncomingMessage } from "node:http";
 import { Writable } from "node:stream";
 import { ReactNode } from "react";
-import { Request } from "./client";
+import { Request } from "./server";
 
 export function renderToFlightPipeableStream(model: ReactNode): PipeableStream;
 

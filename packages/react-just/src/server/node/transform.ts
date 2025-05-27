@@ -1,6 +1,6 @@
 import { IncomingMessage } from "node:http";
 import { TLSSocket } from "node:tls";
-import { Request } from "../../../types/client";
+import { Request } from "../../../types/server";
 
 export function incomingMessageToRequest(
   incomingMessage: IncomingMessage,
