@@ -35,6 +35,9 @@ export default defineConfig({
       copyright: "Copyright © 2025-present almadoro",
     },
   },
+  sitemap: {
+    hostname: "https://reactjust.dev",
+  },
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
