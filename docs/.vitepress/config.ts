@@ -17,14 +17,21 @@ export default defineConfig({
     sidebar: [
       {
         text: "Introduction",
-        items: [{ text: "Getting Started", link: "/guide/getting-started" }],
+        items: [
+          { text: "Getting Started", link: "/guide/getting-started" },
+          { text: "Manual Setup", link: "/guide/manual-setup" },
+        ],
       },
       {
-        text: "Deploying",
+        text: "Guide",
         items: [
-          { text: "Platforms", link: "/guide/deploying/platforms" },
-          { text: "Node.js (@react-just/node)", link: "/guide/deploying/node" },
+          { text: "App Entry Component", link: "/guide/app-entry-component" },
+          { text: "Deployment", link: "/guide/deployment" },
         ],
+      },
+      {
+        text: "Platforms",
+        items: [{ text: "Node.js", link: "/platforms/node" }],
       },
     ],
     socialLinks: [
