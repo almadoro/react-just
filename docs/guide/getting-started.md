@@ -89,7 +89,7 @@ Make sure to include the following options in your tsconfig.json:
 
 :::
 
-The `app` option should point to your [app's entry component](#app-s-entry-component), relative to the project root.
+The `app` option should point to your [app's entry component](#add-an-app-entry), relative to the project root.
 
 ## Add an App Entry
 
