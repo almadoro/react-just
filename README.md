@@ -15,7 +15,8 @@ If you're interested in using ReactJust, follow the guide [here](https://reactju
 
 This monorepo contains the following packages:
 
-| Package                               | Description                                         |
-| ------------------------------------- | --------------------------------------------------- |
-| [`react-just`](./packages/react-just) | Vite plugin and core client and server dependencies |
-| [`@react-just/node`](./packages/node) | Node.js runtime for serving ReactJust apps          |
+| Package                                                                       | Description                                                         |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [`react-just`](./packages/react-just)                                         | Vite plugin and core client and server dependencies                 |
+| [`@react-just/node`](./packages/node)                                         | Node.js runtime for serving ReactJust apps                          |
+| [`rollup-plugin-react-use-client`](./packages/rollup-plugin-react-use-client) | Rollup plugin that transforms React's "use client" directive files. |
