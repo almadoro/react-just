@@ -1,6 +1,6 @@
 import "./index.css";
 
-import { AppEntryProps } from "react-just/client";
+import { AppEntryProps } from "react-just/server";
 import viteLogo from "./assets/vite.svg";
 import Button from "./Button";
 

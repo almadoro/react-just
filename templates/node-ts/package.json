@@ -6,9 +6,9 @@
   },
   "dependencies": {
     "@react-just/node": "^0.1.0",
-    "react": "19.1",
-    "react-dom": "19.1",
-    "react-just": "^0.1.1"
+    "react": "~19.1",
+    "react-dom": "~19.1",
+    "react-just": "^0.1.2"
   },
   "devDependencies": {
     "vite": "^6.3.5"
