@@ -1,5 +1,8 @@
 import { hydrateRoot } from "react-dom/client";
-import { createFromReadableStream } from "react-server-dom/client.browser";
+import {
+  createFromFetch,
+  createFromReadableStream,
+} from "react-server-dom/client.browser";
 import {
   FlighChunk,
   FLIGHT_BINARY_DATA,
@@ -7,10 +10,12 @@ import {
   FLIGHT_WINDOW_IDENTIFIER,
 } from "../flight";
 
+export { createFromFetch as createFromFlightFetch };
+
 export async function hydrateFromWindowFlight() {
   const stream = createFlightReadableStream();
   const tree = await createFromReadableStream<React.ReactNode>(stream);
-  hydrateRoot(document, tree);
+  return hydrateRoot(document, tree);
 }
 
 function createFlightReadableStream() {

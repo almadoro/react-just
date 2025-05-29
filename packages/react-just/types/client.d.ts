@@ -1,4 +1,10 @@
-export function hydrateFromWindowFlight(): void;
+import { Root } from "react-dom/client";
+
+export function hydrateFromWindowFlight(): Root;
+
+export function createFromFlightFetch<T>(
+  res: Promise<Response>,
+): PromiseLike<T>;
 
 export function registerModule(id: string, module: Module): void;
 

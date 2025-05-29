@@ -40,6 +40,17 @@ export default function dev(options: DevOptions): PluginOption {
           await resolveAppEntry(this.environment.config.root, options.app),
         );
     },
+    hotUpdate(ctx) {
+      if (this.environment.name === "ssr")
+        ctx.server.ws.send({
+          type: "custom",
+          event: HMR_RELOAD_EVENT,
+          data: {
+            eventId: crypto.randomUUID(),
+            headers: { Accept: options.flightMimeType },
+          },
+        });
+    },
   };
 }
 
@@ -102,6 +113,8 @@ function getServerCssModulesUrls(server: ViteDevServer) {
   return cssModulesUrls;
 }
 
+const HMR_RELOAD_EVENT = "react-just:reload";
+
 const CLIENT_ENTRY_MODULE_ID = "/virtual:client-entry";
 const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
 
@@ -115,8 +128,16 @@ function getClientEntry(cssModulesUrls: string[]) {
 
   let code =
     HMR_CODE +
-    `import { hydrateFromWindowFlight } from "react-just/client";` +
-    `hydrateFromWindowFlight();`;
+    `import { hydrateFromWindowFlight, createFromFlightFetch } from "react-just/client";` +
+    `const root = await hydrateFromWindowFlight();` +
+    `let lastEventId = null;` +
+    `import.meta.hot.on("${HMR_RELOAD_EVENT}", ({ eventId, headers }) => {` +
+    ` lastEventId = eventId;` +
+    ` createFromFlightFetch(fetch(window.location.href, { headers })).then((tree) => {` +
+    // Avoid race conditions between multiple reloads. Render only the latest one.
+    `   if (lastEventId === eventId) root.render(tree);` +
+    ` });` +
+    `});`;
 
   for (const cssModuleUrl of cssModulesUrls) {
     code += `import "${cssModuleUrl}";`;

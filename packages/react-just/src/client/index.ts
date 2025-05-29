@@ -1,5 +1,5 @@
 // modules has side effects
 import "./modules";
 
-export { hydrateFromWindowFlight } from "./flight";
+export { hydrateFromWindowFlight, createFromFlightFetch } from "./flight";
 export { registerModule } from "./modules";
