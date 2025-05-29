@@ -2,8 +2,7 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "rollup";
 
-const EXTERNAL = (id) =>
-  /node_modules/.test(id) || id.startsWith("react-just");
+const EXTERNAL = (id) => /node_modules/.test(id) || id.startsWith("react-just");
 
 export default defineConfig([
   {
