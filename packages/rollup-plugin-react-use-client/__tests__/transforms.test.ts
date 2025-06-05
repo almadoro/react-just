@@ -61,8 +61,8 @@ describe("transforms", () => {
 
   test("export named specifiers", transformTest("export-named-specifiers.js"));
 
-  test("export all declarations not supported", () => {
-    expect(
+  test("export all declarations not supported", async () => {
+    await expect(
       transform("'use client'; export * from 'pkg';", "module.js"),
     ).rejects.toThrowError();
   });
