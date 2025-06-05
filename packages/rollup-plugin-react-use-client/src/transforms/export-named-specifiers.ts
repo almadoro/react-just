@@ -1,28 +1,34 @@
-import type { ExportNamedDeclaration } from "estree";
+import type { ExportDefaultDeclaration, ExportNamedDeclaration } from "estree";
 import { TransformationContext } from "./context";
-import { createExportNamedClientReference } from "./utils";
+import {
+  createExportDefaultClientReference,
+  createExportNamedClientReference,
+} from "./utils";
 
 /**
  * Transforms exports in the form of:
  * ```ts
  * let a;
  * let b;
- * export { a, b as c };
+ * let d;
+ * export { a, b as c, d as default };
  * ```
  *
  * Into:
  * ```ts
  * let __Impl__a;
- * let __Impl__b;
+ * let b;
+ * let d;
  * export const a = registerClientReference(__Impl__a, ...);
- * export const c = registerClientReference(__Impl__b, ...);
+ * export const c = registerClientReference(b, ...);
+ * export default registerClientReference(d, ...);
  * ```
  */
 export default function transformExportNamedSpecifiers(
   node: ExportNamedDeclaration,
   context: TransformationContext,
 ) {
-  const exports: ExportNamedDeclaration[] = [];
+  const exports: (ExportNamedDeclaration | ExportDefaultDeclaration)[] = [];
 
   for (const specifier of node.specifiers) {
     if (
@@ -45,9 +51,19 @@ export default function transformExportNamedSpecifiers(
       implementationName = localName;
     }
 
-    exports.push(
-      createExportNamedClientReference(exportName, implementationName, context),
-    );
+    if (exportName === "default") {
+      exports.push(
+        createExportDefaultClientReference(implementationName, context),
+      );
+    } else {
+      exports.push(
+        createExportNamedClientReference(
+          exportName,
+          implementationName,
+          context,
+        ),
+      );
+    }
   }
 
   context.program.body.splice(

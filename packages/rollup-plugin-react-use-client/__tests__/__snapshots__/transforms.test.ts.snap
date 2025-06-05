@@ -104,7 +104,9 @@ exports[`transforms > export named specifiers 1`] = `
 "import {registerClientReference} from "react";
 let __Impl__a;
 let b;
+let d;
 export const a = registerClientReference(__Impl__a, "module.js", "a");
 export const c = registerClientReference(b, "module.js", "c");
+export default registerClientReference(d, "module.js", "default");
 "
 `;
