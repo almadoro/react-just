@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-react-use-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Rollup plugin to transform use client directives following react specs.",
   "license": "MIT",
