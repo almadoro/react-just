@@ -22,6 +22,7 @@ import { createExportNamedClientReference } from "./utils";
  * const __Impl__a = ...;
  * const { b: __Impl__b } = ...;
  * const [__Impl__c] = ...;
+ * function __Impl__d() { ... }
  * export const a = registerClientReference(__Impl__a, ...);
  * export const b = registerClientReference(__Impl__b, ...);
  * export const c = registerClientReference(__Impl__c, ...);
