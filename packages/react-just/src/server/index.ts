@@ -1,4 +1,4 @@
 // modules has side effects
-import "./modules";
+import "../modules";
 
 export { default as registerClientReference } from "./register-client-reference";

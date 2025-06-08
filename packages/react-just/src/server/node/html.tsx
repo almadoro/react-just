@@ -77,7 +77,7 @@ const serverMap = new Proxy(
   {
     get(_, prop) {
       if (typeof prop !== "string") return null;
-      const [__, name] = prop.split("#");
+      const [, name] = prop.split("#");
       return { [name]: { id: prop, chunks: [], name, async: false } };
     },
   },

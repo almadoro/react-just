@@ -1,5 +1,5 @@
 import { registerClientReference as baseRegisterClientReference } from "react-server-dom/server.node";
-import { registerModuleExport } from "./modules";
+import { registerModuleExport } from "../modules";
 
 export default function registerClientReference(
   proxyImplementation: unknown,
