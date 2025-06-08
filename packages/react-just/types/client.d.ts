@@ -20,3 +20,14 @@ export {
    */
   Request,
 } from "./server";
+
+export declare const WINDOW_SHARED: unique symbol;
+
+declare global {
+  interface Window {
+    [WINDOW_SHARED]: {
+      root: Root;
+      rscMimeType: string;
+    };
+  }
+}

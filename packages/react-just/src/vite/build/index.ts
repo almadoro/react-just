@@ -1,6 +1,9 @@
 import path from "node:path";
 import type { Plugin } from "vite";
-import { getRegisterModuleIdFromPath } from "../utils/client";
+import {
+  getInitializationCode,
+  getModulesRegisteringCodeProduction,
+} from "../utils/client";
 import { resolveAppEntry } from "../utils/resolve-entry";
 import buildApp from "./build-app";
 
@@ -8,11 +11,7 @@ type BuildOptions = { app?: string; flightMimeType: string };
 
 // TODO: handle chunks and code splitting
 export default function build(options: BuildOptions): Plugin {
-  /**
-   * This is used to collect all the client entries found during the server
-   * build and build a client entry.
-   */
-  const clientEntries: string[] = [];
+  const clientModulesIds: string[] = [];
 
   return {
     name: "react-just:build",
@@ -64,7 +63,7 @@ export default function build(options: BuildOptions): Plugin {
               outDir: clientOutDir,
               manifest: "manifest.json",
               rollupOptions: {
-                input: ENTRY_MODULE_ID,
+                input: CLIENT_ENTRY_MODULE_ID,
                 output: {
                   format: "esm",
                   entryFileNames: path.join(ASSETS_DIR, "[hash].mjs"),
@@ -76,38 +75,45 @@ export default function build(options: BuildOptions): Plugin {
         },
       };
     },
-    moduleParsed(moduleInfo) {
-      if (this.environment.name !== "server") return;
-
-      const isClientFile = moduleInfo.meta.reactUseClient?.transformed;
-
-      if (isClientFile) clientEntries.push(moduleInfo.id);
+    buildEnd() {
+      // Server build must be generated before the client build for this method
+      // to work.
+      for (const id of this.getModuleIds()) {
+        const moduleInfo = this.getModuleInfo(id);
+        const isClientFile = moduleInfo?.meta.reactUseClient?.transformed;
+        if (isClientFile) clientModulesIds.push(id);
+      }
     },
     resolveId(id) {
-      if (id === ENTRY_MODULE_ID) return RESOLVED_ENTRY_MODULE_ID;
+      if (id === CLIENT_ENTRY_MODULE_ID) return RESOLVED_CLIENT_ENTRY_MODULE_ID;
+      if (id === APP_MODULES_MODULE_ID) return RESOLVED_APP_MODULES_MODULE_ID;
     },
     load(id) {
-      if (id === RESOLVED_ENTRY_MODULE_ID)
-        return getClientEntryCode(clientEntries);
+      if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID)
+        return getClientEntryCode(options.flightMimeType);
+      if (id === RESOLVED_APP_MODULES_MODULE_ID)
+        return getAppModulesCode(
+          clientModulesIds,
+          this.environment.config.root,
+        );
     },
   };
 }
 
 const ASSETS_DIR = "assets";
 
-const ENTRY_MODULE_ID = "/virtual:client-entry";
-const RESOLVED_ENTRY_MODULE_ID = "\0" + ENTRY_MODULE_ID;
+const CLIENT_ENTRY_MODULE_ID = "/virtual:react-just/client-entry";
+const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
 
-function getClientEntryCode(entries: string[]) {
-  let code = `import { hydrateFromWindowFlight, registerModule } from "react-just/client";`;
+function getClientEntryCode(flightMimeType: string) {
+  return (
+    `import "${APP_MODULES_MODULE_ID}";` + getInitializationCode(flightMimeType)
+  );
+}
 
-  for (let i = 0; i < entries.length; i++) {
-    const entryPath = entries[i];
-    const moduleId = getRegisterModuleIdFromPath(entryPath);
-    code += `import * as entry_${i} from "${entryPath}";`;
-    code += `registerModule("${moduleId}", entry_${i});`;
-  }
+const APP_MODULES_MODULE_ID = "/virtual:react-just/app-modules";
+const RESOLVED_APP_MODULES_MODULE_ID = "\0" + APP_MODULES_MODULE_ID;
 
-  code += "hydrateFromWindowFlight();";
-  return code;
+function getAppModulesCode(clientModulesIds: string[], root: string) {
+  return getModulesRegisteringCodeProduction(clientModulesIds, root);
 }

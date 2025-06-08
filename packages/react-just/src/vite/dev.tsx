@@ -1,7 +1,6 @@
 import type {
   Connect,
   DevEnvironment,
-  EnvironmentModuleNode,
   Plugin,
   RunnableDevEnvironment,
   ViteDevServer,
@@ -12,14 +11,17 @@ import {
   renderToHtmlPipeableStream,
 } from "../../types/server.node";
 import { incomingMessageToRequest } from "../server/node/transform";
-import { getReactModulesRegisteringCode } from "./utils/client";
+import {
+  getInitializationCode,
+  getModulesRegisteringCodeDevelopment,
+} from "./utils/client";
 import { resolveAppEntry } from "./utils/resolve-entry";
 
 type DevOptions = { app?: string; flightMimeType: string };
 
 export default function dev(options: DevOptions): Plugin {
-  let clientModules: EnvironmentModuleNode[] = [];
-  let cssModulesUrls: string[] = [];
+  let clientModulesIds: string[] = [];
+  let cssModulesIds: string[] = [];
 
   return {
     name: "react-just:dev",
@@ -33,8 +35,8 @@ export default function dev(options: DevOptions): Plugin {
           );
           // Once we have loaded the latest server entry module we can extract
           // the client modules and css referenced modules.
-          clientModules = getClientModules(ssrEnv);
-          cssModulesUrls = getCssModulesUrls(ssrEnv);
+          clientModulesIds = getClientModulesIds(ssrEnv);
+          cssModulesIds = getCssModulesIds(ssrEnv);
           serveApp(serverEntryModule, options.flightMimeType)(...args);
         });
     },
@@ -59,13 +61,13 @@ export default function dev(options: DevOptions): Plugin {
             await resolveAppEntry(this.environment.config.root, options.app),
           );
         case RESOLVED_CLIENT_ENTRY_MODULE_ID:
-          return getClientEntry();
+          return getClientEntry(options.flightMimeType);
         case RESOLVED_HMR_PREAMBLE_MODULE_ID:
           return getHmrPreambleCode();
         case RESOLVED_APP_MODULES_MODULE_ID:
-          return getAppModulesCode(clientModules, cssModulesUrls);
+          return getAppModulesCode(clientModulesIds, cssModulesIds);
         case RESOLVED_SERVER_HMR_MODULE_ID:
-          return getServerHmrCode(options.flightMimeType);
+          return getServerHmrCode();
       }
     },
     hotUpdate(ctx) {
@@ -91,29 +93,31 @@ function getServerEntry(appUrl: string) {
 const CSS_EXTENSIONS_RE =
   /\.(css|less|sass|scss|styl|stylus|pcss|postcss|sss)($|\?)/;
 
-function getCssModulesUrls(ssrEnv: DevEnvironment) {
+function getCssModulesIds(ssrEnv: DevEnvironment) {
   // Some css modules are imported by client modules too. This doesn't matter
   // because Vite will automatically dedupe them.
-  const { urlToModuleMap } = ssrEnv.moduleGraph;
-
-  const urls = [...urlToModuleMap.keys()];
-
-  const cssModulesUrls = urls.filter((url) => CSS_EXTENSIONS_RE.test(url));
-
-  return cssModulesUrls;
-}
-
-function getClientModules(ssrEnv: DevEnvironment) {
   const { idToModuleMap } = ssrEnv.moduleGraph;
 
-  const clientModules: EnvironmentModuleNode[] = [];
+  const cssModulesIds: string[] = [];
 
-  for (const [id, module] of idToModuleMap.entries()) {
-    const meta = ssrEnv.pluginContainer.getModuleInfo(id)?.meta;
-    if (meta?.reactUseClient?.transformed) clientModules.push(module);
+  for (const id of idToModuleMap.keys()) {
+    if (CSS_EXTENSIONS_RE.test(id)) cssModulesIds.push(id);
   }
 
-  return clientModules;
+  return cssModulesIds;
+}
+
+function getClientModulesIds(ssrEnv: DevEnvironment) {
+  const { idToModuleMap } = ssrEnv.moduleGraph;
+
+  const clientModulesIds: string[] = [];
+
+  for (const id of idToModuleMap.keys()) {
+    const meta = ssrEnv.pluginContainer.getModuleInfo(id)?.meta;
+    if (meta?.reactUseClient?.transformed) clientModulesIds.push(id);
+  }
+
+  return clientModulesIds;
 }
 
 type ServerEntryModule = {
@@ -160,11 +164,12 @@ function serveApp(
 const CLIENT_ENTRY_MODULE_ID = "/virtual:react-just/client-entry";
 const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
 
-function getClientEntry() {
+function getClientEntry(flightMimeType: string) {
   return (
     `import "${HMR_PREAMBLE_MODULE_ID}";` +
     `import "${APP_MODULES_MODULE_ID}";` +
-    `import "${SERVER_HMR_MODULE_ID}";`
+    `import "${SERVER_HMR_MODULE_ID}";` +
+    getInitializationCode(flightMimeType)
   );
 }
 
@@ -185,13 +190,13 @@ const APP_MODULES_MODULE_ID = "/virtual:react-just/app-modules";
 const RESOLVED_APP_MODULES_MODULE_ID = "\0" + APP_MODULES_MODULE_ID;
 
 function getAppModulesCode(
-  clientModules: EnvironmentModuleNode[],
-  cssModulesUrls: string[],
+  clientModulesIds: string[],
+  cssModulesIds: string[],
 ) {
-  let code = getReactModulesRegisteringCode(clientModules);
+  let code = getModulesRegisteringCodeDevelopment(clientModulesIds);
 
-  for (const cssModuleUrl of cssModulesUrls) {
-    code += `import "${cssModuleUrl}";`;
+  for (const cssModuleId of cssModulesIds) {
+    code += `import "${cssModuleId}";`;
   }
 
   return code;
@@ -219,14 +224,14 @@ function onSsrHotUpdate(server: ViteDevServer) {
   });
 }
 
-function getServerHmrCode(flightMimeType: string) {
+function getServerHmrCode() {
   return (
-    `import { hydrateFromWindowFlight } from "react-just/client";` +
-    `const root = await hydrateFromWindowFlight();` +
+    `import { WINDOW_SHARED } from "react-just/client";` +
     `let lastEventId = null;` +
     `import.meta.hot.on("${HMR_RELOAD_EVENT}", ({ eventId }) => {` +
     ` lastEventId = eventId;` +
-    ` const headers = { accept: "${flightMimeType}" };` +
+    ` const { root, rscMimeType } = window[WINDOW_SHARED];` +
+    ` const headers = { accept: rscMimeType };` +
     ` createFromFlightFetch(fetch(window.location.href, { headers })).then(async (tree) => {` +
     // Add a timestamp to trigger app modules reload on the browser.
     `   await import(/* @vite-ignore */ \`${APP_MODULES_MODULE_ID}?t=\${Date.now()}\`);` +
