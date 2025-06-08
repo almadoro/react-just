@@ -94,9 +94,10 @@ export const e = registerClientReference(__Impl__e, "module.js", "e");
 
 exports[`transforms > export named from source 1`] = `
 "import {registerClientReference} from "react";
-import {a as __Impl__a, b as __Impl__c} from "pkg";
+import {a as __Impl__a, b as __Impl__c, default as __Impl__default} from "pkg";
 export const a = registerClientReference(__Impl__a, "module.js", "a");
 export const c = registerClientReference(__Impl__c, "module.js", "c");
+export default registerClientReference(__Impl__default, "module.js", "default");
 "
 `;
 

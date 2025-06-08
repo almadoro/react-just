@@ -1,7 +1,14 @@
-import type { ExportNamedDeclaration, ImportSpecifier } from "estree";
+import type {
+  ExportDefaultDeclaration,
+  ExportNamedDeclaration,
+  ImportSpecifier,
+} from "estree";
 import { builders } from "estree-toolkit";
 import { TransformationContext } from "./context";
-import { createExportNamedClientReference } from "./utils";
+import {
+  createExportDefaultClientReference,
+  createExportNamedClientReference,
+} from "./utils";
 
 /**
  * Transforms exports in the form of:
@@ -23,7 +30,7 @@ export default function transformExportNamedFromSource(
   const source = node.source!;
 
   const imports: ImportSpecifier[] = [];
-  const exports: ExportNamedDeclaration[] = [];
+  const exports: (ExportNamedDeclaration | ExportDefaultDeclaration)[] = [];
 
   for (const specifier of node.specifiers) {
     if (
@@ -44,9 +51,19 @@ export default function transformExportNamedFromSource(
       ),
     );
 
-    exports.push(
-      createExportNamedClientReference(exportName, implementationName, context),
-    );
+    if (exportName === "default") {
+      exports.push(
+        createExportDefaultClientReference(implementationName, context),
+      );
+    } else {
+      exports.push(
+        createExportNamedClientReference(
+          exportName,
+          implementationName,
+          context,
+        ),
+      );
+    }
   }
 
   const importDeclaration = builders.importDeclaration(imports, source);

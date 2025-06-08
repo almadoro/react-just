@@ -1,3 +1,3 @@
 "use client";
 
-export { a, b as c } from "pkg";
+export { a, b as c, default } from "pkg";
