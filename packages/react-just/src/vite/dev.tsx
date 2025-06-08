@@ -15,7 +15,7 @@ import {
   getInitializationCode,
   getModulesRegisteringCodeDevelopment,
 } from "./utils/client";
-import { resolveAppEntry } from "./utils/resolve-entry";
+import { getAppEntryPath } from "./utils/server";
 
 type DevOptions = { app?: string; flightMimeType: string };
 
@@ -58,7 +58,7 @@ export default function dev(options: DevOptions): Plugin {
       switch (id) {
         case RESOLVED_SERVER_ENTRY_MODULE_ID:
           return getServerEntry(
-            await resolveAppEntry(this.environment.config.root, options.app),
+            await getAppEntryPath(this.environment.config.root, options.app),
           );
         case RESOLVED_CLIENT_ENTRY_MODULE_ID:
           return getClientEntry(options.flightMimeType);
