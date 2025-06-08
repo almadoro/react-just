@@ -26,6 +26,15 @@ export default function dev(options: DevOptions): Plugin {
   return {
     name: "react-just:dev",
     apply: "serve",
+    config() {
+      return {
+        optimizeDeps: {
+          // Include the client module to avoid crashes on the first
+          // cache-free request.
+          include: ["react-just/client"],
+        },
+      };
+    },
     configureServer(server) {
       return () =>
         server.middlewares.use(async (...args) => {
