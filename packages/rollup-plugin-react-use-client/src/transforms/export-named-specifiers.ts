@@ -1,9 +1,7 @@
-import type { ExportDefaultDeclaration, ExportNamedDeclaration } from "estree";
+import type { ExportNamedDeclaration, ExportSpecifier } from "estree";
+import { builders } from "estree-toolkit";
 import { TransformationContext } from "./context";
-import {
-  createExportDefaultClientReference,
-  createExportNamedClientReference,
-} from "./utils";
+import { createClientReferenceDeclaration } from "./utils";
 
 /**
  * Transforms exports in the form of:
@@ -16,19 +14,20 @@ import {
  *
  * Into:
  * ```ts
- * let __Impl__a;
+ * let a;
  * let b;
  * let d;
- * export const a = registerClientReference(__Impl__a, ...);
- * export const c = registerClientReference(b, ...);
- * export default registerClientReference(d, ...);
+ * const $$Ref$$a = registerClientReference(a, ..., "a");
+ * const $$Ref$$c = registerClientReference(b, ..., "c");
+ * const $$Ref$$default = registerClientReference(d, ..., "default");
+ * export { $$Ref$$a as a, $$Ref$$c as c, $$Ref$$default as default };
  * ```
  */
 export default function transformExportNamedSpecifiers(
   node: ExportNamedDeclaration,
   context: TransformationContext,
 ) {
-  const exports: (ExportNamedDeclaration | ExportDefaultDeclaration)[] = [];
+  const exportSpecifiers: ExportSpecifier[] = [];
 
   for (const specifier of node.specifiers) {
     if (
@@ -38,37 +37,29 @@ export default function transformExportNamedSpecifiers(
       /* c8 ignore next */
       continue;
 
-    const localName = specifier.local.name;
-    const exportName = specifier.exported.name;
+    const localIdentifier = specifier.local.name;
+    const exportIdentifier = specifier.exported.name;
+    const referenceIdentifier = context.referencePrefix + exportIdentifier;
 
-    let implementationName: string;
+    context.program.body.push(
+      createClientReferenceDeclaration(
+        { reference: referenceIdentifier, implementation: localIdentifier },
+        exportIdentifier,
+        context,
+      ),
+    );
 
-    if (localName === exportName) {
-      implementationName = context.implementationPrefix + exportName;
-
-      context.scope.renameBinding(localName, implementationName);
-    } else {
-      implementationName = localName;
-    }
-
-    if (exportName === "default") {
-      exports.push(
-        createExportDefaultClientReference(implementationName, context),
-      );
-    } else {
-      exports.push(
-        createExportNamedClientReference(
-          exportName,
-          implementationName,
-          context,
-        ),
-      );
-    }
+    exportSpecifiers.push(
+      builders.exportSpecifier(
+        builders.identifier(referenceIdentifier),
+        builders.identifier(exportIdentifier),
+      ),
+    );
   }
 
-  context.program.body.splice(
-    context.program.body.indexOf(node),
-    1,
-    ...exports,
+  context.program.body.splice(context.program.body.indexOf(node), 1);
+
+  context.program.body.push(
+    builders.exportNamedDeclaration(null, exportSpecifiers),
   );
 }

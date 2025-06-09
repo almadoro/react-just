@@ -2,61 +2,28 @@ import { builders } from "estree-toolkit";
 import { TransformationContext } from "./context";
 
 /**
- * Creates an export default declaration node with the following form:
+ * Creates a variable declaration node with the following form:
  *
  * ```js
- * export default registerClientReference(
- *   implementationName,
- *   moduleId,
- *   "default"
- * )
+ * const variable = registerClientReference(implementation, moduleId, exportName);
  * ```
  */
-export function createExportDefaultClientReference(
-  implementationName: string,
-  context: TransformationContext,
-) {
-  return builders.exportDefaultDeclaration(
-    builders.callExpression(
-      builders.identifier(context.registerClientReferenceIdentifier),
-      [
-        builders.identifier(implementationName),
-        builders.literal(context.moduleId),
-        builders.literal("default"),
-      ],
-    ),
-  );
-}
-
-/**
- * Creates an export named declaration node with the following form:
- *
- * ```js
- * export const exportName = registerClientReference(
- *   implementationName,
- *   moduleId,
- *   exportName
- * )
- * ```
- */
-export function createExportNamedClientReference(
+export function createClientReferenceDeclaration(
+  identifiers: { reference: string; implementation: string },
   exportName: string,
-  implementationName: string,
   context: TransformationContext,
 ) {
-  return builders.exportNamedDeclaration(
-    builders.variableDeclaration("const", [
-      builders.variableDeclarator(
-        builders.identifier(exportName),
-        builders.callExpression(
-          builders.identifier(context.registerClientReferenceIdentifier),
-          [
-            builders.identifier(implementationName),
-            builders.literal(context.moduleId),
-            builders.literal(exportName),
-          ],
-        ),
+  return builders.variableDeclaration("const", [
+    builders.variableDeclarator(
+      builders.identifier(identifiers.reference),
+      builders.callExpression(
+        builders.identifier(context.registerClientReferenceIdentifier),
+        [
+          builders.identifier(identifiers.implementation),
+          builders.literal(context.moduleId),
+          builders.literal(exportName),
+        ],
       ),
-    ]),
-  );
+    ),
+  ]);
 }

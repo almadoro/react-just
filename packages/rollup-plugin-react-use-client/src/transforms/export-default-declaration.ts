@@ -5,7 +5,7 @@ import type {
 } from "estree";
 import { builders } from "estree-toolkit";
 import { TransformationContext } from "./context";
-import { createExportDefaultClientReference } from "./utils";
+import { createClientReferenceDeclaration } from "./utils";
 
 /**
  * Transforms exports in the form of:
@@ -20,28 +20,29 @@ import { createExportDefaultClientReference } from "./utils";
  *
  * Into:
  * ```ts
- * let __Impl__a;
- * export default registerClientReference(__Impl__a, ...);
+ * let a;
+ * const $$Ref$$default = registerClientReference(a, ..., "default");
+ * export default $$Ref$$default;
  *
- * const __Impl__default__b = ...;
- * export default registerClientReference(__Impl__default__b, ...);
+ * function b() {}
+ * const $$Ref$$default = registerClientReference(b, ..., "default");
+ * export default $$Ref$$default;
  *
- * const __Impl__default = [];
- * export default registerClientReference(__Impl__default, ...);
+ * const $$default$$ = [];
+ * const $$Ref$$default = registerClientReference($$default$$, ..., "default");
+ * export default $$Ref$$default;
  * ```
  */
 export default function transformExportDefaultDeclaration(
   node: ExportDefaultDeclaration,
   context: TransformationContext,
 ) {
-  let implementationName: string;
+  let implementationIdentifier: string;
 
   if (node.declaration.type === "Identifier") {
     // let a;
     // export default a;
-    implementationName = context.implementationPrefix + node.declaration.name;
-
-    context.scope.renameBinding(node.declaration.name, implementationName);
+    implementationIdentifier = node.declaration.name;
 
     context.program.body.splice(context.program.body.indexOf(node), 1);
   } else if (
@@ -49,36 +50,45 @@ export default function transformExportDefaultDeclaration(
     node.declaration.type === "ClassDeclaration"
   ) {
     // export default function b() {}
-    const originalName = node.declaration.id?.name || "";
+    if (!node.declaration.id)
+      node.declaration.id = builders.identifier("$$default$$");
 
-    implementationName =
-      context.implementationPrefix + "default__" + originalName;
-
-    node.declaration.id = builders.identifier(implementationName);
+    implementationIdentifier = node.declaration.id.name;
 
     context.program.body.splice(
       context.program.body.indexOf(node),
       1,
-      // identifier is now defined
-      node.declaration as FunctionDeclaration | ClassDeclaration,
+      node.declaration as FunctionDeclaration | ClassDeclaration, // identifier is now defined
     );
   } else {
     // export default [];
-    implementationName = context.implementationPrefix + "default";
+    implementationIdentifier = "$$default$$";
+
+    const variableDeclaration = builders.variableDeclaration("const", [
+      builders.variableDeclarator(
+        builders.identifier(implementationIdentifier),
+        node.declaration,
+      ),
+    ]);
 
     context.program.body.splice(
       context.program.body.indexOf(node),
       1,
-      builders.variableDeclaration("const", [
-        builders.variableDeclarator(
-          builders.identifier(implementationName),
-          node.declaration,
-        ),
-      ]),
+      variableDeclaration,
     );
   }
 
+  const referenceIdentifier = context.referencePrefix + "default";
+
   context.program.body.push(
-    createExportDefaultClientReference(implementationName, context),
+    createClientReferenceDeclaration(
+      {
+        reference: referenceIdentifier,
+        implementation: implementationIdentifier,
+      },
+      "default",
+      context,
+    ),
+    builders.exportDefaultDeclaration(builders.identifier(referenceIdentifier)),
   );
 }

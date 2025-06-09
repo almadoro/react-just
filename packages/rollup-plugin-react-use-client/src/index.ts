@@ -9,7 +9,7 @@ import transformExportNamedFromSource from "./transforms/export-named-from-sourc
 import transformExportNamedSpecifiers from "./transforms/export-named-specifiers";
 
 export default function reactUseClient(options: ReactUseClientOptions) {
-  const implementationPrefix = IMPLEMENTATION_PREFIX;
+  const referencePrefix = REFERENCE_PREFIX;
 
   const { registerClientReference } = options;
 
@@ -32,7 +32,6 @@ export default function reactUseClient(options: ReactUseClientOptions) {
       const moduleId = await options.moduleId(id);
 
       traverse(ast, {
-        $: { scope: true },
         ExportAllDeclaration() {
           throw new Error(
             "export all (`export *`) declarations are not supported on client components",
@@ -40,12 +39,10 @@ export default function reactUseClient(options: ReactUseClientOptions) {
         },
         ExportNamedDeclaration(path) {
           const node = path.node!;
-          const scope = path.scope!;
 
           const context: TransformationContext = {
             program: ast,
-            scope,
-            implementationPrefix,
+            referencePrefix,
             registerClientReferenceIdentifier,
             moduleId,
           };
@@ -60,12 +57,10 @@ export default function reactUseClient(options: ReactUseClientOptions) {
         },
         ExportDefaultDeclaration(path) {
           const node = path.node!;
-          const scope = path.scope!;
 
           const context: TransformationContext = {
             program: ast,
-            scope,
-            implementationPrefix,
+            referencePrefix,
             registerClientReferenceIdentifier,
             moduleId,
           };
@@ -94,7 +89,7 @@ const EXTENSIONS = [
   ".ts", ".tsx", ".mts", ".cts",
 ];
 
-const IMPLEMENTATION_PREFIX = "__Impl__";
+const REFERENCE_PREFIX = "$$Ref$$";
 
 const USE_CLIENT_DIRECTIVE = "use client";
 

@@ -2,11 +2,13 @@ import type {
   ArrayPattern,
   AssignmentPattern,
   ExportNamedDeclaration,
+  ExportSpecifier,
   ObjectPattern,
   RestElement,
 } from "estree";
+import { builders } from "estree-toolkit";
 import { TransformationContext } from "./context";
-import { createExportNamedClientReference } from "./utils";
+import { createClientReferenceDeclaration } from "./utils";
 
 /**
  * Transforms exports in the form of:
@@ -19,14 +21,18 @@ import { createExportNamedClientReference } from "./utils";
  *
  * Into:
  * ```ts
- * const __Impl__a = ...;
- * const { b: __Impl__b } = ...;
- * const [__Impl__c] = ...;
- * function __Impl__d() { ... }
- * export const a = registerClientReference(__Impl__a, ...);
- * export const b = registerClientReference(__Impl__b, ...);
- * export const c = registerClientReference(__Impl__c, ...);
- * export const d = registerClientReference(__Impl__d, ...);
+ * const a = ...;
+ * const { b } = ...;
+ * const [c] = ...;
+ * function d() { ... }
+ * const $$Ref$$a = registerClientReference(a, ..., "a");
+ * export { $$Ref$$a as a };
+ * const $$Ref$$b = registerClientReference(b, ..., "b");
+ * export { $$Ref$$b as b };
+ * const $$Ref$$c = registerClientReference(c, ..., "c");
+ * export { $$Ref$$c as c };
+ * const $$Ref$$d = registerClientReference(d, ..., "d");
+ * export { $$Ref$$d as d };
  * ```
  */
 export default function transformExportNamedDeclaration(
@@ -35,54 +41,74 @@ export default function transformExportNamedDeclaration(
 ) {
   const declaration = node.declaration!;
 
-  const exports: ExportNamedDeclaration[] = [];
+  const exportSpecifiers: ExportSpecifier[] = [];
 
   switch (declaration.type) {
     case "FunctionDeclaration":
     case "ClassDeclaration":
-      const implementationName =
-        context.implementationPrefix + declaration.id.name;
+      const exportIdentifier = declaration.id.name;
+      const implementationIdentifier = exportIdentifier;
+      const referenceIdentifier = context.referencePrefix + exportIdentifier;
 
-      const exportName = declaration.id.name;
-
-      context.scope.renameBinding(exportName, implementationName);
-
-      exports.push(
-        createExportNamedClientReference(
-          exportName,
-          implementationName,
+      context.program.body.push(
+        createClientReferenceDeclaration(
+          {
+            reference: referenceIdentifier,
+            implementation: implementationIdentifier,
+          },
+          exportIdentifier,
           context,
+        ),
+      );
+
+      exportSpecifiers.push(
+        builders.exportSpecifier(
+          builders.identifier(referenceIdentifier),
+          builders.identifier(exportIdentifier),
         ),
       );
 
       break;
     case "VariableDeclaration":
-      const exportedNames: string[] = [];
+      const exportedIdentifiers: string[] = [];
 
       for (const declarator of declaration.declarations) {
         switch (declarator.id.type) {
           case "Identifier":
-            exportedNames.push(declarator.id.name);
+            exportedIdentifiers.push(declarator.id.name);
             break;
           case "ObjectPattern":
-            exportedNames.push(...getObjectPatternExportedNames(declarator.id));
+            exportedIdentifiers.push(
+              ...getObjectPatternExportedIdentifiers(declarator.id),
+            );
             break;
           case "ArrayPattern":
-            exportedNames.push(...getArrayPatternExportedNames(declarator.id));
+            exportedIdentifiers.push(
+              ...getArrayPatternExportedIdentifiers(declarator.id),
+            );
             break;
         }
       }
 
-      for (const exportName of exportedNames) {
-        const implementationName = context.implementationPrefix + exportName;
+      for (const exportIdentifier of exportedIdentifiers) {
+        const implementationIdentifier = exportIdentifier;
+        const referenceIdentifier = context.referencePrefix + exportIdentifier;
 
-        context.scope.renameBinding(exportName, implementationName);
-
-        exports.push(
-          createExportNamedClientReference(
-            exportName,
-            implementationName,
+        context.program.body.push(
+          createClientReferenceDeclaration(
+            {
+              reference: referenceIdentifier,
+              implementation: implementationIdentifier,
+            },
+            exportIdentifier,
             context,
+          ),
+        );
+
+        exportSpecifiers.push(
+          builders.exportSpecifier(
+            builders.identifier(referenceIdentifier),
+            builders.identifier(exportIdentifier),
           ),
         );
       }
@@ -97,31 +123,41 @@ export default function transformExportNamedDeclaration(
     declaration,
   );
 
-  context.program.body.push(...exports);
+  context.program.body.push(
+    builders.exportNamedDeclaration(null, exportSpecifiers),
+  );
 }
 
-function getObjectPatternExportedNames(objectPattern: ObjectPattern) {
-  const exportedNames: string[] = [];
+function getObjectPatternExportedIdentifiers(objectPattern: ObjectPattern) {
+  const exportedIdentifiers: string[] = [];
 
   for (const property of objectPattern.properties) {
     switch (property.type) {
       case "RestElement":
-        exportedNames.push(...getRestElementExportedNames(property));
+        exportedIdentifiers.push(
+          ...getRestElementExportedIdentifiers(property),
+        );
         break;
       case "Property": {
         const value = property.value;
         switch (value.type) {
           case "Identifier":
-            exportedNames.push(value.name);
+            exportedIdentifiers.push(value.name);
             break;
           case "ObjectPattern":
-            exportedNames.push(...getObjectPatternExportedNames(value));
+            exportedIdentifiers.push(
+              ...getObjectPatternExportedIdentifiers(value),
+            );
             break;
           case "ArrayPattern":
-            exportedNames.push(...getArrayPatternExportedNames(value));
+            exportedIdentifiers.push(
+              ...getArrayPatternExportedIdentifiers(value),
+            );
             break;
           case "AssignmentPattern":
-            exportedNames.push(...getAssignmentPatternExportedNames(value));
+            exportedIdentifiers.push(
+              ...getAssignmentPatternExportedIdentifiers(value),
+            );
             break;
         }
         break;
@@ -129,80 +165,88 @@ function getObjectPatternExportedNames(objectPattern: ObjectPattern) {
     }
   }
 
-  return exportedNames;
+  return exportedIdentifiers;
 }
 
-function getArrayPatternExportedNames(arrayPattern: ArrayPattern) {
-  const exportedNames: string[] = [];
+function getArrayPatternExportedIdentifiers(arrayPattern: ArrayPattern) {
+  const exportedIdentifiers: string[] = [];
 
   for (const element of arrayPattern.elements) {
     if (!element) continue;
 
     switch (element.type) {
       case "RestElement":
-        exportedNames.push(...getRestElementExportedNames(element));
+        exportedIdentifiers.push(...getRestElementExportedIdentifiers(element));
         break;
       case "Identifier":
-        exportedNames.push(element.name);
+        exportedIdentifiers.push(element.name);
         break;
       case "ObjectPattern":
-        exportedNames.push(...getObjectPatternExportedNames(element));
+        exportedIdentifiers.push(
+          ...getObjectPatternExportedIdentifiers(element),
+        );
         break;
       case "ArrayPattern":
-        exportedNames.push(...getArrayPatternExportedNames(element));
+        exportedIdentifiers.push(
+          ...getArrayPatternExportedIdentifiers(element),
+        );
         break;
       case "AssignmentPattern":
-        exportedNames.push(...getAssignmentPatternExportedNames(element));
+        exportedIdentifiers.push(
+          ...getAssignmentPatternExportedIdentifiers(element),
+        );
         break;
       // "MemberExpression" are only valid in assignments, not declarations
     }
   }
 
-  return exportedNames;
+  return exportedIdentifiers;
 }
 
-function getAssignmentPatternExportedNames(
+function getAssignmentPatternExportedIdentifiers(
   assignmentPattern: AssignmentPattern,
 ) {
-  const exportedNames: string[] = [];
+  const exportedIdentifiers: string[] = [];
 
   switch (assignmentPattern.left.type) {
     case "Identifier":
-      exportedNames.push(assignmentPattern.left.name);
+      exportedIdentifiers.push(assignmentPattern.left.name);
       break;
     case "ObjectPattern":
-      exportedNames.push(
-        ...getObjectPatternExportedNames(assignmentPattern.left),
+      exportedIdentifiers.push(
+        ...getObjectPatternExportedIdentifiers(assignmentPattern.left),
       );
       break;
     case "ArrayPattern":
-      exportedNames.push(
-        ...getArrayPatternExportedNames(assignmentPattern.left),
+      exportedIdentifiers.push(
+        ...getArrayPatternExportedIdentifiers(assignmentPattern.left),
       );
       break;
     // "MemberExpression" are only valid in assignments, not declarations
   }
 
-  return exportedNames;
+  return exportedIdentifiers;
 }
 
-function getRestElementExportedNames(restElement: RestElement) {
-  const exportedNames: string[] = [];
+function getRestElementExportedIdentifiers(restElement: RestElement) {
+  const exportedIdentifiers: string[] = [];
 
   switch (restElement.argument.type) {
     case "Identifier":
-      exportedNames.push(restElement.argument.name);
+      exportedIdentifiers.push(restElement.argument.name);
       break;
     case "ObjectPattern":
-      exportedNames.push(
-        ...getObjectPatternExportedNames(restElement.argument),
+      exportedIdentifiers.push(
+        ...getObjectPatternExportedIdentifiers(restElement.argument),
       );
       break;
     case "ArrayPattern":
-      exportedNames.push(...getArrayPatternExportedNames(restElement.argument));
+      exportedIdentifiers.push(
+        ...getArrayPatternExportedIdentifiers(restElement.argument),
+      );
       break;
     // "MemberExpression" are only valid in assignments, not declarations
   }
 
-  return exportedNames;
+  return exportedIdentifiers;
 }

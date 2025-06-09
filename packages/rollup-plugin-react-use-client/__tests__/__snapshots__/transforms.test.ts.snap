@@ -2,112 +2,157 @@
 
 exports[`transforms > export default declarations > class declarations 1`] = `
 "import {registerClientReference} from "react";
+class A {}
+const $$Ref$$default = registerClientReference(A, "module.js", "default");
+export default $$Ref$$default;
+"
+`;
+
+exports[`transforms > export default declarations > function declarations 1`] = `
+"import {registerClientReference} from "react";
+function $$default$$() {}
+const $$Ref$$default = registerClientReference($$default$$, "module.js", "default");
+export default $$Ref$$default;
+"
+`;
+
+exports[`transforms > export default declarations > identifier 1`] = `
+"import {registerClientReference} from "react";
+let a;
+const $$Ref$$default = registerClientReference(a, "module.js", "default");
+export default $$Ref$$default;
+"
+`;
+
+exports[`transforms > export default declarations > value declarations 1`] = `
+"import {registerClientReference} from "react";
+const $$default$$ = 1;
+const $$Ref$$default = registerClientReference($$default$$, "module.js", "default");
+export default $$Ref$$default;
+"
+`;
+
+exports[`transforms > export named declarations > array pattern 1`] = `
+"import {registerClientReference} from "react";
+let [a, {b}, [c], d = 1, , ...e] = [];
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+const $$Ref$$b = registerClientReference(b, "module.js", "b");
+const $$Ref$$c = registerClientReference(c, "module.js", "c");
+const $$Ref$$d = registerClientReference(d, "module.js", "d");
+const $$Ref$$e = registerClientReference(e, "module.js", "e");
+export {$$Ref$$a as a, $$Ref$$b as b, $$Ref$$c as c, $$Ref$$d as d, $$Ref$$e as e};
+"
+`;
+
+exports[`transforms > export named declarations > assignment pattern 1`] = `
+"import {registerClientReference} from "react";
+let [a = 1, {b} = c, [d] = e] = [];
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+const $$Ref$$b = registerClientReference(b, "module.js", "b");
+const $$Ref$$d = registerClientReference(d, "module.js", "d");
+export {$$Ref$$a as a, $$Ref$$b as b, $$Ref$$d as d};
+"
+`;
+
+exports[`transforms > export named declarations > class 1`] = `
+"import {registerClientReference} from "react";
+class A {}
+const $$Ref$$A = registerClientReference(A, "module.js", "A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms > export named declarations > function 1`] = `
+"import {registerClientReference} from "react";
+function a() {}
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms > export named declarations > identifier 1`] = `
+"import {registerClientReference} from "react";
+let a;
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms > export named declarations > object pattern 1`] = `
+"import {registerClientReference} from "react";
+let {a, b: {c}, d: [e], f = 1, ...g} = {};
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+const $$Ref$$c = registerClientReference(c, "module.js", "c");
+const $$Ref$$e = registerClientReference(e, "module.js", "e");
+const $$Ref$$f = registerClientReference(f, "module.js", "f");
+const $$Ref$$g = registerClientReference(g, "module.js", "g");
+export {$$Ref$$a as a, $$Ref$$c as c, $$Ref$$e as e, $$Ref$$f as f, $$Ref$$g as g};
+"
+`;
+
+exports[`transforms > export named declarations > rest element 1`] = `
+"import {registerClientReference} from "react";
+let [...a] = [];
+let [...[b, c]] = [];
+let [...{d: e}] = [];
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = registerClientReference(b, "module.js", "b");
+const $$Ref$$c = registerClientReference(c, "module.js", "c");
+export {$$Ref$$b as b, $$Ref$$c as c};
+const $$Ref$$e = registerClientReference(e, "module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms > export named from source 1`] = `
+"import {registerClientReference} from "react";
+import {a, b as c, b as d, default as $$default$$, default as e} from "pkg";
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+const $$Ref$$c = registerClientReference(c, "module.js", "c");
+const $$Ref$$d = registerClientReference(d, "module.js", "d");
+const $$Ref$$default = registerClientReference($$default$$, "module.js", "default");
+const $$Ref$$e = registerClientReference(e, "module.js", "e");
+export {$$Ref$$a as a, $$Ref$$c as c, $$Ref$$d as d, $$Ref$$default as default, $$Ref$$e as e};
+"
+`;
+
+exports[`transforms > export named specifiers 1`] = `
+"import {registerClientReference} from "react";
+let a;
+let b;
+let d;
+const $$Ref$$a = registerClientReference(a, "module.js", "a");
+const $$Ref$$c = registerClientReference(b, "module.js", "c");
+const $$Ref$$default = registerClientReference(d, "module.js", "default");
+export {$$Ref$$a as a, $$Ref$$c as c, $$Ref$$default as default};
+"
+`;
+
+exports[`transforms export default declarations class declarations 1`] = `
+"import {registerClientReference} from "react";
 class __Impl__default__A {}
 export default registerClientReference(__Impl__default__A, "module.js", "default");
 "
 `;
 
-exports[`transforms > export default declarations > function declarations 1`] = `
+exports[`transforms export default declarations function declarations 1`] = `
 "import {registerClientReference} from "react";
 function __Impl__default__() {}
 export default registerClientReference(__Impl__default__, "module.js", "default");
 "
 `;
 
-exports[`transforms > export default declarations > identifier 1`] = `
+exports[`transforms export default declarations identifier 1`] = `
 "import {registerClientReference} from "react";
 let __Impl__a;
 export default registerClientReference(__Impl__a, "module.js", "default");
 "
 `;
 
-exports[`transforms > export default declarations > value declarations 1`] = `
+exports[`transforms export default declarations value declarations 1`] = `
 "import {registerClientReference} from "react";
 const __Impl__default = 1;
 export default registerClientReference(__Impl__default, "module.js", "default");
-"
-`;
-
-exports[`transforms > export named declarations > array pattern 1`] = `
-"import {registerClientReference} from "react";
-let [__Impl__a, {b: __Impl__b}, [__Impl__c], __Impl__d = 1, , ...__Impl__e] = [];
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const b = registerClientReference(__Impl__b, "module.js", "b");
-export const c = registerClientReference(__Impl__c, "module.js", "c");
-export const d = registerClientReference(__Impl__d, "module.js", "d");
-export const e = registerClientReference(__Impl__e, "module.js", "e");
-"
-`;
-
-exports[`transforms > export named declarations > assignment pattern 1`] = `
-"import {registerClientReference} from "react";
-let [__Impl__a = 1, {b: __Impl__b} = c, [__Impl__d] = e] = [];
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const b = registerClientReference(__Impl__b, "module.js", "b");
-export const d = registerClientReference(__Impl__d, "module.js", "d");
-"
-`;
-
-exports[`transforms > export named declarations > class 1`] = `
-"import {registerClientReference} from "react";
-class __Impl__A {}
-export const A = registerClientReference(__Impl__A, "module.js", "A");
-"
-`;
-
-exports[`transforms > export named declarations > function 1`] = `
-"import {registerClientReference} from "react";
-function __Impl__a() {}
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-"
-`;
-
-exports[`transforms > export named declarations > identifier 1`] = `
-"import {registerClientReference} from "react";
-let __Impl__a;
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-"
-`;
-
-exports[`transforms > export named declarations > object pattern 1`] = `
-"import {registerClientReference} from "react";
-let {a: __Impl__a, b: {c: __Impl__c}, d: [__Impl__e], f: __Impl__f = 1, ...__Impl__g} = {};
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const c = registerClientReference(__Impl__c, "module.js", "c");
-export const e = registerClientReference(__Impl__e, "module.js", "e");
-export const f = registerClientReference(__Impl__f, "module.js", "f");
-export const g = registerClientReference(__Impl__g, "module.js", "g");
-"
-`;
-
-exports[`transforms > export named declarations > rest element 1`] = `
-"import {registerClientReference} from "react";
-let [...__Impl__a] = [];
-let [...[__Impl__b, __Impl__c]] = [];
-let [...{d: __Impl__e}] = [];
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const b = registerClientReference(__Impl__b, "module.js", "b");
-export const c = registerClientReference(__Impl__c, "module.js", "c");
-export const e = registerClientReference(__Impl__e, "module.js", "e");
-"
-`;
-
-exports[`transforms > export named from source 1`] = `
-"import {registerClientReference} from "react";
-import {a as __Impl__a, b as __Impl__c, default as __Impl__default} from "pkg";
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const c = registerClientReference(__Impl__c, "module.js", "c");
-export default registerClientReference(__Impl__default, "module.js", "default");
-"
-`;
-
-exports[`transforms > export named specifiers 1`] = `
-"import {registerClientReference} from "react";
-let __Impl__a;
-let b;
-let d;
-export const a = registerClientReference(__Impl__a, "module.js", "a");
-export const c = registerClientReference(b, "module.js", "c");
-export default registerClientReference(d, "module.js", "default");
 "
 `;
