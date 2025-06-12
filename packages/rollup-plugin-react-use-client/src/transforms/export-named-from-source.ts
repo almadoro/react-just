@@ -15,12 +15,12 @@ import { createClientReferenceDeclaration } from "./utils";
  *
  * Into:
  * ```ts
- * import { a, b as c, b as d, default as $$default$$, default as e } from "pkg";
- * const $$Ref$$a = registerClientReference(a, ..., "a");
- * const $$Ref$$c = registerClientReference(c, ..., "c");
- * const $$Ref$$d = registerClientReference(d, ..., "d");
+ * import { a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$ } from "pkg";
+ * const $$Ref$$a = registerClientReference($$a$$, ..., "a");
+ * const $$Ref$$c = registerClientReference($$c$$, ..., "c");
+ * const $$Ref$$d = registerClientReference($$d$$, ..., "d");
  * const $$Ref$$default = registerClientReference($$default$$, ..., "default");
- * const $$Ref$$e = registerClientReference(e, ..., "e");
+ * const $$Ref$$e = registerClientReference($$e$$, ..., "e");
  * export { $$Ref$$a as a, $$Ref$$c as c, $$Ref$$d as d, $$Ref$$default as default $$Ref$$e as e };
  * ```
  */
@@ -43,8 +43,10 @@ export default function transformExportNamedFromSource(
 
     const importIdentifier = specifier.local.name;
     const exportIdentifier = specifier.exported.name;
-    const localIdentifier =
-      exportIdentifier === "default" ? "$$default$$" : exportIdentifier;
+    // It's allowed to export an identifier from a module with the same
+    // name as another identifier within the same module. Add the $$
+    // prefix and suffix to avoid collisions.
+    const localIdentifier = "$$" + exportIdentifier + "$$";
     const referenceIdentifier = context.referencePrefix + exportIdentifier;
 
     importSpecifiers.push(

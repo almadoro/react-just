@@ -107,12 +107,13 @@ export {$$Ref$$e as e};
 
 exports[`transforms > export named from source 1`] = `
 "import {registerClientReference} from "react";
-import {a, b as c, b as d, default as $$default$$, default as e} from "pkg";
-const $$Ref$$a = registerClientReference(a, "module.js", "a");
-const $$Ref$$c = registerClientReference(c, "module.js", "c");
-const $$Ref$$d = registerClientReference(d, "module.js", "d");
+import {a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$} from "pkg";
+let c = 1;
+const $$Ref$$a = registerClientReference($$a$$, "module.js", "a");
+const $$Ref$$c = registerClientReference($$c$$, "module.js", "c");
+const $$Ref$$d = registerClientReference($$d$$, "module.js", "d");
 const $$Ref$$default = registerClientReference($$default$$, "module.js", "default");
-const $$Ref$$e = registerClientReference(e, "module.js", "e");
+const $$Ref$$e = registerClientReference($$e$$, "module.js", "e");
 export {$$Ref$$a as a, $$Ref$$c as c, $$Ref$$d as d, $$Ref$$default as default, $$Ref$$e as e};
 "
 `;
