@@ -1,9 +1,6 @@
 import path from "node:path";
 import type { Plugin } from "vite";
-import {
-  getInitializationCode,
-  getModulesRegisteringCodeProduction,
-} from "../utils/client";
+import { getInitializationCode } from "../utils/client";
 import { getAppEntryModuleId } from "../utils/server";
 import buildApp from "./build-app";
 
@@ -86,16 +83,10 @@ export default function build(options: BuildOptions): Plugin {
     },
     resolveId(id) {
       if (id === CLIENT_ENTRY_MODULE_ID) return RESOLVED_CLIENT_ENTRY_MODULE_ID;
-      if (id === APP_MODULES_MODULE_ID) return RESOLVED_APP_MODULES_MODULE_ID;
     },
     load(id) {
       if (id === RESOLVED_CLIENT_ENTRY_MODULE_ID)
-        return getClientEntryCode(options.flightMimeType);
-      if (id === RESOLVED_APP_MODULES_MODULE_ID)
-        return getAppModulesCode(
-          clientModulesIds,
-          this.environment.config.root,
-        );
+        return getClientEntryCode(clientModulesIds, options.flightMimeType);
     },
   };
 }
@@ -105,15 +96,16 @@ const ASSETS_DIR = "assets";
 const CLIENT_ENTRY_MODULE_ID = "/virtual:react-just/client-entry";
 const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
 
-function getClientEntryCode(flightMimeType: string) {
-  return (
-    `import "${APP_MODULES_MODULE_ID}";` + getInitializationCode(flightMimeType)
-  );
-}
+function getClientEntryCode(
+  clientModulesIds: string[],
+  flightMimeType: string,
+) {
+  let code = "";
 
-const APP_MODULES_MODULE_ID = "/virtual:react-just/app-modules";
-const RESOLVED_APP_MODULES_MODULE_ID = "\0" + APP_MODULES_MODULE_ID;
+  for (const id of clientModulesIds) {
+    code += `import "${id}";`;
+  }
+  code += getInitializationCode(flightMimeType);
 
-function getAppModulesCode(clientModulesIds: string[], root: string) {
-  return getModulesRegisteringCodeProduction(clientModulesIds, root);
+  return code;
 }

@@ -1,6 +1,7 @@
 const ENVIRONMENTS = {
-  FLIGHT: "flight",
+  CLIENT: "client",
   FIZZ: "fizz",
+  FLIGHT: "flight",
 };
 
 export default ENVIRONMENTS;

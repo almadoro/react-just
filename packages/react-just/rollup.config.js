@@ -4,7 +4,7 @@ import { defineConfig } from "rollup";
 
 export default defineConfig({
   input: {
-    client: "src/client/index.ts",
+    client: "src/client.ts",
     "fizz.node": "src/fizz/node.ts",
     "flight.node": "src/flight/node.ts",
     server: "src/server/index.ts",

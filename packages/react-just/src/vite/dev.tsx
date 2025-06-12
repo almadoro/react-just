@@ -9,12 +9,9 @@ import type {
   RunnableDevEnvironment,
   ViteDevServer,
 } from "vite";
-import { incomingMessageToRequest } from "../server/node/transform";
-import {
-  getInitializationCode,
-  getModulesRegisteringCodeDevelopment,
-} from "./utils/client";
+import { getInitializationCode } from "./utils/client";
 import ENVIRONMENTS from "./utils/environments";
+import { incomingMessageToRequest } from "./utils/request";
 import { getAppEntryModuleId } from "./utils/server";
 
 type DevOptions = { app?: string; rscMimeType: string };
@@ -29,6 +26,29 @@ export default function dev(options: DevOptions): Plugin {
     config() {
       return {
         environments: {
+          [ENVIRONMENTS.CLIENT]: {
+            consumer: "client",
+            optimizeDeps: {
+              include: [
+                "react",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+                "react-dom",
+                "react-just/client",
+              ],
+            },
+          },
+          [ENVIRONMENTS.FIZZ]: {
+            consumer: "server",
+            optimizeDeps: {
+              include: [
+                "react",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+                "react-dom",
+              ],
+            },
+          },
           [ENVIRONMENTS.FLIGHT]: {
             consumer: "server",
             resolve: {
@@ -51,17 +71,6 @@ export default function dev(options: DevOptions): Plugin {
                 // Including react-just/flight.node triggers optimization of
                 // react-server-dom-webpack.
                 "react-just/flight.node",
-              ],
-            },
-          },
-          [ENVIRONMENTS.FIZZ]: {
-            consumer: "server",
-            optimizeDeps: {
-              include: [
-                "react",
-                "react/jsx-runtime",
-                "react/jsx-dev-runtime",
-                "react-dom",
               ],
             },
           },
@@ -286,7 +295,11 @@ function getAppModulesCode(
   clientModulesIds: string[],
   cssModulesIds: string[],
 ) {
-  let code = getModulesRegisteringCodeDevelopment(clientModulesIds);
+  let code = "";
+
+  for (const clientModuleId of clientModulesIds) {
+    code += `import "${clientModuleId}";`;
+  }
 
   for (const cssModuleId of cssModulesIds) {
     code += `import "${cssModuleId}";`;
@@ -319,17 +332,17 @@ function onFlightHotUpdate(server: ViteDevServer) {
 
 function getServerHmrCode() {
   return (
-    `import { WINDOW_SHARED } from "react-just/client";` +
+    `import { createFromRscFetch, WINDOW_SHARED } from "react-just/client";` +
     `let lastEventId = null;` +
     `import.meta.hot.on("${HMR_RELOAD_EVENT}", ({ eventId }) => {` +
-    ` lastEventId = eventId;` +
-    ` const { root, rscMimeType } = window[WINDOW_SHARED];` +
-    ` const headers = { accept: rscMimeType };` +
-    ` createFromFlightFetch(fetch(window.location.href, { headers })).then(async (tree) => {` +
+    `  lastEventId = eventId;` +
+    `  const { root, rscMimeType } = window[WINDOW_SHARED];` +
+    `  const headers = { accept: rscMimeType };` +
+    `  createFromRscFetch(fetch(window.location.href, { headers })).then(async (tree) => {` +
     // Add a timestamp to trigger app modules reload on the browser.
-    `   await import(/* @vite-ignore */ \`${APP_MODULES_MODULE_ID}?t=\${Date.now()}\`);` +
+    `    await import(/* @vite-ignore */ \`${APP_MODULES_MODULE_ID}?t=\${Date.now()}\`);` +
     // Avoid race conditions between multiple reloads. Render only the latest one.
-    `   if (lastEventId === eventId) root.render(tree);` +
+    `    if (lastEventId === eventId) root.render(tree);` +
     ` });` +
     `});`
   );

@@ -1,12 +1,20 @@
+import { createHash } from "node:crypto";
+import path from "node:path";
 import reactUseClient from "rollup-plugin-react-use-client";
 import { Plugin, ResolvedConfig } from "vite";
-import { getModuleRegisterId } from "./utils/client";
 import ENVIRONMENTS from "./utils/environments";
 
 export default function useClient(): Plugin {
   let config: ResolvedConfig;
 
-  const moduleId = (id: string) => getModuleRegisterId(id, config);
+  function moduleId(id: string) {
+    if (config.mode === "development") return id;
+    // Use a hash of the relative path to the project root as the module id.
+    // This ensures that the module id is consistent across builds.
+    const relativePath = path.relative(config.root, id);
+    const hash = createHash("sha256").update(relativePath).digest("base64url");
+    return hash;
+  }
 
   const { transform: flightTransform, ...basePlugin } = reactUseClient({
     moduleId,
@@ -29,9 +37,19 @@ export default function useClient(): Plugin {
     registerArguments: ["implementation", "module-id", "export-name"],
   });
 
+  const { transform: clientTransform } = reactUseClient({
+    moduleId,
+    registerClientReference: {
+      import: "registerClientReference",
+      from: "react-just/client",
+    },
+    registerArguments: ["implementation", "module-id", "export-name"],
+  });
+
   if (
     typeof flightTransform !== "function" ||
-    typeof fizzTransform !== "function"
+    typeof fizzTransform !== "function" ||
+    typeof clientTransform !== "function"
   )
     throw new Error(
       "Expected rollup-plugin-react-use-client transform to be a function",
@@ -46,10 +64,12 @@ export default function useClient(): Plugin {
     transform(code, id) {
       // Vite will use `?v=` and `?t=` sometimes.
       const [, idWithoutQuery] = id.match(/^([^?]*)/)!;
-      if (this.environment.name === ENVIRONMENTS.FLIGHT)
-        return flightTransform.apply(this, [code, idWithoutQuery]);
+      if (this.environment.name === ENVIRONMENTS.CLIENT)
+        return clientTransform.apply(this, [code, idWithoutQuery]);
       if (this.environment.name === ENVIRONMENTS.FIZZ)
         return fizzTransform.apply(this, [code, idWithoutQuery]);
+      if (this.environment.name === ENVIRONMENTS.FLIGHT)
+        return flightTransform.apply(this, [code, idWithoutQuery]);
     },
   };
 }

@@ -1,27 +1,17 @@
 import { Root } from "react-dom/client";
-
-export function hydrateFromWindowFlight(): Root;
-
-export function createFromFlightFetch<T>(
-  res: Promise<Response>,
-): PromiseLike<T>;
-
-export function registerModule(id: string, module: Module): void;
-
-type Module = Record<string, unknown>;
-
-export {
-  /**
-   * @deprecated Use the exported type from `react-just/server` instead.
-   */
-  AppEntryProps,
-  /**
-   * @deprecated Use the exported type from `react-just/server` instead.
-   */
-  Request,
-} from "./server";
+import { Module } from "./shared";
 
 export declare const WINDOW_SHARED: unique symbol;
+
+export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T>;
+
+export function hydrateFromWindowStream(): Root;
+
+export function registerClientReference(
+  module: Module,
+  moduleId: string,
+  exportName: string,
+): void;
 
 declare global {
   interface Window {
