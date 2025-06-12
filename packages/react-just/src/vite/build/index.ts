@@ -4,7 +4,7 @@ import {
   getInitializationCode,
   getModulesRegisteringCodeProduction,
 } from "../utils/client";
-import { getAppEntryPath } from "../utils/server";
+import { getAppEntryModuleId } from "../utils/server";
 import buildApp from "./build-app";
 
 type BuildOptions = { app?: string; flightMimeType: string };
@@ -45,7 +45,7 @@ export default function build(options: BuildOptions): Plugin {
               outDir: serverOutDir,
               manifest: "manifest.json",
               rollupOptions: {
-                input: await getAppEntryPath(root, options.app),
+                input: await getAppEntryModuleId(root, options.app),
                 output: {
                   format: "esm",
                   entryFileNames: "[name].mjs",

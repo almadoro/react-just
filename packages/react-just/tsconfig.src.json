@@ -5,7 +5,10 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "paths": {
+      "@/types/*": ["./types/*"]
+    }
   },
   "include": ["src", "types"]
 }

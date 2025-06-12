@@ -1,3 +1,4 @@
+import { Manifest as ReactJustManifest } from "@/types/server";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type {
@@ -5,7 +6,6 @@ import type {
   ViteBuilder,
   Manifest as ViteManifest,
 } from "vite";
-import { Manifest as ReactJustManifest } from "../../../types/server";
 
 const OUTPUT_PUBLIC_DIR = "public";
 const OUTPUT_SERVER_DIR = "server";

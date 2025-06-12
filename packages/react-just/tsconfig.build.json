@@ -5,7 +5,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@/types/*": ["./types/*"]
+    }
   },
   "include": ["src", "types"]
 }

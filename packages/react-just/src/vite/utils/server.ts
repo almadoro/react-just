@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export async function getAppEntryPath(root: string, app?: string) {
+export async function getAppEntryModuleId(root: string, app?: string) {
   if (app) return path.resolve(root, app);
 
   for (const entryPath of APP_ENTRY_PATHS) {

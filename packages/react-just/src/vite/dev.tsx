@@ -1,3 +1,7 @@
+import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
+import { renderToPipeableStream as renderToPipeableRscStream } from "@/types/flight.node";
+import { AppEntryProps } from "@/types/server";
+import type React from "react";
 import type {
   Connect,
   DevEnvironment,
@@ -5,19 +9,15 @@ import type {
   RunnableDevEnvironment,
   ViteDevServer,
 } from "vite";
-import { AppEntryProps } from "../../types/server";
-import {
-  renderToFlightPipeableStream,
-  renderToHtmlPipeableStream,
-} from "../../types/server.node";
 import { incomingMessageToRequest } from "../server/node/transform";
 import {
   getInitializationCode,
   getModulesRegisteringCodeDevelopment,
 } from "./utils/client";
-import { getAppEntryPath } from "./utils/server";
+import ENVIRONMENTS from "./utils/environments";
+import { getAppEntryModuleId } from "./utils/server";
 
-type DevOptions = { app?: string; flightMimeType: string };
+type DevOptions = { app?: string; rscMimeType: string };
 
 export default function dev(options: DevOptions): Plugin {
   let clientModulesIds: string[] = [];
@@ -28,31 +28,81 @@ export default function dev(options: DevOptions): Plugin {
     apply: "serve",
     config() {
       return {
-        optimizeDeps: {
-          // Include the client module to avoid crashes on the first
-          // cache-free request.
-          include: ["react-just/client"],
+        environments: {
+          [ENVIRONMENTS.FLIGHT]: {
+            consumer: "server",
+            resolve: {
+              conditions: ["react-server"],
+              // Any package can contain the "use client" and "use server"
+              // directives. These modules should be transformed so they
+              // can't be externalized.
+              noExternal: true,
+            },
+            optimizeDeps: {
+              esbuildOptions: { conditions: ["react-server"] },
+              // At the moment, React and complementary packages are
+              // commonjs-only. We need to transform them to esm.
+              // As far as I know, optimizeDeps.include is what should be used
+              // to transform cjs to esm modules.
+              include: [
+                "react",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+                // Including react-just/flight.node triggers optimization of
+                // react-server-dom-webpack.
+                "react-just/flight.node",
+              ],
+            },
+          },
+          [ENVIRONMENTS.FIZZ]: {
+            consumer: "server",
+            optimizeDeps: {
+              include: [
+                "react",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+                "react-dom",
+              ],
+            },
+          },
         },
       };
     },
     configureServer(server) {
       return () =>
-        server.middlewares.use(async (...args) => {
-          const ssrEnv = server.environments.ssr as RunnableDevEnvironment;
-          const serverEntryModule = await ssrEnv.runner.import(
-            SERVER_ENTRY_MODULE_ID,
-          );
-          // Once we have loaded the latest server entry module we can extract
-          // the client modules and css referenced modules.
-          clientModulesIds = getClientModulesIds(ssrEnv);
-          cssModulesIds = getCssModulesIds(ssrEnv);
-          serveApp(serverEntryModule, options.flightMimeType)(...args);
+        server.middlewares.use(async (req, res, next) => {
+          try {
+            const flightEnv = server.environments[
+              ENVIRONMENTS.FLIGHT
+            ] as RunnableDevEnvironment;
+            const flightEntryModule = await flightEnv.runner.import(
+              FLIGHT_ENTRY_MODULE_ID,
+            );
+            // Once we have loaded the latest app entry module we can extract
+            // the client modules and css referenced modules.
+            clientModulesIds = getClientModulesIds(flightEnv);
+            cssModulesIds = getCssModulesIds(flightEnv);
+            const fizzEnv = server.environments[
+              ENVIRONMENTS.FIZZ
+            ] as RunnableDevEnvironment;
+            const fizzEntryModule =
+              await fizzEnv.runner.import(FIZZ_ENTRY_MODULE_ID);
+            serveApp(flightEntryModule, fizzEntryModule, options.rscMimeType)(
+              req,
+              res,
+              next,
+            );
+          } catch (err) {
+            next(err);
+          }
         });
     },
     resolveId(id) {
       switch (id) {
-        case SERVER_ENTRY_MODULE_ID:
-          return RESOLVED_SERVER_ENTRY_MODULE_ID;
+        case FLIGHT_ENTRY_MODULE_ID:
+          return RESOLVED_FLIGHT_ENTRY_MODULE_ID;
+        case FIZZ_ENTRY_MODULE_ID:
+          return RESOLVED_FIZZ_ENTRY_MODULE_ID;
         case CLIENT_ENTRY_MODULE_ID:
           return RESOLVED_CLIENT_ENTRY_MODULE_ID;
         case HMR_PREAMBLE_MODULE_ID:
@@ -65,12 +115,17 @@ export default function dev(options: DevOptions): Plugin {
     },
     async load(id) {
       switch (id) {
-        case RESOLVED_SERVER_ENTRY_MODULE_ID:
-          return getServerEntry(
-            await getAppEntryPath(this.environment.config.root, options.app),
+        case RESOLVED_FLIGHT_ENTRY_MODULE_ID:
+          return getFlightEntry(
+            await getAppEntryModuleId(
+              this.environment.config.root,
+              options.app,
+            ),
           );
+        case RESOLVED_FIZZ_ENTRY_MODULE_ID:
+          return getFizzEntry(clientModulesIds);
         case RESOLVED_CLIENT_ENTRY_MODULE_ID:
-          return getClientEntry(options.flightMimeType);
+          return getClientEntry(options.rscMimeType);
         case RESOLVED_HMR_PREAMBLE_MODULE_ID:
           return getHmrPreambleCode();
         case RESOLVED_APP_MODULES_MODULE_ID:
@@ -80,32 +135,38 @@ export default function dev(options: DevOptions): Plugin {
       }
     },
     hotUpdate(ctx) {
-      if (this.environment.name === "ssr") onSsrHotUpdate(ctx.server);
+      if (this.environment.name === ENVIRONMENTS.FLIGHT)
+        onFlightHotUpdate(ctx.server);
     },
   };
 }
 
-const SERVER_ENTRY_MODULE_ID = "/virtual:react-just/server-entry";
-const RESOLVED_SERVER_ENTRY_MODULE_ID = "\0" + SERVER_ENTRY_MODULE_ID;
+const FLIGHT_ENTRY_MODULE_ID = "/virtual:react-just/flight-entry";
+const RESOLVED_FLIGHT_ENTRY_MODULE_ID = "\0" + FLIGHT_ENTRY_MODULE_ID;
 
-function getServerEntry(appUrl: string) {
+function getFlightEntry(appModuleId: string) {
   // Render functions and App entry must be imported together to share modules
   // registering.
   return (
-    `import { renderToFlightPipeableStream, renderToHtmlPipeableStream } from "react-just/server.node";` +
-    `import App from "${appUrl}";` +
-    `export { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } `
+    `import React from "react";` +
+    `import { renderToPipeableStream } from "react-just/flight.node";` +
+    `import App from "${appModuleId}";` +
+    `export { React, renderToPipeableStream, App };`
   );
 }
+
+type FlightEntryModule = {
+  React: typeof React;
+  renderToPipeableStream: typeof renderToPipeableRscStream;
+  App: React.ComponentType<AppEntryProps>;
+};
 
 // Taken from: https://github.com/vitejs/vite/blob/main/packages/vite/src/node/constants.ts#L92
 const CSS_EXTENSIONS_RE =
   /\.(css|less|sass|scss|styl|stylus|pcss|postcss|sss)($|\?)/;
 
-function getCssModulesIds(ssrEnv: DevEnvironment) {
-  // Some css modules are imported by client modules too. This doesn't matter
-  // because Vite will automatically dedupe them.
-  const { idToModuleMap } = ssrEnv.moduleGraph;
+function getCssModulesIds(env: DevEnvironment) {
+  const { idToModuleMap } = env.moduleGraph;
 
   const cssModulesIds: string[] = [];
 
@@ -116,56 +177,79 @@ function getCssModulesIds(ssrEnv: DevEnvironment) {
   return cssModulesIds;
 }
 
-function getClientModulesIds(ssrEnv: DevEnvironment) {
-  const { idToModuleMap } = ssrEnv.moduleGraph;
+function getClientModulesIds(env: DevEnvironment) {
+  const { idToModuleMap } = env.moduleGraph;
 
   const clientModulesIds: string[] = [];
 
   for (const id of idToModuleMap.keys()) {
-    const meta = ssrEnv.pluginContainer.getModuleInfo(id)?.meta;
+    const meta = env.pluginContainer.getModuleInfo(id)?.meta;
     if (meta?.reactUseClient?.transformed) clientModulesIds.push(id);
   }
 
   return clientModulesIds;
 }
 
-type ServerEntryModule = {
-  renderToFlightPipeableStream: typeof renderToFlightPipeableStream;
-  renderToHtmlPipeableStream: typeof renderToHtmlPipeableStream;
-  App: React.ComponentType<AppEntryProps>;
+const FIZZ_ENTRY_MODULE_ID = "/virtual:react-just/fizz-entry";
+const RESOLVED_FIZZ_ENTRY_MODULE_ID = "\0" + FIZZ_ENTRY_MODULE_ID;
+
+function getFizzEntry(clientModulesIds: string[]) {
+  let code = `export { renderToPipeableStream } from "react-just/fizz.node";`;
+
+  for (const id of clientModulesIds) {
+    code += `import "${id}";`;
+  }
+
+  return code;
+}
+
+type FizzEntryModule = {
+  renderToPipeableStream: typeof renderToPipeableHtmlStream;
 };
 
 function serveApp(
-  serverEntryModule: ServerEntryModule,
-  flightMimeType: string,
+  flightEntryModule: FlightEntryModule,
+  fizzEntryModule: FizzEntryModule,
+  rscMimeType: string,
 ): Connect.NextHandleFunction {
   return async (req, res) => {
-    const { renderToFlightPipeableStream, renderToHtmlPipeableStream, App } =
-      serverEntryModule;
+    const {
+      renderToPipeableStream: renderToPipeableRscStream,
+      App,
+      React,
+    } = flightEntryModule;
+
+    const { renderToPipeableStream: renderToPipeableHtmlStream } =
+      fizzEntryModule;
 
     const request = incomingMessageToRequest(req);
 
     // Vite rewrites the url path. Use the original url to get the correct path.
     if (req.originalUrl) request.url.pathname = req.originalUrl;
 
-    const AppRoot = () => (
-      <>
-        <script async type="module" src={CLIENT_ENTRY_MODULE_ID} />
-        <App req={request} />
-      </>
+    const rscStream = renderToPipeableRscStream(
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement("script", {
+          async: true,
+          type: "module",
+          src: CLIENT_ENTRY_MODULE_ID,
+        }),
+        React.createElement(App, { req: request }),
+      ),
     );
 
-    if (req.headers.accept?.includes(flightMimeType)) {
+    if (req.headers.accept?.includes(rscMimeType)) {
       res.statusCode = 200;
-      res.setHeader("content-type", flightMimeType);
-      const flightStream = renderToFlightPipeableStream(<AppRoot />);
-      flightStream.pipe(res);
+      res.setHeader("content-type", rscMimeType);
+      rscStream.pipe(res);
       return;
     }
 
     res.statusCode = 200;
     res.setHeader("content-type", "text/html");
-    const htmlStream = renderToHtmlPipeableStream(<AppRoot />);
+    const htmlStream = renderToPipeableHtmlStream(rscStream);
     htmlStream.pipe(res);
   };
 }
@@ -173,12 +257,12 @@ function serveApp(
 const CLIENT_ENTRY_MODULE_ID = "/virtual:react-just/client-entry";
 const RESOLVED_CLIENT_ENTRY_MODULE_ID = "\0" + CLIENT_ENTRY_MODULE_ID;
 
-function getClientEntry(flightMimeType: string) {
+function getClientEntry(rscMimeType: string) {
   return (
     `import "${HMR_PREAMBLE_MODULE_ID}";` +
     `import "${APP_MODULES_MODULE_ID}";` +
     `import "${SERVER_HMR_MODULE_ID}";` +
-    getInitializationCode(flightMimeType)
+    getInitializationCode(rscMimeType)
   );
 }
 
@@ -215,7 +299,7 @@ const HMR_RELOAD_EVENT = "react-just:reload";
 const SERVER_HMR_MODULE_ID = "/virtual:react-just/server-hmr";
 const RESOLVED_SERVER_HMR_MODULE_ID = "\0" + SERVER_HMR_MODULE_ID;
 
-function onSsrHotUpdate(server: ViteDevServer) {
+function onFlightHotUpdate(server: ViteDevServer) {
   // Invalidate the app modules module to make vite recalculate it on the next
   // request.
   const appModulesModule = server.environments.client.moduleGraph.getModuleById(

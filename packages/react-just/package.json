@@ -26,25 +26,30 @@
     "types"
   ],
   "exports": {
-    "./vite": {
-      "types": "./types/vite.d.ts",
-      "import": "./dist/vite.mjs",
-      "require": "./dist/vite.cjs"
+    "./client": {
+      "types": "./types/client.d.ts",
+      "import": "./dist/client.mjs",
+      "require": "./dist/client.cjs"
+    },
+    "./fizz.node": {
+      "types": "./types/fizz.node.d.ts",
+      "import": "./dist/fizz.node.mjs",
+      "require": "./dist/fizz.node.cjs"
+    },
+    "./flight.node": {
+      "types": "./types/flight.node.d.ts",
+      "import": "./dist/flight.node.mjs",
+      "require": "./dist/flight.node.cjs"
     },
     "./server": {
       "types": "./types/server.d.ts",
       "import": "./dist/server.mjs",
       "require": "./dist/server.cjs"
     },
-    "./server.node": {
-      "types": "./types/server.node.d.ts",
-      "import": "./dist/server.node.mjs",
-      "require": "./dist/server.node.cjs"
-    },
-    "./client": {
-      "types": "./types/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.cjs"
+    "./vite": {
+      "types": "./types/vite.d.ts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.cjs"
     }
   },
   "scripts": {
@@ -69,6 +74,7 @@
   "peerDependencies": {
     "react": "~19.1",
     "react-dom": "~19.1",
+    "react-server-dom-webpack": "~19.1",
     "vite": ">=6"
   }
 }

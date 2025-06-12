@@ -1,16 +1,16 @@
 const MODULES: Record<string, Module> = {};
 
-export function registerModule(id: string, module: Module) {
-  MODULES[id] = module;
+export function registerModule(moduleId: string, module: Module) {
+  MODULES[moduleId] = module;
 }
 
 export function registerModuleExport(
-  id: string,
+  implementation: unknown,
+  moduleId: string,
   exportName: string,
-  value: unknown,
 ) {
-  MODULES[id] ||= {};
-  MODULES[id][exportName] = value;
+  MODULES[moduleId] ||= {};
+  MODULES[moduleId][exportName] = implementation;
 }
 
 globalThis.__webpack_require__ = (id) => {
