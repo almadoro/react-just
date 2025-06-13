@@ -129,31 +129,3 @@ const $$Ref$$default = registerClientReference(d, "module.js", "default");
 export {$$Ref$$a as a, $$Ref$$c as c, $$Ref$$default as default};
 "
 `;
-
-exports[`transforms export default declarations class declarations 1`] = `
-"import {registerClientReference} from "react";
-class __Impl__default__A {}
-export default registerClientReference(__Impl__default__A, "module.js", "default");
-"
-`;
-
-exports[`transforms export default declarations function declarations 1`] = `
-"import {registerClientReference} from "react";
-function __Impl__default__() {}
-export default registerClientReference(__Impl__default__, "module.js", "default");
-"
-`;
-
-exports[`transforms export default declarations identifier 1`] = `
-"import {registerClientReference} from "react";
-let __Impl__a;
-export default registerClientReference(__Impl__a, "module.js", "default");
-"
-`;
-
-exports[`transforms export default declarations value declarations 1`] = `
-"import {registerClientReference} from "react";
-const __Impl__default = 1;
-export default registerClientReference(__Impl__default, "module.js", "default");
-"
-`;
