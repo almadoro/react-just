@@ -1,8 +1,9 @@
 import { generate } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
+import { Expression } from "estree";
 import fs from "fs/promises";
 import { parseAstAsync, Plugin } from "vite";
-import transform, { TransformOptions } from "./transform";
+import transform from "./transform";
 
 export default function useClient(options: UseClientOptions) {
   function shouldApply(environmentName: string) {
@@ -34,7 +35,11 @@ export default function useClient(options: UseClientOptions) {
       const { transformOptions, modules } =
         options.environments[this.environment.name];
 
-      const { transformed } = transform(program, transformOptions);
+      const { transformed } = transform(program, {
+        ...transformOptions,
+        getRegisterArguments: (ctx) =>
+          transformOptions.getRegisterArguments({ ...ctx, moduleId: id }),
+      });
 
       if (!transformed) return;
 
@@ -52,6 +57,16 @@ type UseClientOptions = {
 type EnvironmentOptions = {
   modules: Modules;
   transformOptions: TransformOptions;
+};
+
+export type TransformOptions = {
+  getRegisterArguments: (context: {
+    exportName: string;
+    implementationIdentifier: string;
+    moduleId: string;
+  }) => Expression[];
+  registerClientReferenceSource: string;
+  treeshakeImplementation: boolean;
 };
 
 type Modules = Set<string>;
@@ -72,7 +87,14 @@ export function getEsbuildPlugin(
 
           const ast = await parseAstAsync(code);
 
-          const { transformed } = transform(ast, environment.transformOptions);
+          const { transformed } = transform(ast, {
+            ...environment.transformOptions,
+            getRegisterArguments: (ctx) =>
+              environment.transformOptions.getRegisterArguments({
+                ...ctx,
+                moduleId: path,
+              }),
+          });
 
           if (!transformed) return;
 
