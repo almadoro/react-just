@@ -58,18 +58,21 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",
-    "rollup-plugin-react-use-client": "workspace:^"
+    "astring": "^1.9.0",
+    "estree-toolkit": "^1.7.13"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.2",
+    "@types/estree": "^1.0.7",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "esbuild": "^0.25.5",
     "react-server-dom": "workspace:^",
-    "rollup": "^4.40.2",
-    "rollup-plugin-react-use-server": "workspace:^",
-    "vite": "^6.3.5"
+    "rollup": "^4.43.0",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.3"
   },
   "peerDependencies": {
     "react": "~19.1",

@@ -5,7 +5,10 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["src", "__tests__"]
+  "include": ["src", "__tests__", "vitest.config.ts"]
 }

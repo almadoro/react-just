@@ -1,0 +1,278 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transforms with no treeshake > export default declarations > class declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+class A {}
+const $$Ref$$default = $$registerClientReference$$(A, "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with no treeshake > export default declarations > function declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+function $$default$$() {}
+const $$Ref$$default = $$registerClientReference$$($$default$$, "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with no treeshake > export default declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let a;
+const $$Ref$$default = $$registerClientReference$$(a, "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with no treeshake > export default declarations > value declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$default$$ = 1;
+const $$Ref$$default = $$registerClientReference$$($$default$$, "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > array pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let [a, {b}, [c], d = 1, , ...e] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$(c, "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$(d, "d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerClientReference$$(e, "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > assignment pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let [a = 1, {b} = c, [d] = e] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerClientReference$$(d, "d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > class 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+class A {}
+const $$Ref$$A = $$registerClientReference$$(A, "A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > function 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+function a() {}
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let a;
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > object pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let {a, b: {c}, d: [e], f = 1, ...g} = {};
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$(c, "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$(e, "e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerClientReference$$(f, "f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerClientReference$$(g, "g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms with no treeshake > export named declarations > rest element 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let [...a] = [];
+let [...[b, c]] = [];
+let [...{d: e}] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$(c, "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$(e, "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with no treeshake > export named from source 1`] = `
+"import {a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$} from "pkg";
+import {registerClientReference as $$registerClientReference$$} from "pkg";
+let c = 1;
+const $$Ref$$a = $$registerClientReference$$($$a$$, "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$($$c$$, "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$($$d$$, "d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerClientReference$$($$default$$, "default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerClientReference$$($$e$$, "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with no treeshake > export named specifiers 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+let a;
+let b;
+let d;
+const $$Ref$$a = $$registerClientReference$$(a, "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$(b, "c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerClientReference$$(d, "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with treeshake > export default declarations > class declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with treeshake > export default declarations > function declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with treeshake > export default declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with treeshake > export default declarations > value declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > array pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$("c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$("d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerClientReference$$("e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > assignment pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerClientReference$$("d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > class 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$A = $$registerClientReference$$("A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > function 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > object pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$("e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerClientReference$$("f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerClientReference$$("g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms with treeshake > export named declarations > rest element 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$("c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$("e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with treeshake > export named from source 1`] = `
+"import {a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$} from "pkg";
+import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$("d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerClientReference$$("e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms with treeshake > export named specifiers 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "pkg";
+const $$Ref$$a = $$registerClientReference$$("a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;
