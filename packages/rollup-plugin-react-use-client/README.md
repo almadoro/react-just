@@ -1,3 +1,6 @@
+> [!WARNING]
+> This plugin development is paused while a more general api is determined. Consider using [react-just](https://github.com/almadoro/react-just) for your project or open an issue there requesting to continue development with api suggestions.
+
 # rollup-plugin-react-use-client
 
 A Rollup plugin that transforms React's "use client" directive files.
