@@ -13,6 +13,7 @@ export {
 exports[`extensions > applies esbuild plugin to .jsx 1`] = `
 "// __tests__/use-client/fixtures/esbuild/client.jsx
 import { registerClientReference as $$registerClientReference$$ } from "pkg";
+import { jsx } from "react/jsx-runtime";
 var $$Ref$$default = $$registerClientReference$$();
 export {
   $$Ref$$default as default
@@ -53,6 +54,7 @@ export {
 exports[`extensions > applies esbuild plugin to .tsx 1`] = `
 "// __tests__/use-client/fixtures/esbuild/client.tsx
 import { registerClientReference as $$registerClientReference$$ } from "pkg";
+import { jsxs } from "react/jsx-runtime";
 var $$Ref$$default = $$registerClientReference$$();
 export {
   $$Ref$$default as default
@@ -62,12 +64,18 @@ export {
 
 exports[`extensions > doesn't apply esbuild plugin to .cjs 1`] = `
 ""use client";
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
 
 // __tests__/use-client/fixtures/esbuild/not-valid.cjs
-var not_valid_default = 1;
-export {
-  not_valid_default as default
-};
+var require_not_valid = __commonJS({
+  "__tests__/use-client/fixtures/esbuild/not-valid.cjs"(exports, module) {
+    module.exports = 1;
+  }
+});
+export default require_not_valid();
 "
 `;
 
@@ -78,11 +86,17 @@ exports[`extensions > doesn't apply esbuild plugin to .css 1`] = `
 
 exports[`extensions > doesn't apply esbuild plugin to .cts 1`] = `
 ""use client";
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
 
 // __tests__/use-client/fixtures/esbuild/not-valid.cts
-var not_valid_default = 1;
-export {
-  not_valid_default as default
-};
+var require_not_valid = __commonJS({
+  "__tests__/use-client/fixtures/esbuild/not-valid.cts"(exports, module) {
+    module.exports = 1;
+  }
+});
+export default require_not_valid();
 "
 `;

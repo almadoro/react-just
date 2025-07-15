@@ -104,7 +104,7 @@ function transformTests(options: TransformOptions) {
   function transformTest(filepath: string) {
     return async () => {
       const code = await fs.readFile(
-        path.resolve(import.meta.dirname, "fixtures", filepath),
+        path.resolve(import.meta.dirname, "fixtures/transforms", filepath),
         "utf-8",
       );
 

@@ -2,7 +2,7 @@ import { generate } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
 import { Expression } from "estree";
 import fs from "fs/promises";
-import { parseAstAsync, Plugin } from "vite";
+import { parseAstAsync, Plugin, transformWithEsbuild } from "vite";
 import transform from "./transform";
 
 export default function useClient(options: UseClientOptions) {
@@ -12,6 +12,10 @@ export default function useClient(options: UseClientOptions) {
 
   return {
     name: PLUGIN_NAME,
+    // We should apply this plugin before others because the "use client"
+    // directive must appear at the top and other plugins may add code
+    // before it (e.g. vitejs react plugin on development)
+    enforce: "pre",
     applyToEnvironment(environment) {
       return shouldApply(environment.name);
     },
@@ -27,23 +31,26 @@ export default function useClient(options: UseClientOptions) {
           },
         };
     },
-    transform(code, id) {
+    async transform(code, id) {
       if (!EXTENSIONS_REGEX.test(id)) return;
 
-      const program = this.parse(code);
+      const program = await parse(code, id, this.environment.mode === "dev");
 
-      const { transformOptions, modules } =
+      const { transformOptions, onModuleTransformed } =
         options.environments[this.environment.name];
 
       const { transformed } = transform(program, {
         ...transformOptions,
         getRegisterArguments: (ctx) =>
-          transformOptions.getRegisterArguments({ ...ctx, moduleId: id }),
+          transformOptions.getRegisterArguments({
+            ...ctx,
+            moduleId: id,
+          }),
       });
 
       if (!transformed) return;
 
-      modules.add(id);
+      onModuleTransformed?.(id);
 
       return generate(program);
     },
@@ -55,7 +62,7 @@ type UseClientOptions = {
 };
 
 type EnvironmentOptions = {
-  modules: Modules;
+  onModuleTransformed?: (id: string) => void;
   transformOptions: TransformOptions;
 };
 
@@ -68,8 +75,6 @@ export type TransformOptions = {
   registerClientReferenceSource: string;
   treeshakeImplementation: boolean;
 };
-
-type Modules = Set<string>;
 
 const PLUGIN_NAME = "react-just:use-client";
 
@@ -85,7 +90,7 @@ export function getEsbuildPlugin(
         async ({ path }) => {
           const code = await fs.readFile(path, "utf-8");
 
-          const ast = await parseAstAsync(code);
+          const ast = await parse(code, path, false);
 
           const { transformed } = transform(ast, {
             ...environment.transformOptions,
@@ -98,7 +103,7 @@ export function getEsbuildPlugin(
 
           if (!transformed) return;
 
-          environment.modules.add(path);
+          environment.onModuleTransformed?.(path);
 
           return { contents: generate(ast), loader: "js" };
         },
@@ -109,3 +114,19 @@ export function getEsbuildPlugin(
 
 // Vite will use query params like `?v=` sometimes.
 const EXTENSIONS_REGEX = /\.(js|jsx|mjs|ts|tsx|mts)(\?[^\/]+)?$/;
+
+async function parse(code: string, id: string, isDev: boolean) {
+  const shouldTransform = /\.(jsx|ts|tsx|mts)/.test(id);
+
+  if (shouldTransform) {
+    const { code: transformedCode } = await transformWithEsbuild(code, id, {
+      jsx: "automatic",
+      jsxImportSource: "react",
+      jsxDev: isDev,
+    });
+
+    return parseAstAsync(transformedCode);
+  }
+
+  return parseAstAsync(code);
+}

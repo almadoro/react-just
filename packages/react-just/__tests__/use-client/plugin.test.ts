@@ -1,34 +1,35 @@
 import useClient, { getEsbuildPlugin } from "@/vite/use-client";
 import { build } from "esbuild";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { TransformPluginContext } from "rollup";
 import { Environment, parseAst } from "vite";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 describe("extensions", () => {
   const SUPPORTED_EXTENSIONS = [".js", ".jsx", ".mjs", ".ts", ".tsx", ".mts"];
   const UNSUPPORTED_EXTENSIONS = [".cjs", ".cts", ".css"];
 
   for (const extension of SUPPORTED_EXTENSIONS) {
-    test(`applies transform to ${extension}`, () => {
-      const output = transform('"use client";', "module" + extension);
+    test(`applies transform to ${extension}`, async () => {
+      const { output } = await transform("client" + extension);
       expect(output).toBeDefined();
     });
 
     test(`applies esbuild plugin to ${extension}`, async () => {
-      const output = await buildWithEsbuild("client" + extension);
+      const { output } = await buildWithEsbuild("client" + extension);
       expect(output).toMatchSnapshot();
     });
   }
 
   for (const extension of UNSUPPORTED_EXTENSIONS) {
-    test(`doesn't apply transform to ${extension}`, () => {
-      const output = transform('"use client";', "module" + extension);
+    test(`doesn't apply transform to ${extension}`, async () => {
+      const { output } = await transform("not-valid" + extension);
       expect(output).toBeUndefined();
     });
 
     test(`doesn't apply esbuild plugin to ${extension}`, async () => {
-      const output = await buildWithEsbuild("not-valid" + extension);
+      const { output } = await buildWithEsbuild("not-valid" + extension);
       expect(output).toMatchSnapshot();
     });
   }
@@ -59,49 +60,47 @@ describe("environments", () => {
 });
 
 describe("modules", () => {
-  const ID = "module.js";
+  test("adds to environments modules when transform is applied", async () => {
+    onModuleTransformed.mockClear();
 
-  test("adds to environments modules when transform is applied", () => {
-    modules.clear();
+    const { entry } = await transform("client.js");
 
-    transform('"use client";', ID);
-
-    expect(modules.size).toBe(1);
-    expect(modules.has(ID)).toBe(true);
+    expect(onModuleTransformed).toHaveBeenCalledWith(entry);
   });
 
-  test("doesn't add to environments modules when transform is applied", () => {
-    modules.clear();
+  test("doesn't add to environments modules when transform is applied", async () => {
+    onModuleTransformed.mockClear();
 
-    transform("export default a;", ID);
+    const { entry } = await transform("not-client.js");
 
-    expect(modules.size).toBe(0);
+    expect(onModuleTransformed).not.toHaveBeenCalledWith(entry);
   });
 
   test("adds to environments modules when esbuild plugin is applied", async () => {
-    modules.clear();
+    onModuleTransformed.mockClear();
 
-    await buildWithEsbuild("client.js");
+    const { entry } = await buildWithEsbuild("client.js");
 
-    expect(modules.size).toBe(1);
+    expect(onModuleTransformed).toHaveBeenCalledWith(entry);
   });
 
   test("doesn't add to environments modules when esbuild plugin is applied", async () => {
-    modules.clear();
+    onModuleTransformed.mockClear();
 
     await buildWithEsbuild("not-client.js");
 
-    expect(modules.size).toBe(0);
+    expect(onModuleTransformed).not.toHaveBeenCalled();
   });
 });
 
 const ENV_NAME = "test";
-const modules = new Set<string>();
+const onModuleTransformed = vi.fn();
 const environment = {
-  modules,
+  onModuleTransformed,
   transformOptions: {
     getRegisterArguments: () => [],
     registerClientReferenceSource: "pkg",
+    treeshakeImplementation: false,
   },
 };
 
@@ -111,23 +110,29 @@ const plugin = useClient({
   },
 });
 
-function transform(code: string, id: string) {
-  return plugin.transform.apply(
+async function transform(filepath: string) {
+  const entry = path.resolve(import.meta.dirname, "fixtures/esbuild", filepath);
+
+  const code = await fs.readFile(entry, "utf-8");
+
+  const output = await plugin.transform.apply(
     {
       parse: parseAst,
       environment: { name: ENV_NAME },
     } as TransformPluginContext,
-    [code, id],
+    [code, entry],
   );
+
+  return { output, entry };
 }
 
 const esbuildPlugin = getEsbuildPlugin(environment);
 
 async function buildWithEsbuild(filepath: string) {
+  const entry = path.resolve(import.meta.dirname, "fixtures/esbuild", filepath);
+
   const result = await build({
-    entryPoints: [
-      path.resolve(import.meta.dirname, "fixtures/esbuild", filepath),
-    ],
+    entryPoints: [entry],
     write: false,
     bundle: true,
     plugins: [esbuildPlugin],
@@ -135,5 +140,5 @@ async function buildWithEsbuild(filepath: string) {
     format: "esm",
   });
 
-  return result.outputFiles![0].text;
+  return { output: result.outputFiles![0].text, entry };
 }
