@@ -4,7 +4,8 @@ import {
   FunctionDeclaration,
 } from "estree";
 import { builders } from "estree-toolkit";
-import { Program } from "./program";
+import Generator from "./generator";
+import Module from "./module";
 
 /**
  * Transforms exports in the form of:
@@ -34,7 +35,8 @@ import { Program } from "./program";
  */
 export default function transformExportDefaultDeclaration(
   node: ExportDefaultDeclaration,
-  program: Program,
+  module: Module,
+  generator: Generator,
 ) {
   let implementationIdentifier: string;
 
@@ -43,7 +45,7 @@ export default function transformExportDefaultDeclaration(
     // export default a;
     implementationIdentifier = node.declaration.name;
 
-    program.removeExport(node);
+    module.remove(node);
   } else if (
     node.declaration.type === "FunctionDeclaration" ||
     node.declaration.type === "ClassDeclaration"
@@ -54,7 +56,7 @@ export default function transformExportDefaultDeclaration(
 
     implementationIdentifier = node.declaration.id.name;
 
-    program.replaceExportWithDeclaration(
+    module.replace(
       node,
       node.declaration as FunctionDeclaration | ClassDeclaration, // identifier is now defined
     );
@@ -69,8 +71,13 @@ export default function transformExportDefaultDeclaration(
       ),
     ]);
 
-    program.replaceExportWithDeclaration(node, variableDeclaration);
+    module.replace(node, variableDeclaration);
   }
 
-  program.registerClientReference("default", implementationIdentifier);
+  module.append(
+    ...generator.createRegisterAndExportReference(
+      "default",
+      implementationIdentifier,
+    ),
+  );
 }

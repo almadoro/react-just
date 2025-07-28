@@ -5,7 +5,8 @@ import {
   ObjectPattern,
   RestElement,
 } from "estree";
-import { Program } from "./program";
+import Generator from "./generator";
+import Module from "./module";
 
 /**
  * Transforms exports in the form of:
@@ -34,7 +35,8 @@ import { Program } from "./program";
  */
 export default function transformExportNamedDeclaration(
   node: ExportNamedDeclaration,
-  program: Program,
+  module: Module,
+  generator: Generator,
 ) {
   const declaration = node.declaration!;
 
@@ -44,9 +46,11 @@ export default function transformExportNamedDeclaration(
       const exportIdentifier = declaration.id.name;
       const implementationIdentifier = exportIdentifier;
 
-      program.registerClientReference(
-        exportIdentifier,
-        implementationIdentifier,
+      module.append(
+        ...generator.createRegisterAndExportReference(
+          exportIdentifier,
+          implementationIdentifier,
+        ),
       );
 
       break;
@@ -74,16 +78,18 @@ export default function transformExportNamedDeclaration(
       for (const exportIdentifier of exportedIdentifiers) {
         const implementationIdentifier = exportIdentifier;
 
-        program.registerClientReference(
-          exportIdentifier,
-          implementationIdentifier,
+        module.append(
+          ...generator.createRegisterAndExportReference(
+            exportIdentifier,
+            implementationIdentifier,
+          ),
         );
       }
 
       break;
   }
 
-  program.replaceExportWithDeclaration(node, declaration);
+  module.replace(node, declaration);
 }
 
 function getObjectPatternExportedIdentifiers(objectPattern: ObjectPattern) {

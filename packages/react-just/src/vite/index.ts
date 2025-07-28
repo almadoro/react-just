@@ -1,19 +1,27 @@
 import vitejsReact from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
 import { ReactJustOptions } from "../../types/vite";
-import build from "./build";
-import dev from "./dev";
+import clientHot from "./client-hot";
+import css from "./css";
+import entries from "./entries";
+import environments from "./environments";
+import server from "./server";
 import useClient from "./use-client";
 import useServer from "./use-server";
 
-const FLIGHT_MIME_TYPE = "text/x-component";
+const RSC_MIME_TYPE = "text/x-component";
 
 export default function react(options?: ReactJustOptions): PluginOption {
+  const { api: useClientApi, ...useClientPlugin } = useClient();
+
   return [
-    build({ app: options?.app, flightMimeType: FLIGHT_MIME_TYPE }),
-    dev({ app: options?.app, rscMimeType: FLIGHT_MIME_TYPE }),
-    vitejsReact(),
-    useClient(),
+    useClientPlugin,
     useServer(),
+    vitejsReact(),
+    environments(),
+    entries({ app: options?.app, rscMimeType: RSC_MIME_TYPE }),
+    css(),
+    clientHot(),
+    server({ rscMimeType: RSC_MIME_TYPE, useClientApi }),
   ];
 }

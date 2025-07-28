@@ -1,26 +1,26 @@
-import { Program as EstreeProgram } from "estree";
+import { Program } from "estree";
 import { traverse } from "estree-toolkit";
 import transformExportDefaultDeclaration from "./export-default-declaration";
 import transformExportNamedDeclaration from "./export-named-declaration";
 import transformExportNamedFromSource from "./export-named-from-source";
 import transformExportNamedSpecifiers from "./export-named-specifiers";
-import { Program, ProgramOptions } from "./program";
+import Generator from "./generator";
+import Module from "./module";
 
-export default function transform(
-  esProgram: EstreeProgram,
-  options: TransformOptions,
-) {
-  const program = new Program(esProgram, options);
+export default function transform(program: Program, options: TransformOptions) {
+  const { generator, treeshakeImplementation } = options;
 
-  const useClientDirective = program.getUseClientDirective();
+  const module = new Module(program);
+
+  const useClientDirective = getUseClientDirective(program);
 
   if (!useClientDirective) return { transformed: false };
 
-  program.removeUseClientDirective();
+  module.remove(useClientDirective);
 
-  program.addRegisterClientReferenceImport();
+  module.unshift(generator.createRegisterFunctionImport());
 
-  traverse(esProgram, {
+  traverse(program, {
     ExportAllDeclaration() {
       throw new Error(
         "export all (`export *`) declarations are not supported on client modules",
@@ -29,24 +29,43 @@ export default function transform(
     ExportNamedDeclaration(path) {
       const node = path.node!;
       if (node.source) {
-        transformExportNamedFromSource(node, program);
+        transformExportNamedFromSource(node, module, generator);
       } else if (node.declaration) {
-        transformExportNamedDeclaration(node, program);
+        transformExportNamedDeclaration(node, module, generator);
       } else {
-        transformExportNamedSpecifiers(node, program);
+        transformExportNamedSpecifiers(node, module, generator);
       }
     },
     ExportDefaultDeclaration(path) {
       const node = path.node!;
-      transformExportDefaultDeclaration(node, program);
+      transformExportDefaultDeclaration(node, module, generator);
     },
   });
 
-  if (options.treeshakeImplementation) program.treeshakeImplementation();
+  if (treeshakeImplementation)
+    program.body = generator.createTreeshakedBody(program.body);
 
   return { transformed: true };
 }
 
-export type TransformOptions = ProgramOptions & {
-  treeshakeImplementation?: boolean;
+export type TransformOptions = {
+  generator: Generator;
+  treeshakeImplementation: boolean;
 };
+
+const USE_CLIENT_DIRECTIVE = "use client";
+
+function getUseClientDirective(program: Program) {
+  // The "use client" directive must be the first node in the file.
+  const firstNode = program.body[0];
+
+  if (
+    firstNode &&
+    firstNode.type === "ExpressionStatement" &&
+    firstNode.expression.type === "Literal" &&
+    firstNode.expression.value === USE_CLIENT_DIRECTIVE
+  )
+    return firstNode;
+
+  return null;
+}

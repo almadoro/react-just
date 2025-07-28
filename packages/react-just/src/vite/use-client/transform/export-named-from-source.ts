@@ -1,6 +1,7 @@
 import { ExportNamedDeclaration, ImportSpecifier } from "estree";
 import { builders } from "estree-toolkit";
-import { Program } from "./program";
+import Generator from "./generator";
+import Module from "./module";
 
 /**
  * Transforms exports in the form of:
@@ -33,7 +34,8 @@ import { Program } from "./program";
  */
 export default function transformExportNamedFromSource(
   node: ExportNamedDeclaration,
-  program: Program,
+  module: Module,
+  generator: Generator,
 ) {
   const source = node.source!;
 
@@ -61,10 +63,15 @@ export default function transformExportNamedFromSource(
       ),
     );
 
-    program.registerClientReference(exportIdentifier, localIdentifier);
+    module.append(
+      ...generator.createRegisterAndExportReference(
+        exportIdentifier,
+        localIdentifier,
+      ),
+    );
   }
 
-  program.addImportDeclaration(importSpecifiers, source);
+  module.unshift(builders.importDeclaration(importSpecifiers, source));
 
-  program.removeExport(node);
+  module.remove(node);
 }

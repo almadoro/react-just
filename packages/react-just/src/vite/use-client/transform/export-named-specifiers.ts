@@ -1,5 +1,6 @@
 import { ExportNamedDeclaration } from "estree";
-import { Program } from "./program";
+import Generator from "./generator";
+import Module from "./module";
 
 /**
  * Transforms exports in the form of:
@@ -23,7 +24,8 @@ import { Program } from "./program";
  */
 export default function transformExportNamedSpecifiers(
   node: ExportNamedDeclaration,
-  program: Program,
+  module: Module,
+  generator: Generator,
 ) {
   for (const specifier of node.specifiers) {
     if (
@@ -36,8 +38,13 @@ export default function transformExportNamedSpecifiers(
     const localIdentifier = specifier.local.name;
     const exportIdentifier = specifier.exported.name;
 
-    program.registerClientReference(exportIdentifier, localIdentifier);
+    module.append(
+      ...generator.createRegisterAndExportReference(
+        exportIdentifier,
+        localIdentifier,
+      ),
+    );
   }
 
-  program.removeExport(node);
+  module.remove(node);
 }
