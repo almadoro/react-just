@@ -37,17 +37,22 @@ export default class Generator {
   ) {
     const referenceIdentifier = REFERENCE_PREFIX + exportName;
 
+    const callExpression = builders.callExpression(
+      builders.identifier(REGISTER_CLIENT_REFERENCE_IDENTIFIER),
+      this.options.getRegisterArguments({
+        exportName,
+        implementationIdentifier,
+      }),
+    );
+
+    // Mark as pure so original reference can be treeshaken.
+    callExpression.leadingComments = [{ type: "Block", value: " @__PURE__ " }];
+
     return [
       builders.variableDeclaration("const", [
         builders.variableDeclarator(
           builders.identifier(referenceIdentifier),
-          builders.callExpression(
-            builders.identifier(REGISTER_CLIENT_REFERENCE_IDENTIFIER),
-            this.options.getRegisterArguments({
-              exportName,
-              implementationIdentifier,
-            }),
-          ),
+          callExpression,
         ),
       ]),
       builders.exportNamedDeclaration(null, [

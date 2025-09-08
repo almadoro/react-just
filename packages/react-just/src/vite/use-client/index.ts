@@ -1,4 +1,4 @@
-import { generate } from "astring";
+import { generate, GENERATOR } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
 import fs from "node:fs/promises";
 import { DevEnvironment, Plugin } from "vite";
@@ -88,7 +88,20 @@ export default function useClient() {
       if (isFlightEnvironment(this.environment.name))
         await api.addModules([moduleId]);
 
-      return generate(program);
+      return generate(program, {
+        generator: {
+          ...GENERATOR,
+          CallExpression(node, state) {
+            if (node.leadingComments) {
+              for (const comment of node.leadingComments) {
+                state.write(" /*" + comment.value + "*/ ");
+              }
+            }
+
+            GENERATOR.CallExpression(node, state);
+          },
+        },
+      });
     },
     resolveId(id) {
       if (id === CLIENT_MODULES) return RESOLVED_CLIENT_MODULES;
