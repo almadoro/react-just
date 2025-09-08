@@ -70,16 +70,17 @@ export default function useClient() {
     async transform(code, id) {
       if (!EXTENSIONS_REGEX.test(id)) return;
 
-      const program = await parse(code, id, {
-        jsxDev: this.environment.config.mode === "development",
-      });
+      const isDev = this.environment.config.mode === "development";
+
+      const program = await parse(code, id, { jsxDev: isDev });
 
       const moduleId = cleanId(id);
 
-      const transformOptions = getTransformOptions(
-        this.environment.name,
+      const transformOptions = getTransformOptions({
+        environment: this.environment.name,
         moduleId,
-      );
+        minimizeIds: !isDev,
+      });
 
       const { transformed } = transform(program, transformOptions);
 
@@ -129,19 +130,25 @@ function getEsbuildPlugin(
       build.onLoad(
         { filter: EXTENSIONS_REGEX, namespace: "file" },
         async ({ path }) => {
-          const transformOptions = getTransformOptions(environment, path);
+          const transformOptions = getTransformOptions({
+            environment,
+            moduleId: path,
+            // Optimized dependencies are used only in development. There
+            // is not need to minimize ids.
+            minimizeIds: false,
+          });
 
           const code = await fs.readFile(path, "utf-8");
 
-          const ast = await parse(code, path);
+          const program = await parse(code, path);
 
-          const { transformed } = transform(ast, transformOptions);
+          const { transformed } = transform(program, transformOptions);
 
           if (!transformed) return;
 
           moduleIds.add(path);
 
-          return { contents: generate(ast), loader: "js" };
+          return { contents: generate(program), loader: "js" };
         },
       );
 

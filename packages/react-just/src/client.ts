@@ -29,8 +29,8 @@ export async function hydrateFromWindowStream() {
 
 export function registerClientReference(
   implementation: unknown,
-  moduleId: string,
-  exportName: string,
+  moduleId: string | number,
+  exportName: string | number,
 ) {
   registerModuleExport(implementation, moduleId, exportName);
   return implementation;

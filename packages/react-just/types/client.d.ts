@@ -9,8 +9,8 @@ export function hydrateFromWindowStream(): Root;
 
 export function registerClientReference(
   module: Module,
-  moduleId: string,
-  exportName: string,
+  moduleId: string | number,
+  exportName: string | number,
 ): void;
 
 declare global {

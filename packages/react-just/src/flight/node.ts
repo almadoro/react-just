@@ -4,8 +4,15 @@ import {
   renderToPipeableStream as baseRenderToPipeableStream,
 } from "react-server-dom-webpack/server.node";
 
-export function registerClientReference(moduleId: string, exportName: string) {
-  return baseRegisterClientReference({}, moduleId, exportName);
+export function registerClientReference(
+  moduleId: string | number,
+  exportName: string | number,
+) {
+  return baseRegisterClientReference(
+    {},
+    moduleId.toString(),
+    exportName.toString(),
+  );
 }
 
 export function renderToPipeableStream(model: React.ReactNode): PipeableStream {

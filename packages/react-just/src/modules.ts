@@ -2,8 +2,8 @@ globalThis.__RJ_MODULES__ ||= {};
 
 export function registerModuleExport(
   implementation: unknown,
-  moduleId: string,
-  exportName: string,
+  moduleId: string | number,
+  exportName: string | number,
 ) {
   globalThis.__RJ_MODULES__[moduleId] ||= {};
   globalThis.__RJ_MODULES__[moduleId][exportName] = implementation;
@@ -11,7 +11,9 @@ export function registerModuleExport(
 
 globalThis.__webpack_require__ = (id) => {
   const [moduleId] = id.split("#");
-  return globalThis.__RJ_MODULES__[moduleId];
+  const module = globalThis.__RJ_MODULES__[moduleId];
+  if (!module) throw new Error(`Module ${moduleId} not found`);
+  return module;
 };
 
 // We don't expect it to be used.
