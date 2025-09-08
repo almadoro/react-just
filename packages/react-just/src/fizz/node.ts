@@ -1,7 +1,7 @@
 import { PipeableStream } from "@/types/shared";
 import { PassThrough, Readable, Transform, Writable } from "node:stream";
 import React, { use } from "react";
-import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server";
+import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server.node";
 import { createFromNodeStream } from "react-server-dom-webpack/client.node";
 import { registerModuleExport } from "../modules";
 import {
