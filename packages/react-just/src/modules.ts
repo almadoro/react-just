@@ -1,21 +1,17 @@
-const MODULES: Record<string, Module> = {};
-
-export function registerModule(moduleId: string, module: Module) {
-  MODULES[moduleId] = module;
-}
+globalThis.__RJ_MODULES__ ||= {};
 
 export function registerModuleExport(
   implementation: unknown,
   moduleId: string,
   exportName: string,
 ) {
-  MODULES[moduleId] ||= {};
-  MODULES[moduleId][exportName] = implementation;
+  globalThis.__RJ_MODULES__[moduleId] ||= {};
+  globalThis.__RJ_MODULES__[moduleId][exportName] = implementation;
 }
 
 globalThis.__webpack_require__ = (id) => {
   const [moduleId] = id.split("#");
-  return MODULES[moduleId];
+  return globalThis.__RJ_MODULES__[moduleId];
 };
 
 // We don't expect it to be used.
@@ -28,6 +24,8 @@ globalThis.__webpack_chunk_load__ = (id) => {
 type Module = Record<string, unknown>;
 
 declare global {
+  var __RJ_MODULES__: Record<string, Module>;
+
   // react-server-dom-webpack expects __webpack_require__ and
   // __webpack_chunk_load__ to be available.
 
