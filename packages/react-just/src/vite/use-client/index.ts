@@ -7,30 +7,28 @@ import {
   isClientLikeEnvironment,
   isFlightEnvironment,
 } from "../environments";
-import UseClientApi from "./api";
+import ClientModules, { OPTIMIZED_CLIENT_MODULES } from "./client-modules";
 import { getTransformOptions } from "./environments";
-import {
-  initPackagesClientModules,
-  PACKAGES_CLIENT_MODULES,
-} from "./packages-modules";
 import parse from "./parse";
 import transform from "./transform";
 
-export type { UseClientApi };
+export default function useClient(): Plugin {
+  const flightDevEnvironments: DevEnvironment[] = [];
+  const clientLikeDevEnvironments: DevEnvironment[] = [];
 
-export default function useClient() {
-  const consumerDevEnvironments: DevEnvironment[] = [];
-  const api = new UseClientApi(consumerDevEnvironments);
+  const clientModules = new ClientModules(
+    clientLikeDevEnvironments,
+    RESOLVED_CLIENT_MODULES,
+  );
 
   return {
     name: PLUGIN_NAME,
-    api,
     // We should apply this plugin before others because the "use client"
     // directive must appear at the top and other plugins may add code
     // before it (e.g. vitejs react plugin on development)
     enforce: "pre",
     async config() {
-      await initPackagesClientModules();
+      await clientModules.initOptimized();
     },
     applyToEnvironment(environment) {
       return shouldApply(environment.name);
@@ -39,13 +37,16 @@ export default function useClient() {
       if (!shouldApply(environment)) return;
 
       async function onModuleTransformed(ids: string[]) {
-        if (isFlightEnvironment(environment)) await api.addModules(ids);
+        // Track only client modules that are referenced from the flight
+        // environment since these are the ones that serve as entry points.
+        if (isFlightEnvironment(environment))
+          await clientModules.addOptimized(ids);
       }
 
       const include: string[] = [];
 
       if (isClientLikeEnvironment(environment))
-        include.push(PACKAGES_CLIENT_MODULES);
+        include.push(OPTIMIZED_CLIENT_MODULES);
 
       return {
         optimizeDeps: {
@@ -63,12 +64,21 @@ export default function useClient() {
     },
     configureServer(server) {
       for (const environment of Object.values(server.environments)) {
-        if (isClientLikeEnvironment(environment.name))
-          consumerDevEnvironments.push(environment);
+        if (isFlightEnvironment(environment.name))
+          flightDevEnvironments.push(environment);
+        else if (isClientLikeEnvironment(environment.name))
+          clientLikeDevEnvironments.push(environment);
       }
     },
     async transform(code, id) {
       if (!EXTENSIONS_REGEX.test(id)) return;
+
+      if (isClientLikeEnvironment(this.environment.name)) {
+        const isEntry = clientModules.hasNonOptimized(id);
+        // We can skip transformation of "use client" annotated modules that
+        // are not used as entry points.
+        if (!isEntry) return;
+      }
 
       const isDev = this.environment.config.mode === "development";
 
@@ -84,10 +94,19 @@ export default function useClient() {
 
       const { transformed } = transform(program, transformOptions);
 
-      if (!transformed) return;
+      // Track only client modules that are referenced from the flight
+      // environment since these are the ones that serve as entry points.
+      if (isFlightEnvironment(this.environment.name)) {
+        if (!transformed) {
+          // Is possible that the module changed from client-only to
+          // unspecified. In that case, we need to remove it.
+          clientModules.removeNonOptimized(moduleId);
+        } else {
+          clientModules.addNonOptimized(moduleId);
+        }
+      }
 
-      if (isFlightEnvironment(this.environment.name))
-        await api.addModules([moduleId]);
+      if (!transformed) return;
 
       return generate(program, {
         generator: {
@@ -108,10 +127,21 @@ export default function useClient() {
       if (id === CLIENT_MODULES) return RESOLVED_CLIENT_MODULES;
     },
     load(id) {
-      if (id === RESOLVED_CLIENT_MODULES)
-        return getClientModulesCode(api.getAppModules());
+      if (id === RESOLVED_CLIENT_MODULES) {
+        const isDev = this.environment instanceof DevEnvironment;
+        // Remove unused client modules. NOTE: Only app client modules will be
+        // removed since package's modules appear under optimized dependencies.
+        // Currently, there is no trivial way to remove them.
+        for (const environment of flightDevEnvironments) {
+          for (const module of environment.moduleGraph.idToModuleMap.values()) {
+            if (module.importers.size === 0)
+              clientModules.removeNonOptimized(module.id!);
+          }
+        }
+        return clientModules.getCode(isDev);
+      }
     },
-  } satisfies Plugin<UseClientApi>;
+  };
 }
 
 function shouldApply(environment: string) {
@@ -125,6 +155,10 @@ function getEsbuildPlugin(
   return {
     name: PLUGIN_NAME,
     setup(build) {
+      const isDepPrebundle = build.initialOptions.plugins?.some(
+        (p) => p.name === "vite:dep-pre-bundle",
+      );
+
       const moduleIds = new Set<string>();
 
       build.onLoad(
@@ -152,7 +186,9 @@ function getEsbuildPlugin(
         },
       );
 
-      build.onEnd(() => onEnd([...moduleIds]));
+      // We are interested in the modules on prebundled dependencies.
+      // Ignore when used in scan environment.
+      if (isDepPrebundle) build.onEnd(() => onEnd([...moduleIds]));
     },
   };
 }
@@ -167,14 +203,4 @@ function cleanId(id: string) {
 }
 
 export const CLIENT_MODULES = "/virtual:react-just/client-modules";
-export const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;
-
-function getClientModulesCode(appModuleIds: string[]) {
-  let code = `import "${PACKAGES_CLIENT_MODULES}";`;
-
-  for (const id of appModuleIds) {
-    code += `import "${id}";`;
-  }
-
-  return code;
-}
+const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;

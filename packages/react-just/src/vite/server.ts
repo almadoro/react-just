@@ -16,17 +16,13 @@ import {
   FlightEntryNodeModule,
 } from "./entries";
 import { ENVIRONMENTS } from "./environments";
-import { RESOLVED_CLIENT_MODULES, UseClientApi } from "./use-client";
 import { isCssModule } from "./utils";
 
 type ServerOptions = {
   rscMimeType: string;
-  useClientApi: UseClientApi;
 };
 
 export default function server(options: ServerOptions): Plugin {
-  const { useClientApi } = options;
-
   return {
     name: "react-just:server",
     configureServer(server) {
@@ -49,7 +45,6 @@ export default function server(options: ServerOptions): Plugin {
               FLIGHT_ENTRY_NODE,
             )) as FlightEntryNodeModule;
 
-            await removeUnusedClientModules(flight.moduleGraph, useClientApi);
             await removeUnusedCssModules(flight.moduleGraph, client);
             invalidateDynamicVirtualModules(fizz);
             invalidateDynamicVirtualModules(client);
@@ -95,24 +90,6 @@ export default function server(options: ServerOptions): Plugin {
   };
 }
 
-async function removeUnusedClientModules(
-  flightModuleGraph: EnvironmentModuleGraph,
-  useClientApi: UseClientApi,
-) {
-  const { idToModuleMap } = flightModuleGraph;
-
-  const ids: string[] = [];
-
-  // Only app client modules will be removed, since package modules appear
-  // under optimized dependencies. There is currently no feasible way to
-  // remove them.
-  for (const [id, module] of idToModuleMap.entries()) {
-    if (module.importers.size === 0) ids.push(id);
-  }
-
-  await useClientApi.removeModules(ids);
-}
-
 async function removeUnusedCssModules(
   flightModuleGraph: EnvironmentModuleGraph,
   client: DevEnvironment,
@@ -141,11 +118,6 @@ async function removeUnusedCssModules(
 function invalidateDynamicVirtualModules(env: DevEnvironment) {
   // Since client modules module and css module are dynamic virtual modules
   // these are not invalidated automatically.
-  const clientModulesModule = env.moduleGraph.getModuleById(
-    RESOLVED_CLIENT_MODULES,
-  );
-  if (clientModulesModule)
-    env.moduleGraph.invalidateModule(clientModulesModule);
 
   const cssModule = env.moduleGraph.getModuleById(RESOLVED_CSS_MODULES);
   if (cssModule) env.moduleGraph.invalidateModule(cssModule);

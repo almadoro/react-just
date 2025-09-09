@@ -12,16 +12,14 @@ import useServer from "./use-server";
 const RSC_MIME_TYPE = "text/x-component";
 
 export default function react(options?: ReactJustOptions): PluginOption {
-  const { api: useClientApi, ...useClientPlugin } = useClient();
-
   return [
-    useClientPlugin,
+    useClient(),
     useServer(),
     vitejsReact(),
     environments(),
     entries({ app: options?.app, rscMimeType: RSC_MIME_TYPE }),
     css(),
     clientHot(),
-    server({ rscMimeType: RSC_MIME_TYPE, useClientApi }),
+    server({ rscMimeType: RSC_MIME_TYPE }),
   ];
 }
