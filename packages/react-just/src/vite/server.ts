@@ -41,9 +41,7 @@ export default function server(options: ServerOptions): Plugin {
               App,
               renderToPipeableStream: renderToPipeableRscStream,
               React,
-            } = (await flight.runner.import(
-              FLIGHT_ENTRY_NODE,
-            )) as FlightEntryNodeModule;
+            } = await importFlightEntry(flight);
 
             await removeUnusedCssModules(flight.moduleGraph, client);
             invalidateDynamicVirtualModules(fizz);
@@ -123,6 +121,26 @@ function invalidateDynamicVirtualModules(env: DevEnvironment) {
   if (cssModule) env.moduleGraph.invalidateModule(cssModule);
 }
 
+const MAX_FLIGHT_ENTRY_IMPORT_ATTEMPTS = 5;
+
+async function importFlightEntry(
+  env: RunnableDevEnvironment,
+): Promise<FlightEntryNodeModule> {
+  for (let i = 0; i < MAX_FLIGHT_ENTRY_IMPORT_ATTEMPTS; i++) {
+    try {
+      return await env.runner.import(FLIGHT_ENTRY_NODE);
+    } catch (err) {
+      if (!isOutdatedOptimizedDepErr(err)) throw err;
+    }
+  }
+
+  throw new Error(
+    "Too many attempts to import flight entry module\n" +
+      "Please, report this issue on https://github.com/almadoro/react-just/issues\n" +
+      "For a temporary solution, try restarting the server",
+  );
+}
+
 const MAX_FIZZ_ENTRY_IMPORT_ATTEMPTS = 5;
 
 async function importFizzEntry(
@@ -131,23 +149,35 @@ async function importFizzEntry(
   let currentBrowserHash = env.depsOptimizer?.metadata.browserHash;
 
   for (let i = 0; i < MAX_FIZZ_ENTRY_IMPORT_ATTEMPTS; i++) {
-    const fizzEntryModule = await env.runner.import(FIZZ_ENTRY_NODE);
+    try {
+      const fizzEntryModule = await env.runner.import(FIZZ_ENTRY_NODE);
 
-    let prevBrowserHash = currentBrowserHash;
-    currentBrowserHash = env.depsOptimizer?.metadata.browserHash;
+      let prevBrowserHash = currentBrowserHash;
+      currentBrowserHash = env.depsOptimizer?.metadata.browserHash;
 
-    const needsReload = prevBrowserHash !== currentBrowserHash;
-    if (!needsReload) return fizzEntryModule;
+      const needsReload = prevBrowserHash !== currentBrowserHash;
+      if (!needsReload) return fizzEntryModule;
 
-    env.logger.info("mismatching versions of React. Reloading", {
-      timestamp: true,
-    });
+      env.logger.info("mismatching versions of react. reloading", {
+        timestamp: true,
+      });
+    } catch (err) {
+      if (!isOutdatedOptimizedDepErr(err)) throw err;
+    }
   }
 
   throw new Error(
     "Too many attempts to import fizz entry module\n" +
       "Please, report this issue on https://github.com/almadoro/react-just/issues\n" +
       "For a temporary solution, try restarting the server",
+  );
+}
+
+function isOutdatedOptimizedDepErr(err: unknown) {
+  return (
+    err instanceof Error &&
+    "code" in err &&
+    err.code === "ERR_OUTDATED_OPTIMIZED_DEP"
   );
 }
 
