@@ -14,12 +14,18 @@ import transform from "./transform";
 
 export default function useClient(): Plugin {
   const flightDevEnvironments: DevEnvironment[] = [];
-  const clientLikeDevEnvironments: DevEnvironment[] = [];
+  const clientModules = new ClientModules();
 
-  const clientModules = new ClientModules(
-    clientLikeDevEnvironments,
-    RESOLVED_CLIENT_MODULES,
-  );
+  function removeUnusedClientModules() {
+    // NOTE: Only app client modules will be removed since package's modules
+    // appear under optimized dependencies. Currently, there is no trivial
+    // way to remove them.
+    for (const environment of flightDevEnvironments) {
+      for (const module of environment.moduleGraph.idToModuleMap.values()) {
+        if (module.importers.size === 0) clientModules.remove(module.id!);
+      }
+    }
+  }
 
   return {
     name: PLUGIN_NAME,
@@ -39,8 +45,7 @@ export default function useClient(): Plugin {
       async function onModuleTransformed(ids: string[]) {
         // Track only client modules that are referenced from the flight
         // environment since these are the ones that serve as entry points.
-        if (isFlightEnvironment(environment))
-          await clientModules.addOptimized(ids);
+        if (isFlightEnvironment(environment)) clientModules.add(...ids);
       }
 
       const include: string[] = [];
@@ -67,14 +72,14 @@ export default function useClient(): Plugin {
         if (isFlightEnvironment(environment.name))
           flightDevEnvironments.push(environment);
         else if (isClientLikeEnvironment(environment.name))
-          clientLikeDevEnvironments.push(environment);
+          clientModules.addClientLikeEnvironment(environment);
       }
     },
     async transform(code, id) {
       if (!EXTENSIONS_REGEX.test(id)) return;
 
       if (isClientLikeEnvironment(this.environment.name)) {
-        const isEntry = clientModules.hasNonOptimized(id);
+        const isEntry = clientModules.has(id);
         // We can skip transformation of "use client" annotated modules that
         // are not used as entry points.
         if (!isEntry) return;
@@ -100,9 +105,9 @@ export default function useClient(): Plugin {
         if (!transformed) {
           // Is possible that the module changed from client-only to
           // unspecified. In that case, we need to remove it.
-          clientModules.removeNonOptimized(moduleId);
+          clientModules.remove(moduleId);
         } else {
-          clientModules.addNonOptimized(moduleId);
+          clientModules.add(moduleId);
         }
       }
 
@@ -128,17 +133,8 @@ export default function useClient(): Plugin {
     },
     load(id) {
       if (id === RESOLVED_CLIENT_MODULES) {
-        const isDev = this.environment instanceof DevEnvironment;
-        // Remove unused client modules. NOTE: Only app client modules will be
-        // removed since package's modules appear under optimized dependencies.
-        // Currently, there is no trivial way to remove them.
-        for (const environment of flightDevEnvironments) {
-          for (const module of environment.moduleGraph.idToModuleMap.values()) {
-            if (module.importers.size === 0)
-              clientModules.removeNonOptimized(module.id!);
-          }
-        }
-        return clientModules.getCode(isDev);
+        removeUnusedClientModules();
+        return clientModules.getEntryCode(this.environment);
       }
     },
   };

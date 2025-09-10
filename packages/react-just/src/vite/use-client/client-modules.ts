@@ -1,34 +1,38 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { DevEnvironment, EnvironmentModuleNode } from "vite";
-import { optimizeDeps } from "../utils";
+import { DevEnvironment, Environment } from "vite";
+import { invalidateModules, optimizeDeps } from "../utils";
 
 export default class ClientModules {
   private nonOptimizedModuleIds = new Set<string>();
   private optimizedModuleIds = new Set<string>();
+  private initHash: string | null = null;
+  private environmentsHashes = new Map<Environment, string>();
 
-  constructor(
-    private clientLikeDevEnvironments: DevEnvironment[],
-    private resolvedEntryId: string,
-  ) {}
+  constructor() {}
 
-  public addNonOptimized(id: string) {
-    this.nonOptimizedModuleIds.add(id);
-    // The module could have been used as non-client module. Invalidate it.
-    this.invalidate([this.resolvedEntryId, id]);
+  public add(...ids: string[]) {
+    for (const id of ids) {
+      if (this.shouldOptimizeModule(id)) this.optimizedModuleIds.add(id);
+      else this.nonOptimizedModuleIds.add(id);
+    }
   }
 
-  public async addOptimized(ids: string[]) {
-    for (const id of ids) this.optimizedModuleIds.add(id);
-    await writeOptimizedClientModules(this.optimizedModuleIds);
-    await Promise.all(this.clientLikeDevEnvironments.map(optimizeDeps));
+  public addClientLikeEnvironment(environment: DevEnvironment) {
+    if (this.initHash) this.environmentsHashes.set(environment, this.initHash);
   }
 
-  public getCode(isDev: boolean) {
+  public async getEntryCode(environment: Environment) {
     let code = "";
 
-    if (isDev) code += `import "${OPTIMIZED_CLIENT_MODULES}";`;
+    if (environment instanceof DevEnvironment) {
+      code += `import "${OPTIMIZED_CLIENT_MODULES}";`;
+      await this.optimizeEnvironment(environment);
+      // Some modules could have been used as non-client module. Invalidate them
+      // to force them to be re-imported and transformed.
+      invalidateModules(environment, ...this.nonOptimizedModuleIds);
+    }
 
     for (const id of this.nonOptimizedModuleIds) {
       code += `import "${id}";`;
@@ -37,34 +41,28 @@ export default class ClientModules {
     return code;
   }
 
-  public hasNonOptimized(id: string) {
+  public has(id: string) {
     return this.nonOptimizedModuleIds.has(id);
   }
 
   public async initOptimized() {
-    await initOptimizedClientModules();
+    this.initHash = await initOptimizedClientModules();
   }
 
-  public removeNonOptimized(id: string) {
+  public remove(id: string) {
+    this.optimizedModuleIds.delete(id);
     this.nonOptimizedModuleIds.delete(id);
-    // The module could have been used as client module. Invalidate it.
-    this.invalidate([this.resolvedEntryId, id]);
   }
 
-  private invalidate(ids: string[]) {
-    for (const env of this.clientLikeDevEnvironments) {
-      const invalidatedModules = new Set<EnvironmentModuleNode>();
-      for (const moduleId of ids) {
-        const module = env.moduleGraph.getModuleById(moduleId);
-        if (module)
-          env.moduleGraph.invalidateModule(
-            module,
-            invalidatedModules,
-            Date.now(),
-            true,
-          );
-      }
-    }
+  private async optimizeEnvironment(environment: DevEnvironment) {
+    const currentHash = this.environmentsHashes.get(environment);
+    const newHash = await writeOptimizedClientModules(this.optimizedModuleIds);
+    this.environmentsHashes.set(environment, newHash);
+    if (currentHash !== newHash) await optimizeDeps(environment);
+  }
+
+  private shouldOptimizeModule(id: string) {
+    return /node_modules\//.test(id);
   }
 }
 
@@ -89,13 +87,16 @@ const OPTIMIZED_CLIENT_MODULES_MAIN = path.resolve(
 );
 
 async function initOptimizedClientModules() {
-  let packageJsonExists: boolean;
+  let hash: string | null;
 
   try {
-    await fs.access(OPTIMIZED_CLIENT_MODULES_PACKAGE_JSON, fs.constants.F_OK);
-    packageJsonExists = true;
+    const packageJson = await fs.readFile(
+      OPTIMIZED_CLIENT_MODULES_PACKAGE_JSON,
+      "utf-8",
+    );
+    hash = JSON.parse(packageJson).hash;
   } catch {
-    packageJsonExists = false;
+    hash = null;
   }
 
   let mainExists: boolean;
@@ -107,9 +108,11 @@ async function initOptimizedClientModules() {
     mainExists = false;
   }
 
-  const initialized = packageJsonExists && mainExists;
+  const initialized = hash && mainExists;
 
-  if (!initialized) await writeOptimizedClientModules([]);
+  if (initialized) return hash;
+
+  return await writeOptimizedClientModules([]);
 }
 
 async function writeOptimizedClientModules(moduleIds: Iterable<string>) {
@@ -138,4 +141,6 @@ async function writeOptimizedClientModules(moduleIds: Iterable<string>) {
     OPTIMIZED_CLIENT_MODULES_PACKAGE_JSON,
     JSON.stringify(packageJson, null, 2),
   );
+
+  return hash;
 }

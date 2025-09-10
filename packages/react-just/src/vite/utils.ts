@@ -1,4 +1,4 @@
-import { DevEnvironment } from "vite";
+import { DevEnvironment, EnvironmentModuleNode } from "vite";
 
 // Taken from: https://github.com/vitejs/vite/blob/main/packages/vite/src/node/constants.ts#L92
 const CSS_EXTENSIONS_RE =
@@ -28,4 +28,18 @@ export async function optimizeDeps(env: DevEnvironment) {
       resolve();
     }, 0);
   });
+}
+
+export function invalidateModules(env: DevEnvironment, ...ids: string[]) {
+  const invalidatedModules = new Set<EnvironmentModuleNode>();
+  for (const moduleId of ids) {
+    const module = env.moduleGraph.getModuleById(moduleId);
+    if (module)
+      env.moduleGraph.invalidateModule(
+        module,
+        invalidatedModules,
+        Date.now(),
+        true,
+      );
+  }
 }
