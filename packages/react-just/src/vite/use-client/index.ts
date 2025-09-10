@@ -199,4 +199,4 @@ function cleanId(id: string) {
 }
 
 export const CLIENT_MODULES = "/virtual:react-just/client-modules";
-const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;
+export const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;

@@ -1,12 +1,7 @@
 import { Request } from "@/types/server";
 import { IncomingMessage } from "node:http";
 import { TLSSocket } from "node:tls";
-import {
-  DevEnvironment,
-  EnvironmentModuleGraph,
-  Plugin,
-  RunnableDevEnvironment,
-} from "vite";
+import { Plugin, RunnableDevEnvironment } from "vite";
 import { RESOLVED_CSS_MODULES } from "./css";
 import {
   CLIENT_ENTRY,
@@ -16,7 +11,8 @@ import {
   FlightEntryNodeModule,
 } from "./entries";
 import { ENVIRONMENTS } from "./environments";
-import { isCssModule } from "./utils";
+import { RESOLVED_CLIENT_MODULES } from "./use-client";
+import { invalidateModules } from "./utils";
 
 type ServerOptions = {
   rscMimeType: string;
@@ -32,7 +28,9 @@ export default function server(options: ServerOptions): Plugin {
       const fizz = server.environments[
         ENVIRONMENTS.FIZZ_NODE
       ] as RunnableDevEnvironment;
-      const client = server.environments[ENVIRONMENTS.CLIENT] as DevEnvironment;
+      const client = server.environments[
+        ENVIRONMENTS.CLIENT
+      ] as RunnableDevEnvironment;
 
       return () =>
         server.middlewares.use(async (req, res, next) => {
@@ -43,9 +41,14 @@ export default function server(options: ServerOptions): Plugin {
               React,
             } = await importFlightEntry(flight);
 
-            await removeUnusedCssModules(flight.moduleGraph, client);
-            invalidateDynamicVirtualModules(fizz);
-            invalidateDynamicVirtualModules(client);
+            // Loading the flight entry module can trigger changes on the client
+            // modules module and css modules module.
+            invalidateModules(fizz, RESOLVED_CLIENT_MODULES);
+            invalidateModules(
+              client,
+              RESOLVED_CLIENT_MODULES,
+              RESOLVED_CSS_MODULES,
+            );
 
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
@@ -86,39 +89,6 @@ export default function server(options: ServerOptions): Plugin {
         });
     },
   };
-}
-
-async function removeUnusedCssModules(
-  flightModuleGraph: EnvironmentModuleGraph,
-  client: DevEnvironment,
-) {
-  const urls: string[] = [];
-
-  for (const [url, module] of flightModuleGraph.urlToModuleMap.entries()) {
-    if (isCssModule(url) && module.importers.size === 0) {
-      urls.push(url);
-    }
-  }
-
-  for (const url of urls) {
-    // update hmr timestamp to make the browser re-import the module when
-    // re-referenced.
-    // https://github.com/vitejs/vite/blob/main/packages/vite/src/node/server/hmr.ts#L935
-    const module = await client.moduleGraph.getModuleByUrl(url);
-    if (module) module.lastHMRTimestamp = Date.now();
-  }
-
-  // Css modules are not pruned automatically when referenced only by
-  // flight environment.
-  client.hot.send({ type: "prune", paths: urls });
-}
-
-function invalidateDynamicVirtualModules(env: DevEnvironment) {
-  // Since client modules module and css module are dynamic virtual modules
-  // these are not invalidated automatically.
-
-  const cssModule = env.moduleGraph.getModuleById(RESOLVED_CSS_MODULES);
-  if (cssModule) env.moduleGraph.invalidateModule(cssModule);
 }
 
 const MAX_FLIGHT_ENTRY_IMPORT_ATTEMPTS = 5;

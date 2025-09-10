@@ -1,13 +1,5 @@
 import { DevEnvironment, EnvironmentModuleNode } from "vite";
 
-// Taken from: https://github.com/vitejs/vite/blob/main/packages/vite/src/node/constants.ts#L92
-const CSS_EXTENSIONS_RE =
-  /\.(css|less|sass|scss|styl|stylus|pcss|postcss|sss)($|\?)/;
-
-export function isCssModule(id: string) {
-  return CSS_EXTENSIONS_RE.test(id);
-}
-
 export async function optimizeDeps(env: DevEnvironment) {
   const { depsOptimizer } = env;
 
