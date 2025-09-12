@@ -1,6 +1,6 @@
+import { AppEntryProps } from "@/types";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "@/types/flight.node";
-import { AppEntryProps } from "@/types/server";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type React from "react";

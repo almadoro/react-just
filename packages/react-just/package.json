@@ -26,6 +26,9 @@
     "types"
   ],
   "exports": {
+    ".": {
+      "types": "./types/index.d.ts"
+    },
     "./client": {
       "types": "./types/client.d.ts",
       "import": "./dist/client.mjs",
@@ -40,11 +43,6 @@
       "types": "./types/flight.node.d.ts",
       "import": "./dist/flight.node.mjs",
       "require": "./dist/flight.node.cjs"
-    },
-    "./server": {
-      "types": "./types/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.cjs"
     },
     "./vite": {
       "types": "./types/vite.d.ts",

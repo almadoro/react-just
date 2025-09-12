@@ -1,4 +1,4 @@
-import { Request } from "@/types/server";
+import { Request } from "@/types";
 import { IncomingMessage } from "node:http";
 import { TLSSocket } from "node:tls";
 import { Plugin, RunnableDevEnvironment } from "vite";
