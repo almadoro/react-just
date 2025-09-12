@@ -72,10 +72,12 @@ export default class ClientModules {
 // can only be used as an optimized dependency. Also, using an optimized
 // package avoids network congestion on the browser on development.
 
-export const OPTIMIZED_CLIENT_MODULES =
-  "node_modules/.react-just/optimized-client-modules";
+// Use ":" to avoid possible conflicts with actual packages.
+export const OPTIMIZED_CLIENT_MODULES = "react-just:optimized-client-modules";
 
-const OPTIMIZED_CLIENT_MODULES_DIR = path.resolve(OPTIMIZED_CLIENT_MODULES);
+export const OPTIMIZED_CLIENT_MODULES_DIR = path.resolve(
+  "node_modules/.react-just/optimized-client-modules",
+);
 const OPTIMIZED_CLIENT_MODULES_PACKAGE_JSON = path.resolve(
   OPTIMIZED_CLIENT_MODULES_DIR,
   "package.json",

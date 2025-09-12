@@ -7,7 +7,10 @@ import {
   isClientLikeEnvironment,
   isFlightEnvironment,
 } from "../environments";
-import ClientModules, { OPTIMIZED_CLIENT_MODULES } from "./client-modules";
+import ClientModules, {
+  OPTIMIZED_CLIENT_MODULES,
+  OPTIMIZED_CLIENT_MODULES_DIR,
+} from "./client-modules";
 import { getTransformOptions } from "./environments";
 import parse from "./parse";
 import transform from "./transform";
@@ -35,6 +38,11 @@ export default function useClient(): Plugin {
     enforce: "pre",
     async config() {
       await clientModules.initOptimized();
+      return {
+        resolve: {
+          alias: { [OPTIMIZED_CLIENT_MODULES]: OPTIMIZED_CLIENT_MODULES_DIR },
+        },
+      };
     },
     applyToEnvironment(environment) {
       return shouldApply(environment.name);
