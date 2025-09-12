@@ -21,6 +21,7 @@ type ServerOptions = {
 export default function server(options: ServerOptions): Plugin {
   return {
     name: "react-just:server",
+    apply: "serve",
     configureServer(server) {
       const flight = server.environments[
         ENVIRONMENTS.FLIGHT_NODE

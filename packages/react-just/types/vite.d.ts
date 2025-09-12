@@ -1,4 +1,6 @@
+import React from "react";
 import { PluginOption } from "vite";
+import { AppEntryProps } from "./index";
 
 export type ReactJustOptions = {
   /**
@@ -10,3 +12,27 @@ export type ReactJustOptions = {
 };
 
 export default function react(options?: ReactJustOptions): PluginOption;
+
+export const RSC_MIME_TYPE: string;
+
+export const ENVIRONMENTS: {
+  CLIENT: string;
+  FIZZ_NODE: string;
+  FLIGHT_NODE: string;
+};
+
+export const ENTRIES: {
+  CLIENT: string;
+  FIZZ_NODE: string;
+  FLIGHT_NODE: string;
+};
+
+export interface FlightEntryNodeModule {
+  App: React.ComponentType<AppEntryProps>;
+  renderToPipeableStream: typeof import("./flight.node").renderToPipeableStream;
+  React: typeof React;
+}
+
+export interface FizzEntryNodeModule {
+  renderToPipeableStream: typeof import("./fizz.node").renderToPipeableStream;
+}
