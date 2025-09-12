@@ -76,6 +76,7 @@ export default function node(): Plugin {
             build: {
               outDir: fizzOutDir,
               manifest: MANIFEST_PATH,
+              copyPublicDir: false,
               rollupOptions: {
                 input: { [ENTRY_CHUNK_NAME]: ENTRIES.FIZZ_NODE },
               },
@@ -85,6 +86,7 @@ export default function node(): Plugin {
             build: {
               outDir: flightOutDir,
               manifest: MANIFEST_PATH,
+              copyPublicDir: false,
               rollupOptions: {
                 input: { [ENTRY_CHUNK_NAME]: ENTRIES.FLIGHT_NODE },
               },
