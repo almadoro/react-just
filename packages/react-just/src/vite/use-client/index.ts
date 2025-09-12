@@ -1,6 +1,7 @@
 import { generate, GENERATOR } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
 import fs from "node:fs/promises";
+import { OutputBundle } from "rollup";
 import { DevEnvironment, Plugin } from "vite";
 import {
   ENVIRONMENTS,
@@ -17,17 +18,37 @@ import transform from "./transform";
 
 export default function useClient(): Plugin {
   const flightDevEnvironments: DevEnvironment[] = [];
+  const flightBuildBundles: OutputBundle[] = [];
   const clientModules = new ClientModules();
 
   function removeUnusedClientModules() {
-    // NOTE: Only app client modules will be removed since package's modules
-    // appear under optimized dependencies. Currently, there is no trivial
-    // way to remove them.
+    // NOTE: Currently, there is no trivial way to remove client modules under
+    // optimized dependencies. This only affects development.
+    const usedModulesIds = new Set<string>();
+
     for (const environment of flightDevEnvironments) {
       for (const module of environment.moduleGraph.idToModuleMap.values()) {
-        if (module.importers.size === 0)
-          clientModules.removeNonOptimized(module.id!);
+        if (module.importers.size !== 0) usedModulesIds.add(module.id!);
+        // Invalidate the module to force it to be transformed next time it's
+        // referenced.
+        else environment.moduleGraph.invalidateModule(module);
       }
+    }
+
+    for (const bundle of flightBuildBundles) {
+      for (const key in bundle) {
+        const file = bundle[key];
+        if (file.type === "asset") continue;
+
+        for (const moduleId in file.modules) {
+          usedModulesIds.add(moduleId);
+        }
+      }
+    }
+
+    for (const moduleId of clientModules.nonOptimizedModuleIdsIterator()) {
+      if (!usedModulesIds.has(moduleId))
+        clientModules.removeNonOptimized(moduleId);
     }
   }
 
@@ -137,6 +158,10 @@ export default function useClient(): Plugin {
           },
         },
       });
+    },
+    generateBundle(_, bundle) {
+      if (isFlightEnvironment(this.environment.name))
+        flightBuildBundles.push(bundle);
     },
     resolveId(id) {
       if (id === CLIENT_MODULES) return RESOLVED_CLIENT_MODULES;

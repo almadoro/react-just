@@ -54,6 +54,10 @@ export default class ClientModules {
     this.initHash = await initOptimizedClientModules();
   }
 
+  public nonOptimizedModuleIdsIterator() {
+    return this.nonOptimizedModuleIds[Symbol.iterator]();
+  }
+
   public removeNonOptimized(id: string) {
     this.nonOptimizedModuleIds.delete(id);
   }
