@@ -45,9 +45,6 @@ export default class Generator {
       }),
     );
 
-    // Mark as pure so original reference can be treeshaken.
-    callExpression.leadingComments = [{ type: "Block", value: " @__PURE__ " }];
-
     return [
       builders.variableDeclaration("const", [
         builders.variableDeclarator(

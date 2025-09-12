@@ -4,6 +4,7 @@ import {
   renderToPipeableStream as baseRenderToPipeableStream,
 } from "react-server-dom-webpack/server.node";
 
+/* @__NO_SIDE_EFFECTS__ */
 export function registerClientReference(
   moduleId: string | number,
   exportName: string | number,

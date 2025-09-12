@@ -1,4 +1,4 @@
-import { generate, GENERATOR } from "astring";
+import { generate } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
 import fs from "node:fs/promises";
 import { OutputBundle } from "rollup";
@@ -144,20 +144,7 @@ export default function useClient(): Plugin {
 
       if (!transformed) return;
 
-      return generate(program, {
-        generator: {
-          ...GENERATOR,
-          CallExpression(node, state) {
-            if (node.leadingComments) {
-              for (const comment of node.leadingComments) {
-                state.write(" /*" + comment.value + "*/ ");
-              }
-            }
-
-            GENERATOR.CallExpression(node, state);
-          },
-        },
-      });
+      return generate(program);
     },
     generateBundle(_, bundle) {
       if (isFlightEnvironment(this.environment.name))
