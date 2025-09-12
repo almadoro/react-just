@@ -12,10 +12,15 @@ export default class ClientModules {
 
   constructor() {}
 
-  public add(...ids: string[]) {
+  public addNonOptimized(...ids: string[]) {
     for (const id of ids) {
-      if (this.shouldOptimizeModule(id)) this.optimizedModuleIds.add(id);
-      else this.nonOptimizedModuleIds.add(id);
+      this.nonOptimizedModuleIds.add(id);
+    }
+  }
+
+  public addOptimized(...ids: string[]) {
+    for (const id of ids) {
+      this.optimizedModuleIds.add(id);
     }
   }
 
@@ -49,8 +54,7 @@ export default class ClientModules {
     this.initHash = await initOptimizedClientModules();
   }
 
-  public remove(id: string) {
-    this.optimizedModuleIds.delete(id);
+  public removeNonOptimized(id: string) {
     this.nonOptimizedModuleIds.delete(id);
   }
 
@@ -59,10 +63,6 @@ export default class ClientModules {
     const newHash = await writeOptimizedClientModules(this.optimizedModuleIds);
     this.environmentsHashes.set(environment, newHash);
     if (currentHash !== newHash) await optimizeDeps(environment);
-  }
-
-  private shouldOptimizeModule(id: string) {
-    return /node_modules\//.test(id);
   }
 }
 

@@ -25,7 +25,8 @@ export default function useClient(): Plugin {
     // way to remove them.
     for (const environment of flightDevEnvironments) {
       for (const module of environment.moduleGraph.idToModuleMap.values()) {
-        if (module.importers.size === 0) clientModules.remove(module.id!);
+        if (module.importers.size === 0)
+          clientModules.removeNonOptimized(module.id!);
       }
     }
   }
@@ -53,7 +54,8 @@ export default function useClient(): Plugin {
       async function onModuleTransformed(ids: string[]) {
         // Track only client modules that are referenced from the flight
         // environment since these are the ones that serve as entry points.
-        if (isFlightEnvironment(environment)) clientModules.add(...ids);
+        if (isFlightEnvironment(environment))
+          clientModules.addOptimized(...ids);
       }
 
       const include: string[] = [];
@@ -113,9 +115,9 @@ export default function useClient(): Plugin {
         if (!transformed) {
           // Is possible that the module changed from client-only to
           // unspecified. In that case, we need to remove it.
-          clientModules.remove(moduleId);
+          clientModules.removeNonOptimized(moduleId);
         } else {
-          clientModules.add(moduleId);
+          clientModules.addNonOptimized(moduleId);
         }
       }
 
