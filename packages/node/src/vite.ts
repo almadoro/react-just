@@ -34,20 +34,22 @@ export default function node(): Plugin {
               path.resolve(root, flightOutDir, MANIFEST_PATH),
             );
 
-            const css = (clientManifest[ENTRIES.CLIENT].css ?? []).map((p) =>
-              path.join("/", p),
-            );
-            const js = [path.join("/", clientManifest[ENTRIES.CLIENT].file)];
+            const clientChunk = findEntryChunk(clientManifest);
+            const fizzChunk = findEntryChunk(fizzManifest);
+            const flightChunk = findEntryChunk(flightManifest);
+
+            const css = (clientChunk.css ?? []).map((p) => path.join("/", p));
+            const js = [path.join("/", clientChunk.file)];
             const publicDir = path.relative(outDir, clientOutDir);
 
             const fizzEntry = path.relative(
               outDir,
-              path.join(fizzOutDir, fizzManifest[ENTRIES.FIZZ_NODE].file),
+              path.join(fizzOutDir, fizzChunk.file),
             );
 
             const flightEntry = path.relative(
               outDir,
-              path.join(flightOutDir, flightManifest[ENTRIES.FLIGHT_NODE].file),
+              path.join(flightOutDir, flightChunk.file),
             );
 
             const code =
@@ -57,7 +59,7 @@ export default function node(): Plugin {
               `const rcsMimeType = "${RSC_MIME_TYPE}";\n` +
               `export { App, React, renderToPipeableHtmlStream, renderToPipeableRscStream, resources, rcsMimeType }`;
 
-            await fs.writeFile(path.join(outDir, ENTRY_PATH), code);
+            await fs.writeFile(path.resolve(root, outDir, ENTRY_PATH), code);
           },
         },
         environments: {
@@ -66,7 +68,7 @@ export default function node(): Plugin {
               outDir: clientOutDir,
               manifest: MANIFEST_PATH,
               rollupOptions: {
-                input: { index: ENTRIES.CLIENT },
+                input: { [ENTRY_CHUNK_NAME]: ENTRIES.CLIENT },
               },
             },
           },
@@ -75,7 +77,7 @@ export default function node(): Plugin {
               outDir: fizzOutDir,
               manifest: MANIFEST_PATH,
               rollupOptions: {
-                input: { index: ENTRIES.FIZZ_NODE },
+                input: { [ENTRY_CHUNK_NAME]: ENTRIES.FIZZ_NODE },
               },
             },
           },
@@ -84,7 +86,7 @@ export default function node(): Plugin {
               outDir: flightOutDir,
               manifest: MANIFEST_PATH,
               rollupOptions: {
-                input: { index: ENTRIES.FLIGHT_NODE },
+                input: { [ENTRY_CHUNK_NAME]: ENTRIES.FLIGHT_NODE },
               },
             },
           },
@@ -94,6 +96,8 @@ export default function node(): Plugin {
   };
 }
 
+const ENTRY_CHUNK_NAME = "index";
+
 const MANIFEST_PATH = "manifest.json";
 
 async function readAndDeleteManifest(path: string) {
@@ -101,6 +105,15 @@ async function readAndDeleteManifest(path: string) {
   const manifest = JSON.parse(manifestStr) as Manifest;
   await fs.rm(path);
   return manifest;
+}
+
+function findEntryChunk(manifest: Manifest) {
+  for (const chunk of Object.values(manifest)) {
+    if (chunk.name === ENTRY_CHUNK_NAME) {
+      return chunk;
+    }
+  }
+  throw new Error("Entry chunk not found in manifest");
 }
 
 function toJsPath(path: string) {
