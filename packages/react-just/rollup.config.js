@@ -23,7 +23,6 @@ export default defineConfig({
       chunkFileNames: "[name].mjs",
     },
   ],
-  external: (id) =>
-    /node_modules/.test(id) || id === "rollup-plugin-react-use-client",
+  external: /node_modules/,
   plugins: [typescript({ tsconfig: "tsconfig.build.json" }), nodeResolve()],
 });
