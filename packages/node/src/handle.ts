@@ -30,7 +30,7 @@ export async function createHandleFunction(buildPath: string) {
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
     resources,
-    rcsMimeType,
+    rscMimeType,
   } = (await import(entry)) as EntryModule;
 
   const AppRoot = (props: AppEntryProps) =>
@@ -86,9 +86,9 @@ export async function createHandleFunction(buildPath: string) {
       React.createElement(AppRoot, { req: request }),
     );
 
-    if (req.headers.accept?.includes(rcsMimeType)) {
+    if (req.headers.accept?.includes(rscMimeType)) {
       res.statusCode = 200;
-      res.setHeader("content-type", rcsMimeType);
+      res.setHeader("content-type", rscMimeType);
       rscStream.pipe(res);
       return;
     }
@@ -110,7 +110,7 @@ type EntryModule = {
     js: string[];
     publicDir: string;
   };
-  rcsMimeType: string;
+  rscMimeType: string;
 };
 
 async function getStaticFile(filePath: string) {

@@ -46,7 +46,6 @@ export default function node(): Plugin {
               outDir,
               path.join(fizzOutDir, fizzChunk.file),
             );
-
             const flightEntry = path.relative(
               outDir,
               path.join(flightOutDir, flightChunk.file),
@@ -56,8 +55,8 @@ export default function node(): Plugin {
               `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "./${toJsPath(flightEntry)}";\n` +
               `import { renderToPipeableStream as renderToPipeableHtmlStream } from "./${toJsPath(fizzEntry)}";\n` +
               `const resources = ${JSON.stringify({ publicDir, css, js }, null, 2)};\n` +
-              `const rcsMimeType = "${RSC_MIME_TYPE}";\n` +
-              `export { App, React, renderToPipeableHtmlStream, renderToPipeableRscStream, resources, rcsMimeType }`;
+              `const rscMimeType = "${RSC_MIME_TYPE}";\n` +
+              `export { App, React, renderToPipeableHtmlStream, renderToPipeableRscStream, resources, rscMimeType }`;
 
             await fs.writeFile(path.resolve(root, outDir, ENTRY_PATH), code);
           },
