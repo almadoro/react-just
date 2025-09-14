@@ -1,5 +1,7 @@
 import React from "react";
 import { PluginOption } from "vite";
+import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
+import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
 import { AppEntryProps } from "./index";
 
 export type ReactJustOptions = {
@@ -29,10 +31,10 @@ export const ENTRIES: {
 
 export interface FlightEntryNodeModule {
   App: React.ComponentType<AppEntryProps>;
-  renderToPipeableStream: typeof import("./flight.node").renderToPipeableStream;
+  renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
 }
 
 export interface FizzEntryNodeModule {
-  renderToPipeableStream: typeof import("./fizz.node").renderToPipeableStream;
+  renderToPipeableStream: typeof renderToPipeableHtmlStream;
 }

@@ -2,9 +2,11 @@ import mime from "mime/lite";
 import fs from "node:fs/promises";
 import { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
-import { Readable } from "node:stream";
-import { TLSSocket } from "node:tls";
+import type React from "react";
 import type { AppEntryProps } from "react-just";
+import type { renderToPipeableStream as renderToPipeableHtmlStream } from "react-just/fizz.node";
+import type { renderToPipeableStream as renderToPipeableRscStream } from "react-just/flight.node";
+import { createHandle } from "react-just/handle.node";
 import { ENTRY_PATH } from "./constants";
 
 export async function createHandleFunction(buildPath: string) {
@@ -100,9 +102,9 @@ export async function createHandleFunction(buildPath: string) {
 
 type EntryModule = {
   App: React.ComponentType<AppEntryProps>;
-  React: typeof import("react");
-  renderToPipeableHtmlStream: typeof import("react-just/fizz.node").renderToPipeableStream;
-  renderToPipeableRscStream: typeof import("react-just/flight.node").renderToPipeableStream;
+  React: typeof React;
+  renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
+  renderToPipeableRscStream: typeof renderToPipeableRscStream;
   resources: {
     css: string[];
     js: string[];
