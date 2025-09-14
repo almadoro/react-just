@@ -86,13 +86,13 @@ export default function entries(options: EntriesOptions): Plugin {
 }
 
 async function resolveAppEntryId(root: string, app?: string) {
-  if (app) return path.resolve(root, app);
+  if (app) return toJsPath(path.resolve(root, app));
 
   for (const entryPath of APP_ENTRY_PATHS) {
     const entry = path.resolve(root, entryPath);
     try {
       await fs.access(entry, fs.constants.F_OK);
-      return entry;
+      return toJsPath(entry);
     } catch {}
   }
 
@@ -100,6 +100,10 @@ async function resolveAppEntryId(root: string, app?: string) {
     `App entry not found. Specify the entry path with the "app" option or ` +
       `create a file named one of the following: ${APP_ENTRY_PATHS.join(", ")}`,
   );
+}
+
+function toJsPath(path: string) {
+  return path.replace(/\\/g, "/");
 }
 
 const APP_ENTRY_PATHS = [
