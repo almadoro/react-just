@@ -2,8 +2,9 @@ import mime from "mime/lite";
 import fs from "node:fs/promises";
 import { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
-import type { AppEntryProps, Request } from "react-just";
+import type { AppEntryProps } from "react-just";
 import { ENTRY_PATH } from "./constants";
 
 export async function createHandleFunction(buildPath: string) {
@@ -121,11 +122,6 @@ async function getStaticFile(filePath: string) {
 function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
   const { method, headers: rawHeaders, url = "" } = incomingMessage;
 
-  if (method !== "GET")
-    throw new Error(
-      `Method ${method} not supported. Only GET requests are supported.`,
-    );
-
   const headers = new Headers();
   for (const [key, value] of Object.entries(rawHeaders)) {
     if (Array.isArray(value)) {
@@ -139,15 +135,15 @@ function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
 
   const isHttps =
     incomingMessage.socket instanceof TLSSocket ||
-    incomingMessage.headers["x-forwarded-proto"] === "https";
+    rawHeaders["x-forwarded-proto"] === "https";
 
   const protocol = isHttps ? "https" : "http";
 
-  const host =
-    incomingMessage.headers["x-forwarded-host"] || headers.get("host");
+  const host = rawHeaders["x-forwarded-host"] || headers.get("host");
 
-  return {
-    url: new URL(url, `${protocol}://${host}`),
-    headers,
-  };
+  let body: BodyInit | undefined = undefined;
+  if (method !== "GET" && method !== "HEAD")
+    body = Readable.toWeb(incomingMessage) as ReadableStream;
+
+  return new Request(new URL(url, `${protocol}://${host}`), { headers, body });
 }

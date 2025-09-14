@@ -1,5 +1,5 @@
-import { Request } from "@/types";
 import { IncomingMessage } from "node:http";
+import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
 import { Plugin, RunnableDevEnvironment } from "vite";
 import { RESOLVED_CSS_MODULES } from "./css";
@@ -36,6 +36,12 @@ export default function server(options: ServerOptions): Plugin {
       return () =>
         server.middlewares.use(async (req, res, next) => {
           try {
+            if (req.method !== "GET") {
+              res.statusCode = 405;
+              res.end("Method Not Allowed");
+              return;
+            }
+
             const {
               App,
               renderToPipeableStream: renderToPipeableRscStream,
@@ -54,11 +60,11 @@ export default function server(options: ServerOptions): Plugin {
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
 
-            const request = incomingMessageToRequest(req);
-
             // Vite rewrites the url path. Use the original url to get the
             // correct path.
-            if (req.originalUrl) request.url.pathname = req.originalUrl;
+            if (req.originalUrl) req.url = req.originalUrl;
+
+            const request = incomingMessageToRequest(req);
 
             const rscStream = renderToPipeableRscStream(
               React.createElement(
@@ -155,11 +161,6 @@ function isOutdatedOptimizedDepErr(err: unknown) {
 function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
   const { method, headers: rawHeaders, url = "" } = incomingMessage;
 
-  if (method !== "GET")
-    throw new Error(
-      `Method ${method} not supported. Only GET requests are supported.`,
-    );
-
   const headers = new Headers();
   for (const [key, value] of Object.entries(rawHeaders)) {
     if (Array.isArray(value)) {
@@ -173,15 +174,15 @@ function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
 
   const isHttps =
     incomingMessage.socket instanceof TLSSocket ||
-    incomingMessage.headers["x-forwarded-proto"] === "https";
+    rawHeaders["x-forwarded-proto"] === "https";
 
   const protocol = isHttps ? "https" : "http";
 
-  const host =
-    incomingMessage.headers["x-forwarded-host"] || headers.get("host");
+  const host = rawHeaders["x-forwarded-host"] || headers.get("host");
 
-  return {
-    url: new URL(url, `${protocol}://${host}`),
-    headers,
-  };
+  let body: BodyInit | undefined = undefined;
+  if (method !== "GET" && method !== "HEAD")
+    body = Readable.toWeb(incomingMessage) as ReadableStream;
+
+  return new Request(new URL(url, `${protocol}://${host}`), { headers, body });
 }
