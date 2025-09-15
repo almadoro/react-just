@@ -2,7 +2,7 @@
   "name": "@react-just/node",
   "version": "0.1.0",
   "type": "module",
-  "description": "CLI to serve React Just apps with Node.js",
+  "description": "Nodejs deployment plugin for ReactJust",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,10 +25,15 @@
     "react-just-node": "dist/bin.mjs"
   },
   "exports": {
-    "./vite": {
+    ".": {
       "types": "./types/vite.d.ts",
       "import": "./dist/vite.mjs",
       "require": "./dist/vite.cjs"
+    },
+    "./handle": {
+      "types": "./types/handle.d.ts",
+      "import": "./dist/handle.mjs",
+      "require": "./dist/handle.cjs"
     }
   },
   "scripts": {

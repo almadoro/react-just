@@ -4,7 +4,7 @@ import { defineConfig } from "rollup";
 
 export default defineConfig([
   {
-    input: { bin: "src/bin.ts", vite: "src/vite.ts" },
+    input: { bin: "src/bin.ts", handle: "src/handle.ts", vite: "src/vite.ts" },
     output: [
       {
         dir: "dist",
@@ -17,7 +17,7 @@ export default defineConfig([
     plugins: [typescript({ tsconfig: "tsconfig.build.json" }), nodeResolve()],
   },
   {
-    input: { vite: "src/vite.ts" },
+    input: { handle: "src/handle.ts", vite: "src/vite.ts" },
     output: [
       {
         dir: "dist",

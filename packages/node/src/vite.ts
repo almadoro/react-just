@@ -1,66 +1,67 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ENTRIES, ENVIRONMENTS, RSC_MIME_TYPE } from "react-just/vite";
-import { Manifest, Plugin } from "vite";
-import { DEFAULT_BUILD_PATH, ENTRY_PATH } from "./constants";
+import { Manifest, Plugin, ViteBuilder } from "vite";
+import {
+  DEFAULT_BUILD_PATH,
+  SERVER_DIR,
+  SERVER_ENTRY_FILENAME,
+  STATIC_DIR,
+} from "./constants";
 
 export default function node(): Plugin {
+  let manifests: { client: Manifest; fizz: Manifest; flight: Manifest };
+  let outDirs: {
+    client: string;
+    fizz: string;
+    flight: string;
+  };
+
+  async function buildApp(builder: ViteBuilder) {
+    if (!outDirs) throw new Error("Expected outDirs to be defined");
+
+    // Flight environment must be the first one to be built.
+    await builder.build(builder.environments[ENVIRONMENTS.FLIGHT_NODE]);
+    await builder.build(builder.environments[ENVIRONMENTS.FIZZ_NODE]);
+    await builder.build(builder.environments[ENVIRONMENTS.CLIENT]);
+
+    const { root } = builder.config;
+
+    manifests = {
+      client: await readAndDeleteManifest(
+        path.resolve(root, outDirs.client, MANIFEST_PATH),
+      ),
+      fizz: await readAndDeleteManifest(
+        path.resolve(root, outDirs.fizz, MANIFEST_PATH),
+      ),
+      flight: await readAndDeleteManifest(
+        path.resolve(root, outDirs.flight, MANIFEST_PATH),
+      ),
+    };
+
+    await builder.build(builder.environments[SERVER_ENVIRONMENT]);
+  }
+
   return {
     name: "react-just:node",
     apply: "build",
+    sharedDuringBuild: true,
     config(config) {
-      const root = config.root ?? process.cwd();
       const outDir = config.build?.outDir ?? DEFAULT_BUILD_PATH;
-      const clientOutDir = path.join(outDir, "client");
-      const fizzOutDir = path.join(outDir, "fizz");
-      const flightOutDir = path.join(outDir, "flight");
+      const clientOutDir = path.join(outDir, STATIC_DIR);
+      const serverOutDir = path.join(outDir, SERVER_DIR);
+      const fizzOutDir = path.join(serverOutDir, "fizz");
+      const flightOutDir = path.join(serverOutDir, "flight");
+
+      outDirs = {
+        client: clientOutDir,
+        fizz: fizzOutDir,
+        flight: flightOutDir,
+      };
 
       return {
-        builder: {
-          sharedPlugins: true,
-          async buildApp(builder) {
-            // Flight environment must be the first one to be built.
-            await builder.build(builder.environments[ENVIRONMENTS.FLIGHT_NODE]);
-            await builder.build(builder.environments[ENVIRONMENTS.FIZZ_NODE]);
-            await builder.build(builder.environments[ENVIRONMENTS.CLIENT]);
-
-            const clientManifest = await readAndDeleteManifest(
-              path.resolve(root, clientOutDir, MANIFEST_PATH),
-            );
-            const fizzManifest = await readAndDeleteManifest(
-              path.resolve(root, fizzOutDir, MANIFEST_PATH),
-            );
-            const flightManifest = await readAndDeleteManifest(
-              path.resolve(root, flightOutDir, MANIFEST_PATH),
-            );
-
-            const clientChunk = findEntryChunk(clientManifest);
-            const fizzChunk = findEntryChunk(fizzManifest);
-            const flightChunk = findEntryChunk(flightManifest);
-
-            const css = (clientChunk.css ?? []).map((p) => path.join("/", p));
-            const js = [path.join("/", clientChunk.file)];
-            const publicDir = path.relative(outDir, clientOutDir);
-
-            const fizzEntry = path.relative(
-              outDir,
-              path.join(fizzOutDir, fizzChunk.file),
-            );
-            const flightEntry = path.relative(
-              outDir,
-              path.join(flightOutDir, flightChunk.file),
-            );
-
-            const code =
-              `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "./${toJsPath(flightEntry)}";\n` +
-              `import { renderToPipeableStream as renderToPipeableHtmlStream } from "./${toJsPath(fizzEntry)}";\n` +
-              `const resources = ${JSON.stringify({ publicDir, css, js }, null, 2)};\n` +
-              `const rscMimeType = "${RSC_MIME_TYPE}";\n` +
-              `export { App, React, renderToPipeableHtmlStream, renderToPipeableRscStream, resources, rscMimeType }`;
-
-            await fs.writeFile(path.resolve(root, outDir, ENTRY_PATH), code);
-          },
-        },
+        builder: { buildApp },
+        build: { outDir, emptyOutDir: config.build?.emptyOutDir ?? true },
         environments: {
           [ENVIRONMENTS.CLIENT]: {
             build: {
@@ -91,8 +92,34 @@ export default function node(): Plugin {
               },
             },
           },
+          [SERVER_ENVIRONMENT]: {
+            build: {
+              outDir: serverOutDir,
+              copyPublicDir: false,
+              rollupOptions: {
+                input: SERVER_ENTRY,
+                output: { entryFileNames: SERVER_ENTRY_FILENAME },
+              },
+            },
+            resolve: { noExternal: true },
+          },
         },
       };
+    },
+    resolveId(id) {
+      if (id === SERVER_ENTRY) return RESOLVED_SERVER_ENTRY;
+    },
+    load(id) {
+      if (id !== RESOLVED_SERVER_ENTRY) return;
+
+      if (!manifests) throw new Error("Expected manifests to be defined");
+      if (!outDirs) throw new Error("Expected outDirs to be defined");
+
+      return getServerEntryCode(
+        this.environment.config.root,
+        outDirs,
+        manifests,
+      );
     },
   };
 }
@@ -101,11 +128,47 @@ const ENTRY_CHUNK_NAME = "index";
 
 const MANIFEST_PATH = "manifest.json";
 
+const SERVER_ENVIRONMENT = "server";
+
 async function readAndDeleteManifest(path: string) {
   const manifestStr = await fs.readFile(path, "utf-8");
   const manifest = JSON.parse(manifestStr) as Manifest;
   await fs.rm(path);
   return manifest;
+}
+
+const SERVER_ENTRY = "/virtual:@react-just/node/server-entry";
+const RESOLVED_SERVER_ENTRY = "\0" + SERVER_ENTRY;
+
+function getServerEntryCode(
+  root: string,
+  outDirs: { fizz: string; flight: string },
+  manifests: { client: Manifest; fizz: Manifest; flight: Manifest },
+) {
+  const clientChunk = findEntryChunk(manifests.client);
+  const fizzChunk = findEntryChunk(manifests.fizz);
+  const flightChunk = findEntryChunk(manifests.flight);
+
+  const css = (clientChunk.css ?? []).map((p) => path.join("/", p));
+  const js = [path.join("/", clientChunk.file)];
+
+  const fizzEntry = path.resolve(root, outDirs.fizz, fizzChunk.file);
+  const flightEntry = path.resolve(root, outDirs.flight, flightChunk.file);
+
+  return (
+    `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "${toJsPath(flightEntry)}";\n` +
+    `import { renderToPipeableStream as renderToPipeableHtmlStream } from "${toJsPath(fizzEntry)}";\n` +
+    `import { createHandle } from "@react-just/node/handle"\n` +
+    `const rscMimeType = "${RSC_MIME_TYPE}";\n` +
+    `export default createHandle({\n` +
+    `  App,\n` +
+    `  React,\n` +
+    `  renderToPipeableRscStream,\n` +
+    `  renderToPipeableHtmlStream,\n` +
+    `  rscMimeType,\n` +
+    `  resources: ${JSON.stringify({ css, js }, null, 2)}\n` +
+    `});`
+  );
 }
 
 function findEntryChunk(manifest: Manifest) {

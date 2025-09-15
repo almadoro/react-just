@@ -1,5 +1,5 @@
 # @react-just/node
 
-CLI tool to serve ReactJust apps with Node.js. Part of the ReactJust ecosystem.
+Nodejs deployment plugin for ReactJust.
 
 Visit [reactjust.dev](https://reactjust.dev) for documentation and more information.
