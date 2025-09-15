@@ -54,6 +54,7 @@ export default function useClient(): Plugin {
 
   return {
     name: PLUGIN_NAME,
+    sharedDuringBuild: true,
     // We should apply this plugin before others because the "use client"
     // directive must appear at the top and other plugins may add code
     // before it (e.g. vitejs react plugin on development)

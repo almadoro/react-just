@@ -61,6 +61,7 @@ export default function css(): Plugin {
 
   return {
     name: "react-just:css",
+    sharedDuringBuild: true,
     configureServer(server) {
       for (const environment of Object.values(server.environments)) {
         if (isFlightEnvironment(environment.name))
