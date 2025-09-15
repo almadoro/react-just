@@ -106,8 +106,8 @@ export default function vercel(): Plugin {
               outDir: functionOutDir,
               copyPublicDir: false,
               rollupOptions: {
-                input: { [HANDLER_FILE]: FUNCTION_ENTRY },
-                output: { entryFileNames: "[name]" + HANDLER_FILE_EXTENSION },
+                input: FUNCTION_ENTRY,
+                output: { entryFileNames: FUNCTION_ENTRY_FILENAME },
               },
             },
             resolve: { noExternal: true },
@@ -214,15 +214,14 @@ async function writeOutputConfig(outputPath: string) {
   );
 }
 
-const HANDLER_FILE = "index";
-const HANDLER_FILE_EXTENSION = ".mjs";
+const FUNCTION_ENTRY_FILENAME = "index.mjs";
 
 async function writeFunctionConfig(functionOutDir: string) {
   await fs.writeFile(
     path.resolve(functionOutDir, ".vc-config.json"),
     JSON.stringify(
       {
-        handler: HANDLER_FILE + HANDLER_FILE_EXTENSION,
+        handler: FUNCTION_ENTRY_FILENAME,
         runtime: "nodejs22.x",
         supportsResponseStreaming: true,
       },
