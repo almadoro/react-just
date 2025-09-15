@@ -44,6 +44,11 @@
       "import": "./dist/flight.node.mjs",
       "require": "./dist/flight.node.cjs"
     },
+    "./handle.node": {
+      "types": "./types/handle.node.d.ts",
+      "import": "./dist/handle.node.mjs",
+      "require": "./dist/handle.node.cjs"
+    },
     "./vite": {
       "types": "./types/vite.d.ts",
       "import": "./dist/vite.mjs",

@@ -7,6 +7,7 @@ export default defineConfig({
     client: "src/client.ts",
     "fizz.node": "src/fizz/node.ts",
     "flight.node": "src/flight/node.ts",
+    "handle.node": "src/handle/node.ts",
     vite: "src/vite/index.ts",
   },
   output: [

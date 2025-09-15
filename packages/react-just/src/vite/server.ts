@@ -1,7 +1,6 @@
-import { IncomingMessage } from "node:http";
-import { Readable } from "node:stream";
-import { TLSSocket } from "node:tls";
+import { AppEntryProps } from "@/types";
 import { Plugin, RunnableDevEnvironment } from "vite";
+import { createHandle } from "../handle/node";
 import { RESOLVED_CSS_MODULES } from "./css";
 import {
   CLIENT_ENTRY,
@@ -36,12 +35,6 @@ export default function server(options: ServerOptions): Plugin {
       return () =>
         server.middlewares.use(async (req, res, next) => {
           try {
-            if (req.method !== "GET") {
-              res.statusCode = 405;
-              res.end("Method Not Allowed");
-              return;
-            }
-
             const {
               App,
               renderToPipeableStream: renderToPipeableRscStream,
@@ -60,13 +53,7 @@ export default function server(options: ServerOptions): Plugin {
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
 
-            // Vite rewrites the url path. Use the original url to get the
-            // correct path.
-            if (req.originalUrl) req.url = req.originalUrl;
-
-            const request = incomingMessageToRequest(req);
-
-            const rscStream = renderToPipeableRscStream(
+            const Root = (props: AppEntryProps) =>
               React.createElement(
                 React.Fragment,
                 null,
@@ -75,21 +62,22 @@ export default function server(options: ServerOptions): Plugin {
                   type: "module",
                   src: CLIENT_ENTRY,
                 }),
-                React.createElement(App, { req: request }),
-              ),
-            );
+                React.createElement(App, props),
+              );
 
-            if (req.headers.accept?.includes(options.rscMimeType)) {
-              res.statusCode = 200;
-              res.setHeader("content-type", options.rscMimeType);
-              rscStream.pipe(res);
-              return;
-            }
+            const handle = createHandle({
+              App: Root,
+              React,
+              renderToPipeableHtmlStream,
+              renderToPipeableRscStream,
+              rscMimeType: options.rscMimeType,
+            });
 
-            const htmlStream = renderToPipeableHtmlStream(rscStream);
-            res.statusCode = 200;
-            res.setHeader("content-type", "text/html");
-            htmlStream.pipe(res);
+            // Vite rewrites the url path. Use the original url to get the
+            // correct path.
+            if (req.originalUrl) req.url = req.originalUrl;
+
+            handle(req, res);
           } catch (err) {
             next(err);
           }
@@ -156,33 +144,4 @@ function isOutdatedOptimizedDepErr(err: unknown) {
     "code" in err &&
     err.code === "ERR_OUTDATED_OPTIMIZED_DEP"
   );
-}
-
-function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
-  const { method, headers: rawHeaders, url = "" } = incomingMessage;
-
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(rawHeaders)) {
-    if (Array.isArray(value)) {
-      for (const v of value) {
-        headers.append(key, v);
-      }
-    } else if (typeof value === "string") {
-      headers.set(key, value);
-    }
-  }
-
-  const isHttps =
-    incomingMessage.socket instanceof TLSSocket ||
-    rawHeaders["x-forwarded-proto"] === "https";
-
-  const protocol = isHttps ? "https" : "http";
-
-  const host = rawHeaders["x-forwarded-host"] || headers.get("host");
-
-  let body: BodyInit | undefined = undefined;
-  if (method !== "GET" && method !== "HEAD")
-    body = Readable.toWeb(incomingMessage) as ReadableStream;
-
-  return new Request(new URL(url, `${protocol}://${host}`), { headers, body });
 }
