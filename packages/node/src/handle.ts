@@ -33,7 +33,7 @@ export async function createHandleFunction(buildPath: string) {
     rscMimeType,
   } = (await import(entry)) as EntryModule;
 
-  const AppRoot = (props: AppEntryProps) =>
+  const Root = (props: AppEntryProps) =>
     React.createElement(
       React.Fragment,
       null,
@@ -54,13 +54,15 @@ export async function createHandleFunction(buildPath: string) {
       React.createElement(App, props),
     );
 
-  return async (req: IncomingMessage, res: ServerResponse) => {
-    if (req.method !== "GET") {
-      res.statusCode = 405;
-      res.end("Method not allowed");
-      return;
-    }
+  const handle = createHandle({
+    App: Root,
+    React,
+    renderToPipeableHtmlStream,
+    renderToPipeableRscStream,
+    rscMimeType,
+  });
 
+  return async (req: IncomingMessage, res: ServerResponse) => {
     const pathname = req.url?.replace(/^\/|\/$/g, "") ?? "";
 
     const staticFilePath = path.resolve(
@@ -80,23 +82,7 @@ export async function createHandleFunction(buildPath: string) {
       return;
     }
 
-    const request = incomingMessageToRequest(req);
-
-    const rscStream = renderToPipeableRscStream(
-      React.createElement(AppRoot, { req: request }),
-    );
-
-    if (req.headers.accept?.includes(rscMimeType)) {
-      res.statusCode = 200;
-      res.setHeader("content-type", rscMimeType);
-      rscStream.pipe(res);
-      return;
-    }
-
-    res.statusCode = 200;
-    res.setHeader("content-type", "text/html");
-    const htmlStream = renderToPipeableHtmlStream(rscStream);
-    htmlStream.pipe(res);
+    handle(req, res);
   };
 }
 
@@ -119,33 +105,4 @@ async function getStaticFile(filePath: string) {
   } catch {
     return null;
   }
-}
-
-function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
-  const { method, headers: rawHeaders, url = "" } = incomingMessage;
-
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(rawHeaders)) {
-    if (Array.isArray(value)) {
-      for (const v of value) {
-        headers.append(key, v);
-      }
-    } else if (typeof value === "string") {
-      headers.set(key, value);
-    }
-  }
-
-  const isHttps =
-    incomingMessage.socket instanceof TLSSocket ||
-    rawHeaders["x-forwarded-proto"] === "https";
-
-  const protocol = isHttps ? "https" : "http";
-
-  const host = rawHeaders["x-forwarded-host"] || headers.get("host");
-
-  let body: BodyInit | undefined = undefined;
-  if (method !== "GET" && method !== "HEAD")
-    body = Readable.toWeb(incomingMessage) as ReadableStream;
-
-  return new Request(new URL(url, `${protocol}://${host}`), { headers, body });
 }
