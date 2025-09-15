@@ -16,6 +16,6 @@ export interface HandleOptions {
   rscMimeType: string;
 }
 
-export function createHandle(): HandleFunction;
+export function createHandle(options: HandleOptions): HandleFunction;
 
 export type HandleFunction = (req: VercelRequest, res: VercelResponse) => void;
