@@ -1,5 +1,5 @@
 > [!WARNING]
-> This plugin development is paused while a more general api is determined. Consider using [react-just](https://github.com/almadoro/react-just) for your project or open an issue there requesting to continue development with api suggestions.
+> Development of this plugin is paused while a more general api is defined. Consider using [react-just](https://github.com/almadoro/react-just) for your project, building your framework, or open an issue there requesting to continue development with api suggestions.
 
 # rollup-plugin-react-use-client
 
