@@ -124,7 +124,11 @@ export default function vercel(): Plugin {
       if (!manifests) throw new Error("Expected manifests to be defined");
       if (!outDirs) throw new Error("Expected outDirs to be defined");
 
-      return getFunctionEntryCode(outDirs, manifests);
+      return getFunctionEntryCode(
+        this.environment.config.root,
+        outDirs,
+        manifests,
+      );
     },
   };
 }
@@ -146,6 +150,7 @@ const FUNCTION_ENTRY = "/virtual:@react-just/vercel/function-entry";
 const RESOLVED_FUNCTION_ENTRY = "\0" + FUNCTION_ENTRY;
 
 function getFunctionEntryCode(
+  root: string,
   outDirs: { fizz: string; flight: string },
   manifests: { client: Manifest; fizz: Manifest; flight: Manifest },
 ) {
@@ -156,8 +161,8 @@ function getFunctionEntryCode(
   const css = (clientChunk.css ?? []).map((p) => path.join("/", p));
   const js = [path.join("/", clientChunk.file)];
 
-  const fizzEntry = path.resolve(outDirs.fizz, fizzChunk.file);
-  const flightEntry = path.resolve(outDirs.flight, flightChunk.file);
+  const fizzEntry = path.resolve(root, outDirs.fizz, fizzChunk.file);
+  const flightEntry = path.resolve(root, outDirs.flight, flightChunk.file);
 
   return (
     `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "${toJsPath(flightEntry)}";\n` +
