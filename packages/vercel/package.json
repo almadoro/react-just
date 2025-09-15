@@ -1,0 +1,52 @@
+{
+  "name": "@react-just/vercel",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Vercel deployment plugin for ReactJust",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almadoro/react-just.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almadoro/react-just/issues"
+  },
+  "keywords": [
+    "vercel",
+    "react just"
+  ],
+  "files": [
+    "dist",
+    "types"
+  ],
+  "exports": {
+    ".": {
+      "types": "./types/vite.d.ts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.cjs"
+    },
+    "./handle": {
+      "types": "./types/handle.d.ts",
+      "import": "./dist/handle.mjs",
+      "require": "./dist/handle.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && pnpm check && rollup -c",
+    "check": "tsc --noEmit -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@types/node": "^24.3.3",
+    "@types/react": "^19.1.8",
+    "@vercel/node": "^5.3.22",
+    "react-just": "workspace:^",
+    "rollup": "^4.50.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.0.6"
+  },
+  "peerDependencies": {
+    "react-just": "workspace:^"
+  }
+}
