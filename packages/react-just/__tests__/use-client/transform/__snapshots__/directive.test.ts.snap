@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`'use client' directive > doesn't transform when the directive is not at the top of the file 1`] = `
+"export default a;
+"use client";
+"
+`;
+
+exports[`'use client' directive > doesn't transform when there is no directive 1`] = `
+"export default a;
+"
+`;
+
+exports[`'use client' directive > transforms when the directive is found at the top of the file 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just";
+const $$Ref$$default = $$registerClientReference$$("default");
+export {$$Ref$$default as default};
+"
+`;

@@ -1,0 +1,277 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > class declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+class A {}
+const $$Ref$$default = $$registerClientReference$$(A, "module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > function declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+function $$default$$() {}
+const $$Ref$$default = $$registerClientReference$$($$default$$, "module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let a;
+const $$Ref$$default = $$registerClientReference$$(a, "module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > value declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+const $$default$$ = 1;
+const $$Ref$$default = $$registerClientReference$$($$default$$, "module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > array pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let [a, {b}, [c], d = 1, , ...e] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$(c, "module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$(d, "module.js", "d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerClientReference$$(e, "module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > assignment pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let [a = 1, {b} = c, [d] = e] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerClientReference$$(d, "module.js", "d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > class 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+class A {}
+const $$Ref$$A = $$registerClientReference$$(A, "module.js", "A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > function 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+function a() {}
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let a;
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > object pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let {a, b: {c}, d: [e], f = 1, ...g} = {};
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$(c, "module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$(e, "module.js", "e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerClientReference$$(f, "module.js", "f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerClientReference$$(g, "module.js", "g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > rest element 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let [...a] = [];
+let [...[b, c]] = [];
+let [...{d: e}] = [];
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$(b, "module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$(c, "module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$(e, "module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named from source 1`] = `
+"import {a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$} from "pkg";
+import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let c = 1;
+const $$Ref$$a = $$registerClientReference$$($$a$$, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$($$c$$, "module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$($$d$$, "module.js", "d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerClientReference$$($$default$$, "module.js", "default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerClientReference$$($$e$$, "module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named specifiers 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/no-treeshake";
+let a;
+let b;
+let d;
+const $$Ref$$a = $$registerClientReference$$(a, "module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$(b, "module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerClientReference$$(d, "module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > class declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > function declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > value declarations 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > array pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$("module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$("module.js", "d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerClientReference$$("module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > assignment pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerClientReference$$("module.js", "d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > class 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$A = $$registerClientReference$$("module.js", "A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > function 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > identifier 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > object pattern 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$("module.js", "e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerClientReference$$("module.js", "f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerClientReference$$("module.js", "g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > rest element 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerClientReference$$("module.js", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerClientReference$$("module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerClientReference$$("module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named from source 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerClientReference$$("module.js", "d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerClientReference$$("module.js", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named specifiers 1`] = `
+"import {registerClientReference as $$registerClientReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerClientReference$$("module.js", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerClientReference$$("module.js", "c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerClientReference$$("module.js", "default");
+export {$$Ref$$default as default};
+"
+`;

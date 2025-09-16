@@ -1,6 +1,5 @@
-import useClientTransform, {
-  TransformOptions,
-} from "@/vite/use-client/transform";
+import baseTransform, { TransformOptions } from "@/vite/use-client/transform";
+import Generator from "@/vite/use-client/transform/generator";
 import { generate } from "astring";
 import { builders } from "estree-toolkit";
 import fs from "node:fs/promises";
@@ -8,28 +7,43 @@ import path from "node:path";
 import { parseAst } from "vite";
 import { describe, expect, test } from "vitest";
 
-// client-like transform options
-const noTreeshakeOpts: TransformOptions = {
-  getRegisterArguments: ({ exportName, implementationIdentifier }) => [
-    builders.identifier(implementationIdentifier),
-    builders.literal(exportName),
-  ],
-  registerClientReferenceSource: "pkg",
+const MODULE_ID = "module.js";
+
+// client-like environment
+const noTreeshakeEnv: TransformOptions = {
+  generator: new Generator({
+    getRegisterArguments: ({ exportName, implementationIdentifier }) => [
+      builders.identifier(implementationIdentifier),
+      builders.literal(MODULE_ID),
+      builders.literal(exportName),
+    ],
+    registerClientReferenceSource: "react-just/no-treeshake",
+  }),
   treeshakeImplementation: false,
 };
 
-// flight-like transform options
-const treeshakeOpts: TransformOptions = {
-  getRegisterArguments: ({ exportName }) => [builders.literal(exportName)],
-  registerClientReferenceSource: "pkg",
+// flight-like environment
+const treeshakeEnv: TransformOptions = {
+  generator: new Generator({
+    getRegisterArguments: ({ exportName }) => [
+      builders.literal(MODULE_ID),
+      builders.literal(exportName),
+    ],
+    registerClientReferenceSource: "react-just/treeshake",
+  }),
   treeshakeImplementation: true,
 };
 
-describe("transforms with no treeshake", transformTests(noTreeshakeOpts));
+describe(
+  "transforms exports on a no-treeshake environment",
+  exportsTests(noTreeshakeEnv),
+);
+describe(
+  "transforms exports on a treeshake environment",
+  exportsTests(treeshakeEnv),
+);
 
-describe("transforms with treeshake", transformTests(treeshakeOpts));
-
-function transformTests(options: TransformOptions) {
+function exportsTests(options: TransformOptions) {
   return () => {
     describe("export default declarations", () => {
       test(
@@ -94,7 +108,7 @@ function transformTests(options: TransformOptions) {
       transformTest("export-named-specifiers.js"),
     );
 
-    test("export all declarations not supported", () => {
+    test("throws when there is an export all declaration", () => {
       expect(() =>
         transform("'use client'; export * from 'pkg';"),
       ).toThrowError();
@@ -104,7 +118,7 @@ function transformTests(options: TransformOptions) {
   function transformTest(filepath: string) {
     return async () => {
       const code = await fs.readFile(
-        path.resolve(import.meta.dirname, "fixtures/transforms", filepath),
+        path.resolve(import.meta.dirname, "fixtures", filepath),
         "utf-8",
       );
 
@@ -117,7 +131,7 @@ function transformTests(options: TransformOptions) {
   function transform(code: string) {
     const ast = parseAst(code);
 
-    useClientTransform(ast, options);
+    baseTransform(ast, options);
 
     return generate(ast);
   }
