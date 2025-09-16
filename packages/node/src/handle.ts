@@ -28,6 +28,7 @@ export function createHandle(options: HandleOptions): HandleFunction {
           key: href,
           href,
           rel: "stylesheet",
+          precedence: "default",
         }),
       ),
       React.createElement(App, props),
