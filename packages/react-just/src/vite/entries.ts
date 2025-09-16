@@ -1,4 +1,4 @@
-import { AppEntryProps } from "@/types";
+import { AppProps } from "@/types";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "@/types/flight.node";
 import fs from "node:fs/promises";
@@ -126,7 +126,7 @@ function getFlightEntry(appEntryModuleId: string) {
 }
 
 export type FlightEntryNodeModule = {
-  App: React.ComponentType<AppEntryProps>;
+  App: React.ComponentType<AppProps>;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
 };

@@ -1,3 +1,3 @@
-export interface AppEntryProps {
+export interface AppProps {
   req: Request;
 }

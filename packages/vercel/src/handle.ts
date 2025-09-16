@@ -1,5 +1,5 @@
 import { HandleFunction, HandleOptions } from "@/types/handle";
-import { AppEntryProps } from "react-just";
+import { AppProps } from "react-just";
 import { createHandle as baseCreateHandle } from "react-just/handle.node";
 
 export function createHandle(options: HandleOptions): HandleFunction {
@@ -12,7 +12,7 @@ export function createHandle(options: HandleOptions): HandleFunction {
     resources,
   } = options;
 
-  const Root = (props: AppEntryProps) =>
+  const Root = (props: AppProps) =>
     React.createElement(
       React.Fragment,
       null,

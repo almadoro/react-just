@@ -1,4 +1,4 @@
-import { AppEntryProps } from "@/types";
+import { AppProps } from "@/types";
 import { Plugin, RunnableDevEnvironment } from "vite";
 import { createHandle } from "../handle/node";
 import { RESOLVED_CSS_MODULES } from "./css";
@@ -53,7 +53,7 @@ export default function server(options: ServerOptions): Plugin {
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
 
-            const Root = (props: AppEntryProps) =>
+            const Root = (props: AppProps) =>
               React.createElement(
                 React.Fragment,
                 null,

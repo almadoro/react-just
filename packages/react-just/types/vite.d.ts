@@ -2,7 +2,7 @@ import React from "react";
 import { PluginOption } from "vite";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
-import { AppEntryProps } from "./index";
+import { AppProps } from "./index";
 
 export type ReactJustOptions = {
   /**
@@ -30,7 +30,7 @@ export const ENTRIES: {
 };
 
 export interface FlightEntryNodeModule {
-  App: React.ComponentType<AppEntryProps>;
+  App: React.ComponentType<AppProps>;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
 }

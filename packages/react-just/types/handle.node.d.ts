@@ -2,10 +2,10 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import React from "react";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
-import { AppEntryProps } from "./index";
+import { AppProps } from "./index";
 
 export interface HandleOptions {
-  App: React.ComponentType<AppEntryProps>;
+  App: React.ComponentType<AppProps>;
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;

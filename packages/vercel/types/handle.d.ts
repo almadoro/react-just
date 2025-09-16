@@ -1,11 +1,11 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import React from "react";
-import { AppEntryProps } from "react-just";
+import { AppProps } from "react-just";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "react-just/fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "react-just/flight.node";
 
 export interface HandleOptions {
-  App: React.ComponentType<AppEntryProps>;
+  App: React.ComponentType<AppProps>;
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
