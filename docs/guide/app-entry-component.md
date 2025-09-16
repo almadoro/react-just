@@ -18,7 +18,7 @@ export default function App() {
 
 ## Request Object
 
-The entry component receives a ReactJust `Request` object as the `req` prop. This object is generated on each request:
+The entry component receives a React Just `Request` object as the `req` prop. This object is generated on each request:
 
 ```tsx [src/index.tsx] {1,3}
 import type { AppEntryProps } from "react-just/server";
@@ -126,7 +126,7 @@ export default function App({ req }: AppEntryProps) {
 
 ## Entry Module Path
 
-By default, ReactJust will look for the following files from the root of your project to use as the entry component module:
+By default, React Just will look for the following files from the root of your project to use as the entry component module:
 
 - `src/index.tsx`
 - `src/index.jsx`

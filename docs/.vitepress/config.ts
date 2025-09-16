@@ -5,7 +5,7 @@ import {
 } from "vitepress-plugin-group-icons";
 
 export default defineConfig({
-  title: "ReactJust",
+  title: "React Just",
   description: "React Server Components enabled by Vite",
   head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   themeConfig: {

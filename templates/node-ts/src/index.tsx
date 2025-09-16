@@ -15,19 +15,19 @@ export default function App(props: AppEntryProps) {
       </head>
       <body>
         <div className="app">
-          <h1>Hello, ReactJust!</h1>
+          <h1>Hello, React Just!</h1>
           <a href="https://reactjust.dev" target="_blank">
             <img
               className="react-just-logo"
               src="/react-just.svg"
-              alt="ReactJust"
+              alt="React Just"
             />
           </a>
           <div>
             <Button />
           </div>
           <p style={{ marginBottom: "32px" }}>
-            Click on the ReactJust logo or{" "}
+            Click on the React Just logo or{" "}
             <a href="https://reactjust.dev" target="_blank">
               here
             </a>{" "}

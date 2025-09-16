@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "ReactJust"
+  name: "React Just"
   text: "React Server Components without a framework"
   tagline: React Server Components powered by Vite
   actions:
@@ -11,7 +11,7 @@ hero:
       link: /guide/getting-started
   image:
     src: /logo.svg
-    alt: ReactJust Logo
+    alt: React Just Logo
 
 features:
   - title: Just React

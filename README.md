@@ -1,4 +1,4 @@
-# ReactJust
+# React Just
 
 **Vite plugin to enable React with React Server Components support.**
 
@@ -7,9 +7,9 @@ Use React Server Components without a framework. It integrates directly with Vit
 ## Getting Started
 
 > [!IMPORTANT]
-> 🚧 ReactJust is in **early development**. APIs may change and some features (like `'use server'` support) are still in progress.
+> 🚧 React Just is in **early development**. APIs may change and some features (like `'use server'` support) are still in progress.
 
-If you're interested in using ReactJust, follow the guide [here](https://reactjust.dev). If you're interested in the code, keep reading.
+If you're interested in using React Just, follow the guide [here](https://reactjust.dev). If you're interested in the code, keep reading.
 
 ## Packages
 

@@ -1,6 +1,6 @@
 # `@react-just/vercel`
 
-Official Vercel adapter for ReactJust.
+Official Vercel adapter for React Just.
 
 ## Documentation
 

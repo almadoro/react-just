@@ -7,12 +7,12 @@ next:
 
 # Getting Started
 
-## What is ReactJust?
+## What is React Just?
 
-ReactJust is a [Vite](https://vite.dev/) plugin that enables the use of **React Server Components** ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) without relying on a full framework.
+React Just is a [Vite](https://vite.dev/) plugin that enables the use of **React Server Components** ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) without relying on a full framework.
 
 ::: warning Early development
-ReactJust is in early development and does **not yet** support the `'use server'` directive. Support is planned for release by **mid June 2025**.
+React Just is in early development and does **not yet** support the `'use server'` directive. Support is planned for release by **mid June 2025**.
 :::
 
 ## Try It Out Online

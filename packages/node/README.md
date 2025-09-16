@@ -1,6 +1,6 @@
 # `@react-just/node`
 
-Official Node.js adapter for ReactJust.
+Official Node.js adapter for React Just.
 
 ## Documentation
 

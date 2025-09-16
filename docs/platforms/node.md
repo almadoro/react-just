@@ -1,6 +1,6 @@
 # Node.js Deployment
 
-Run your ReactJust app using the Node.js platform adapter.
+Run your React Just app using the Node.js platform adapter.
 
 ## Installation
 

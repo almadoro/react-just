@@ -32,7 +32,7 @@ $ bun run build
 
 ## Choose Your Deployment Platform
 
-ReactJust is designed to be platform-agnostic. You can deploy your app to any platform that supports running JavaScript in some form.
+React Just is designed to be platform-agnostic. You can deploy your app to any platform that supports running JavaScript in some form.
 
 You can use prebuilt platform packages to deploy your app with minimal configuration, or even [create your own](/advanced/custom-platform.md). The following platforms are currently available or in development:
 

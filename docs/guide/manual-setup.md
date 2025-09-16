@@ -1,10 +1,10 @@
 # Manual Setup
 
-ReactJust is designed to work with minimal setup and zero configuration. Follow the steps below to set it up in your project.
+React Just is designed to work with minimal setup and zero configuration. Follow the steps below to set it up in your project.
 
 ## Installation
 
-Install React and ReactJust packages:
+Install React and React Just packages:
 
 ::: code-group
 
@@ -23,11 +23,11 @@ $ bun add react@19.1 react-dom@19.1 react-just
 ::: warning React 19.1.x recommended
 The underlying APIs for React Server Components are not yet stable. The [React team warns](https://react.dev/reference/rsc/server-components) that these APIs may change between minor versions.
 
-ReactJust has been tested with React 19.1 and should work with any patch version (`19.1.x`). Compatibility with future versions is not guaranteed.
+React Just has been tested with React 19.1 and should work with any patch version (`19.1.x`). Compatibility with future versions is not guaranteed.
 :::
 
 ::: info Why is react-just not a dev dependency?
-ReactJust is used in your production code. Even if you don’t directly import `react-just` in your source files, it’s required by the code generated.
+React Just is used in your production code. Even if you don’t directly import `react-just` in your source files, it’s required by the code generated.
 :::
 
 Install Vite as dev dependency:
@@ -49,7 +49,7 @@ $ bun add -D vite@6
 :::
 
 ::: warning Vite 6 recommended
-ReactJust relies on Vite's experimental [`Environments`](https://vite.dev/guide/api-environment.html) API introduced in Vite 6. Upcoming major versions (Vite 7) may introduce breaking changes to this API.
+React Just relies on Vite's experimental [`Environments`](https://vite.dev/guide/api-environment.html) API introduced in Vite 6. Upcoming major versions (Vite 7) may introduce breaking changes to this API.
 :::
 
 ## TypeScript Configuration (Optional)
@@ -68,7 +68,7 @@ If you want to use TypeScript, you can start with the following base configurati
 
 ## Configure Vite
 
-Create a Vite config file that uses the ReactJust plugin:
+Create a Vite config file that uses the React Just plugin:
 
 ::: code-group
 

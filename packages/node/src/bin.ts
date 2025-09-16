@@ -35,7 +35,7 @@ try {
   );
 
   server.listen(port, () => {
-    console.log(`ReactJust server running on port ${port}`);
+    console.log(`React Just server running on port ${port}`);
   });
 } catch (error) {
   if (error instanceof Error) console.error(error.message);
