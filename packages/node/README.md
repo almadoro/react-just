@@ -1,5 +1,7 @@
-# @react-just/node
+# `@react-just/node`
 
-Nodejs deployment plugin for ReactJust.
+Official Node.js adapter for ReactJust.
 
-Visit [reactjust.dev](https://reactjust.dev) for documentation and more information.
+## Documentation
+
+See [reactjust.dev](https://reactjust.dev)

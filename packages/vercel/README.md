@@ -1,5 +1,7 @@
-# @react-just/vercel
+# `@react-just/vercel`
 
-Vercel deployment plugin for ReactJust.
+Official Vercel adapter for ReactJust.
 
-Visit [reactjust.dev](https://reactjust.dev) for documentation and more information.
+## Documentation
+
+See [reactjust.dev](https://reactjust.dev)

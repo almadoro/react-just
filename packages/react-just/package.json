@@ -2,7 +2,7 @@
   "name": "react-just",
   "version": "0.1.3",
   "type": "module",
-  "description": "React Server Components without a framework. Powered by Vite",
+  "description": "Vite plugin to enable React with React Server Components support",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,12 +14,12 @@
   "keywords": [
     "vite",
     "vite plugin",
-    "plugin",
+    "vite-plugin",
     "react",
+    "reactjs",
     "react server components",
-    "server components",
-    "use client",
-    "use server"
+    "rsc",
+    "server components"
   ],
   "files": [
     "dist",

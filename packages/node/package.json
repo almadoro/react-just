@@ -2,7 +2,7 @@
   "name": "@react-just/node",
   "version": "0.1.0",
   "type": "module",
-  "description": "Nodejs deployment plugin for ReactJust",
+  "description": "Official Node.js adapter for ReactJust",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
   "keywords": [
     "node",
     "nodejs",
-    "react",
     "react just"
   ],
   "files": [

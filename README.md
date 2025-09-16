@@ -1,8 +1,8 @@
 # ReactJust
 
-**React Server Components powered by Vite. Framework-free, platform-agnostic.**
+**Vite plugin to enable React with React Server Components support.**
 
-ReactJust lets you use React Server Components without relying on a framework. It integrates directly with Vite, providing a minimal setup to build modern React apps using server and client components.
+Use React Server Components without a framework. It integrates directly with Vite and requires minimal setup.
 
 ## Getting Started
 
@@ -15,7 +15,8 @@ If you're interested in using ReactJust, follow the guide [here](https://reactju
 
 This monorepo contains the following packages:
 
-| Package                               | Description                                         |
-| ------------------------------------- | --------------------------------------------------- |
-| [`react-just`](./packages/react-just) | Vite plugin and core client and server dependencies |
-| [`@react-just/node`](./packages/node) | Node.js runtime for serving ReactJust apps          |
+| Package                                   | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
+| [`react-just`](./packages/react-just)     | Core plugin and low level utilities APIs |
+| [`@react-just/node`](./packages/node)     | Node.js adapter                          |
+| [`@react-just/vercel`](./packages/vercel) | Vercel adapter                           |

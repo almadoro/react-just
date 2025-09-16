@@ -2,7 +2,7 @@
   "name": "@react-just/vercel",
   "version": "0.1.0",
   "type": "module",
-  "description": "Vercel deployment plugin for ReactJust",
+  "description": "Official Vercel adapter for ReactJust",
   "license": "MIT",
   "repository": {
     "type": "git",
