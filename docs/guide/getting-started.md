@@ -1,23 +1,23 @@
 ---
 outline: deep
 next:
-  text: App Entry
-  link: /guide/app-entry-component
+  text: App Component
+  link: /guide/app-component
 ---
 
 # Getting Started
 
 ## What is React Just?
 
-React Just is a [Vite](https://vite.dev/) plugin that enables the use of **React Server Components** ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) without relying on a full framework.
+React Just is a [Vite](https://vite.dev/) plugin that enables React with **React Server Components** ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) support.
 
 ::: warning Early development
-React Just is in early development and does **not yet** support the `'use server'` directive. Support is planned for release by **mid June 2025**.
+React Just is in early development and doesn't support the `'use server'` directive. Support is planned for release by **late October 2025**.
 :::
 
 ## Try It Out Online
 
-Run it directly in your browser. Explore the project's files to understand how it works. You can try the JavaScript version below, but we recommend opening it in a separate tab using the following links for [JavaScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?file=src%2Findex.jsx&startScript=dev) or [TypeScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-ts?file=src%2Findex.jsx&startScript=dev).
+You can try the JavaScript version below, but we recommend opening it in a separate tab via the [JavaScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?file=src%2Findex.jsx&startScript=dev) or [TypeScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-ts?file=src%2Findex.jsx&startScript=dev) links.
 
 <iframe src="https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?ctl=1&embed=1&file=src%2Findex.jsx&startScript=dev&terminalHeight=18" width="100%" height="540px"></iframe>
 
@@ -38,7 +38,7 @@ $ npx degit almadoro/react-just/templates/node-js my-project
 ```
 
 ```bash [pnpm]
-$ pnpm dlx degit almadoro/react-just/templates/node-js my-project
+$ pnpx degit almadoro/react-just/templates/node-js my-project
 ```
 
 ```bash [bun]
@@ -56,7 +56,7 @@ $ npx degit almadoro/react-just/templates/node-ts my-project
 ```
 
 ```bash [pnpm]
-$ pnpm dlx degit almadoro/react-just/templates/node-ts my-project
+$ pnpx degit almadoro/react-just/templates/node-ts my-project
 ```
 
 ```bash [bun]

@@ -1,23 +1,23 @@
 # Manual Setup
 
-React Just is designed to work with minimal setup and zero configuration. Follow the steps below to set it up in your project.
+React Just is designed to work with minimal setup. Follow the steps below to set it up in your project.
 
 ## Installation
 
-Install React and React Just packages:
+Install React packages:
 
 ::: code-group
 
 ```bash [npm]
-$ npm install react@19.1 react-dom@19.1 react-just
+$ npm install react@19.1 react-dom@19.1
 ```
 
 ```bash [pnpm]
-$ pnpm add react@19.1 react-dom@19.1 react-just
+$ pnpm add react@19.1 react-dom@19.1
 ```
 
 ```bash [Bun]
-$ bun add react@19.1 react-dom@19.1 react-just
+$ bun add react@19.1 react-dom@19.1
 ```
 
 ::: warning React 19.1.x recommended
@@ -26,35 +26,27 @@ The underlying APIs for React Server Components are not yet stable. The [React t
 React Just has been tested with React 19.1 and should work with any patch version (`19.1.x`). Compatibility with future versions is not guaranteed.
 :::
 
-::: info Why is react-just not a dev dependency?
-React Just is used in your production code. Even if you don’t directly import `react-just` in your source files, it’s required by the code generated.
-:::
-
-Install Vite as dev dependency:
+Install Vite and React Just as dev dependencies:
 
 ::: code-group
 
 ```bash [npm]
-$ npm install -D vite@6
+$ npm install -D vite@7 react-just
 ```
 
 ```bash [pnpm]
-$ pnpm add -D vite@6
+$ pnpm add -D vite@7 react-just
 ```
 
 ```bash [Bun]
-$ bun add -D vite@6
+$ bun add -D vite@7 react-just
 ```
 
-:::
-
-::: warning Vite 6 recommended
-React Just relies on Vite's experimental [`Environments`](https://vite.dev/guide/api-environment.html) API introduced in Vite 6. Upcoming major versions (Vite 7) may introduce breaking changes to this API.
 :::
 
 ## TypeScript Configuration (Optional)
 
-If you want to use TypeScript, you can start with the following base configuration:
+For a minimal TypeScript setup, use the following configuration:
 
 ```json [tsconfig.json]
 {
@@ -66,24 +58,15 @@ If you want to use TypeScript, you can start with the following base configurati
 }
 ```
 
-## Configure Vite
+## Vite Configuration
 
 Create a Vite config file that uses the React Just plugin:
 
 ::: code-group
 
-```js [vite.config.js]
-import { defineConfig } from "vite";
-import react from "react-just/vite";
-
-export default defineConfig({
-  plugins: [react()],
-});
-```
-
 ```ts [vite.config.ts]
-import { defineConfig } from "vite";
 import react from "react-just/vite";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
@@ -92,17 +75,16 @@ export default defineConfig({
 
 :::
 
-## Add an App Entry
+## Minimal App Component
 
-Create a the app entry component. It must be exported as `default` and return at least the `html` and `body` tags.
+For a working project, you need to add an [App Component](/guide/app-component). Add a minimal version.
 
 ::: code-group
 
-```jsx [src/index.jsx] {4,6,7,9,10}
-/**
- * @param {import('react-just/server').AppEntryProps} props
- */
-export default function App() {
+```tsx [src/index.tsx]
+import { AppProps } from "react-just";
+
+export default function App(props: AppProps) {
   return (
     <html>
       <body>
@@ -113,10 +95,11 @@ export default function App() {
 }
 ```
 
-```tsx [src/index.tsx] {3,5,6,8,9}
-import { AppEntryProps } from "react-just/server";
-
-export default function App(props: AppEntryProps) {
+```jsx [src/index.jsx]
+/**
+ * @param {import('react-just').AppProps} props
+ */
+export default function App(props) {
   return (
     <html>
       <body>
@@ -133,7 +116,7 @@ export default function App(props: AppEntryProps) {
 
 Start the development server with the `vite` command. For convenience, add the following script to your `package.json`:
 
-```json [package.json] {3}
+```json [package.json]
 {
   "scripts": {
     "dev": "vite"
@@ -150,11 +133,11 @@ $ npm run dev
 ```
 
 ```bash [pnpm]
-$ pnpm run dev
+$ pnpm dev
 ```
 
 ```bash [Bun]
-$ bun run dev
+$ bun dev
 ```
 
 :::

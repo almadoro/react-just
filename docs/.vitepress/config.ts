@@ -25,13 +25,21 @@ export default defineConfig({
       {
         text: "Guide",
         items: [
-          { text: "App Entry Component", link: "/guide/app-entry-component" },
+          { text: "App Component", link: "/guide/app-component" },
+          {
+            text: "Client And Server Components",
+            link: "/guide/client-and-server-components",
+          },
           { text: "Deployment", link: "/guide/deployment" },
         ],
       },
       {
         text: "Platforms",
-        items: [{ text: "Node.js", link: "/platforms/node" }],
+        items: [
+          { text: "Node.js", link: "/platforms/node" },
+          { text: "Vercel", link: "/platforms/vercel" },
+          { text: "Custom", link: "/platforms/custom" },
+        ],
       },
     ],
     socialLinks: [
