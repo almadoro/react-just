@@ -21,8 +21,8 @@ You can try the JavaScript version below, but we recommend opening it in a separ
 
 <iframe src="https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?ctl=1&embed=1&file=src%2Findex.jsx&startScript=dev&terminalHeight=18" width="100%" height="540px"></iframe>
 
-::: warning `start` command may not work on StackBlitz
-The start command may not work on StackBlitz, but it works correctly in a local environment.
+::: warning `start` command
+The `start` command may not work on StackBlitz, but it works correctly on a Node.js environment.
 :::
 
 ## Start From Template
