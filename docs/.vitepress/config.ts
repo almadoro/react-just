@@ -30,6 +30,7 @@ export default defineConfig({
             text: "Client And Server Components",
             link: "/guide/client-and-server-components",
           },
+          { text: "Routing", link: "/guide/routing" },
           { text: "Deployment", link: "/guide/deployment" },
         ],
       },
