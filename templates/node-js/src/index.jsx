@@ -4,7 +4,7 @@ import viteLogo from "./assets/vite.svg";
 import Button from "./Button";
 
 /**
- * @param {import('react-just/server').AppEntryProps} props
+ * @param {import('react-just').AppProps} props
  */
 export default function App(props) {
   return (

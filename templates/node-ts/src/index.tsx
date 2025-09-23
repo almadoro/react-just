@@ -1,10 +1,10 @@
 import "./index.css";
 
-import { AppEntryProps } from "react-just/server";
+import type { AppProps } from "react-just";
 import viteLogo from "./assets/vite.svg";
 import Button from "./Button";
 
-export default function App(props: AppEntryProps) {
+export default function App(props: AppProps) {
   return (
     <html>
       <head>
