@@ -2,4 +2,4 @@
 
 🚧 WIP
 
-Currently on development.
+Currently on development. Releasing by 30th of September.
