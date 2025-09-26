@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/types": ["./types/index.d.ts"]
+    }
+  },
+  "include": ["src", "types"]
+}

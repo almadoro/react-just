@@ -1,0 +1,45 @@
+{
+  "name": "@react-just/router",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Router for React Just",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almadoro/react-just.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almadoro/react-just/issues"
+  },
+  "keywords": [
+    "router",
+    "layout router",
+    "react just"
+  ],
+  "files": [
+    "dist",
+    "types"
+  ],
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && pnpm check && rollup -c",
+    "check": "tsc --noEmit -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/react": "^19.1.4",
+    "react-just": "workspace:^",
+    "rollup": "^4.52.2",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "react-just": "workspace:^"
+  }
+}
