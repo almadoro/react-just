@@ -1,8 +1,8 @@
 "use client";
 
 import { Navigate } from "@/types";
-import { ReactNode, startTransition, useCallback, useEffect } from "react";
-import { createFromRscFetch, WINDOW_SHARED } from "react-just/client";
+import { ReactNode, useCallback, useEffect } from "react";
+import { createFromRscFetch, render, RSC_MIME_TYPE } from "react-just/client";
 import NavigateContext from "../context/navigate";
 
 interface NavigateProviderProps {
@@ -55,11 +55,10 @@ let currentNavId = 0;
 function onNavigation() {
   const navId = ++currentNavId;
 
-  const { root, rscMimeType } = window[WINDOW_SHARED];
-
   createFromRscFetch<React.ReactNode>(
-    fetch(window.location.href, { headers: { accept: rscMimeType } }),
+    fetch(window.location.href, { headers: { accept: RSC_MIME_TYPE } }),
   ).then((tree) => {
-    if (currentNavId === navId) startTransition(() => root.render(tree));
+    // Avoid race conditions between multiple navigation events. Render only the latest one.
+    if (currentNavId === navId) render(tree);
   });
 }
