@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { ENTRIES, ENVIRONMENTS, RSC_MIME_TYPE } from "react-just/vite";
+import { ENTRIES, ENVIRONMENTS } from "react-just/vite";
 import { Manifest, Plugin, ViteBuilder } from "vite";
 
 export default function vercel(): Plugin {
@@ -168,13 +168,11 @@ function getFunctionEntryCode(
     `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "${toJsPath(flightEntry)}";\n` +
     `import { renderToPipeableStream as renderToPipeableHtmlStream } from "${toJsPath(fizzEntry)}";\n` +
     `import { createHandle } from "@react-just/vercel/handle"\n` +
-    `const rscMimeType = "${RSC_MIME_TYPE}";\n` +
     `export default createHandle({\n` +
     `  App,\n` +
     `  React,\n` +
     `  renderToPipeableRscStream,\n` +
     `  renderToPipeableHtmlStream,\n` +
-    `  rscMimeType,\n` +
     `  resources: ${JSON.stringify({ css, js }, null, 2)}\n` +
     `});`
   );

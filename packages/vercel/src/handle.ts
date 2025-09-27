@@ -8,7 +8,6 @@ export function createHandle(options: HandleOptions): HandleFunction {
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
-    rscMimeType,
     resources,
   } = options;
 
@@ -39,6 +38,5 @@ export function createHandle(options: HandleOptions): HandleFunction {
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
-    rscMimeType,
   });
 }

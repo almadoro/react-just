@@ -1,11 +1,11 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import React from "react";
+import React, { ComponentType } from "react";
 import { AppProps } from "react-just";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "react-just/fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "react-just/flight.node";
 
 export interface HandleOptions {
-  App: React.ComponentType<AppProps>;
+  App: ComponentType<AppProps>;
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
@@ -13,7 +13,6 @@ export interface HandleOptions {
     css: string[];
     js: string[];
   };
-  rscMimeType: string;
 }
 
 export function createHandle(options: HandleOptions): HandleFunction;
