@@ -4,10 +4,26 @@ import {
   groupIconVitePlugin,
 } from "vitepress-plugin-group-icons";
 
+const title = "React Just";
+const description = "React Server Components made Simple";
+
 export default defineConfig({
-  title: "React Just",
-  description: "React Server Components enabled by Vite",
-  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
+  title,
+  description,
+  head: [
+    ["link", { rel: "icon", href: "/favicon.ico" }],
+    ["meta", { name: "og:description", content: description }],
+    ["meta", { name: "og:image", content: "/og-image.png" }],
+    ["meta", { name: "og:title", content: title }],
+    ["meta", { name: "og:url", content: "https://reactjust.dev" }],
+    ["meta", { name: "twitter:description", content: description }],
+    ["meta", { name: "twitter:image", content: "/og-image.png" }],
+    ["meta", { name: "twitter:title", content: title }],
+    ["meta", { name: "twitter:url", content: "https://reactjust.dev" }],
+    ["link", { rel: "icon", type: "image/png", href: "/favicon-96x96.png" }],
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+    ["link", { rel: "shortcut icon", href: "/favicon.ico" }],
+  ],
   themeConfig: {
     logo: "/logo.svg",
     nav: [
