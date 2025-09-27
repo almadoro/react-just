@@ -1,10 +1,10 @@
-import { Module, PipeableStream } from "./shared";
+import { PipeableStream } from "./shared";
 
 export function registerClientReference(
-  module: Module,
-  moduleId: string,
-  exportName: string,
-): void;
+  implementation: unknown,
+  moduleId: string | number,
+  exportName: string | number,
+): unknown;
 
 export function renderToPipeableStream(
   rscStream: PipeableStream,

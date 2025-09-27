@@ -8,10 +8,10 @@ export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T>;
 export function hydrateFromWindowStream(): Root;
 
 export function registerClientReference(
-  module: Module,
+  implementation: unknown,
   moduleId: string | number,
   exportName: string | number,
-): void;
+): unknown;
 
 declare global {
   interface Window {

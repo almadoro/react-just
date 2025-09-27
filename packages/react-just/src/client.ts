@@ -31,7 +31,7 @@ export function registerClientReference(
   implementation: unknown,
   moduleId: string | number,
   exportName: string | number,
-) {
+): unknown {
   registerModuleExport(implementation, moduleId, exportName);
   return implementation;
 }

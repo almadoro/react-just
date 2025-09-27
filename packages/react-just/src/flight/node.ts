@@ -8,7 +8,7 @@ import {
 export function registerClientReference(
   moduleId: string | number,
   exportName: string | number,
-) {
+): unknown {
   return baseRegisterClientReference(
     {},
     moduleId.toString(),

@@ -1,9 +1,9 @@
-import React from "react";
+import { ReactNode } from "react";
 import { PipeableStream } from "./shared";
 
 export function registerClientReference(
-  moduleId: string,
-  exportName: string,
-): void;
+  moduleId: string | number,
+  exportName: string | number,
+): unknown;
 
-export function renderToPipeableStream(model: React.ReactNode): PipeableStream;
+export function renderToPipeableStream(model: ReactNode): PipeableStream;
