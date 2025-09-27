@@ -5,10 +5,10 @@
     "start": "react-just-node"
   },
   "dependencies": {
-    "@react-just/node": "^0.2.0",
+    "@react-just/node": "^0.3.0",
     "react": "~19.1",
     "react-dom": "~19.1",
-    "react-just": "^0.2.0"
+    "react-just": "^0.3.0"
   },
   "devDependencies": {
     "vite": "^7.1.7"
