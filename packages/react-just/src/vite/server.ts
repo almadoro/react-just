@@ -13,11 +13,7 @@ import { ENVIRONMENTS } from "./environments";
 import { RESOLVED_CLIENT_MODULES } from "./use-client";
 import { invalidateModules } from "./utils";
 
-type ServerOptions = {
-  rscMimeType: string;
-};
-
-export default function server(options: ServerOptions): Plugin {
+export default function server(): Plugin {
   return {
     name: "react-just:server",
     apply: "serve",
@@ -70,7 +66,6 @@ export default function server(options: ServerOptions): Plugin {
               React,
               renderToPipeableHtmlStream,
               renderToPipeableRscStream,
-              rscMimeType: options.rscMimeType,
             });
 
             // Vite rewrites the url path. Use the original url to get the

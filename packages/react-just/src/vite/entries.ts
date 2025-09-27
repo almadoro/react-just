@@ -4,6 +4,7 @@ import { renderToPipeableStream as renderToPipeableRscStream } from "@/types/fli
 import fs from "node:fs/promises";
 import path from "node:path";
 import type React from "react";
+import { ComponentType } from "react";
 import { Plugin } from "vite";
 import { CLIENT_HOT_MODULES } from "./client-hot";
 import { CSS_MODULES } from "./css";
@@ -12,7 +13,6 @@ import { CLIENT_MODULES } from "./use-client";
 
 type EntriesOptions = {
   app?: string;
-  rscMimeType: string;
 };
 
 export default function entries(options: EntriesOptions): Plugin {
@@ -79,7 +79,7 @@ export default function entries(options: EntriesOptions): Plugin {
         case RESOLVED_FIZZ_ENTRY_NODE:
           return getFizzEntry();
         case RESOLVED_CLIENT_ENTRY:
-          return getClientEntry(options.rscMimeType);
+          return getClientEntry();
       }
     },
   };
@@ -126,7 +126,7 @@ function getFlightEntry(appEntryModuleId: string) {
 }
 
 export type FlightEntryNodeModule = {
-  App: React.ComponentType<AppProps>;
+  App: ComponentType<AppProps>;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
 };
@@ -149,15 +149,12 @@ export type FizzEntryNodeModule = {
 export const CLIENT_ENTRY = "/virtual:react-just/client-entry";
 const RESOLVED_CLIENT_ENTRY = "\0" + CLIENT_ENTRY;
 
-function getClientEntry(rscMimeType: string) {
+function getClientEntry() {
   return (
     `import "${CLIENT_HOT_MODULES}";` +
     `import "${CSS_MODULES}";` +
     `import "${CLIENT_MODULES}";` +
-    `import { hydrateFromWindowStream, WINDOW_SHARED } from "react-just/client";` +
-    `hydrateFromWindowStream()` +
-    `  .then(root => {` +
-    `    window[WINDOW_SHARED] = { root, rscMimeType: "${rscMimeType}" };` +
-    `  });`
+    `import { hydrateFromWindowStream } from "react-just/client";` +
+    `hydrateFromWindowStream();`
   );
 }

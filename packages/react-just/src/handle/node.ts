@@ -2,13 +2,13 @@ import { HandleOptions } from "@/types/handle.node";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
+import { RSC_MIME_TYPE } from "../constants";
 
 export function createHandle({
   App,
   React,
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
-  rscMimeType,
 }: HandleOptions) {
   return (req: IncomingMessage, res: ServerResponse) => {
     if (req.method !== "GET") {
@@ -21,11 +21,11 @@ export function createHandle({
       React.createElement(App, { req: incomingMessageToRequest(req) }),
     );
 
-    const isRscRequest = req.headers.accept?.includes(rscMimeType);
+    const isRscRequest = req.headers.accept?.includes(RSC_MIME_TYPE);
 
     if (isRscRequest) {
       res.statusCode = 200;
-      res.setHeader("content-type", rscMimeType);
+      res.setHeader("content-type", RSC_MIME_TYPE);
       rscStream.pipe(res);
     } else {
       res.statusCode = 200;

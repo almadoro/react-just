@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentType } from "react";
 import { PluginOption } from "vite";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
 import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
@@ -15,8 +15,6 @@ export type ReactJustOptions = {
 
 export default function react(options?: ReactJustOptions): PluginOption;
 
-export const RSC_MIME_TYPE: string;
-
 export const ENVIRONMENTS: {
   CLIENT: string;
   FIZZ_NODE: string;
@@ -30,7 +28,7 @@ export const ENTRIES: {
 };
 
 export interface FlightEntryNodeModule {
-  App: React.ComponentType<AppProps>;
+  App: ComponentType<AppProps>;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
 }

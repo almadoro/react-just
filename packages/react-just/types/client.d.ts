@@ -1,11 +1,8 @@
-import { Root } from "react-dom/client";
-import { Module } from "./shared";
-
-export declare const WINDOW_SHARED: unique symbol;
+import { ReactNode } from "react";
 
 export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T>;
 
-export function hydrateFromWindowStream(): Root;
+export function hydrateFromWindowStream(): Promise<void>;
 
 export function registerClientReference(
   implementation: unknown,
@@ -13,11 +10,6 @@ export function registerClientReference(
   exportName: string | number,
 ): unknown;
 
-declare global {
-  interface Window {
-    [WINDOW_SHARED]: {
-      root: Root;
-      rscMimeType: string;
-    };
-  }
-}
+export function render(tree: ReactNode): void;
+
+export declare const RSC_MIME_TYPE: string;

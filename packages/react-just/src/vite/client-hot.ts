@@ -131,19 +131,18 @@ const RESOLVED_SERVER_HMR = "\0" + SERVER_HMR;
 
 function getServerHmrCode() {
   return (
-    `import { createFromRscFetch, WINDOW_SHARED } from "react-just/client";` +
+    `import { createFromRscFetch, render, RSC_MIME_TYPE } from "react-just/client";` +
     `if (import.meta.hot) {` +
     `  let lastEventId = null;` +
     `  import.meta.hot.on("${TREE_RELOAD_HOT_EVENT}", ({ eventId }) => {` +
     `    lastEventId = eventId;` +
-    `    const { root, rscMimeType } = window[WINDOW_SHARED];` +
-    `    const headers = { accept: rscMimeType };` +
+    `    const headers = { accept: RSC_MIME_TYPE };` +
     `    createFromRscFetch(fetch(window.location.href, { headers })).then(async (tree) => {` +
     // Add a timestamp to trigger modules reload on the browser.
     `      await import(/* @vite-ignore */ "${CLIENT_MODULES}?t=" + Date.now());` +
     `      await import(/* @vite-ignore */ "${CSS_MODULES}?t=" + Date.now());` +
     // Avoid race conditions between multiple reloads. Render only the latest one.
-    `      if (lastEventId === eventId) root.render(tree);` +
+    `      if (lastEventId === eventId) render(tree);` +
     `    });` +
     `  });` +
     `}`

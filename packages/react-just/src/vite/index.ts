@@ -22,15 +22,13 @@ export default function react(options?: ReactJustOptions): PluginOption {
     useServer(),
     vitejsReact(),
     environments(),
-    entries({ app: options?.app, rscMimeType: RSC_MIME_TYPE }),
+    entries({ app: options?.app }),
     css(),
     clientHot(),
-    server({ rscMimeType: RSC_MIME_TYPE }),
+    server(),
     build(),
   ];
 }
-
-export const RSC_MIME_TYPE = "text/x-component";
 
 export const ENVIRONMENTS = {
   CLIENT: BASE_ENVIRONMENTS.CLIENT,

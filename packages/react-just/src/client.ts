@@ -2,11 +2,19 @@
 // react-server-dom-webpack imports.
 import "./modules";
 
+import {
+  createElement,
+  ReactNode,
+  startTransition,
+  useEffect,
+  useState,
+} from "react";
 import { hydrateRoot } from "react-dom/client";
 import {
   createFromFetch,
   createFromReadableStream,
 } from "react-server-dom-webpack/client.browser";
+import { RSC_MIME_TYPE } from "./constants";
 import { registerModuleExport } from "./modules";
 import {
   RSC_STREAM_BINARY_DATA,
@@ -15,16 +23,32 @@ import {
   RscStreamChunk,
 } from "./rsc-stream";
 
-export const WINDOW_SHARED = Symbol.for("react-just.window-shared");
-
 export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T> {
   return createFromFetch(res);
 }
 
-export async function hydrateFromWindowStream() {
+export async function hydrateFromWindowStream(): Promise<void> {
   const stream = createRscReadableStream();
-  const tree = await createFromReadableStream<React.ReactNode>(stream);
-  return hydrateRoot(document, tree);
+  const initialTree = await createFromReadableStream<ReactNode>(stream);
+
+  function Root() {
+    const [tree, setTree] = useState<ReactNode>(initialTree);
+
+    useEffect(() => {
+      const previousRender = _render;
+      _render = (tree: ReactNode) => startTransition(() => setTree(tree));
+
+      return () => {
+        _render = previousRender;
+      };
+    }, []);
+
+    return tree;
+  }
+
+  startTransition(() => {
+    hydrateRoot(document, createElement(Root));
+  });
 }
 
 export function registerClientReference(
@@ -35,6 +59,15 @@ export function registerClientReference(
   registerModuleExport(implementation, moduleId, exportName);
   return implementation;
 }
+
+export function render(tree: ReactNode): void {
+  _render?.(tree);
+}
+
+export { RSC_MIME_TYPE };
+
+let _render: typeof render = () =>
+  console.error("\`render\` method hasn't been initialized");
 
 function createRscReadableStream() {
   const encoder = new TextEncoder();
