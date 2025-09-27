@@ -152,13 +152,13 @@ function parsePath(path: string) {
     let segmentRegexpStr: string;
 
     if (segmentStr.startsWith(":")) {
-      const paramName = segmentStr.slice(1);
-      if (!isValidParamName(paramName))
-        throw new Error(`Invalid path param name: "${paramName}"`);
+      const pathName = segmentStr.slice(1);
+      if (!isValidParamName(pathName))
+        throw new Error(`Invalid path param name: "${pathName}"`);
 
-      segmentRegexpStr = `/(?<${paramName}>[^/]+)`;
+      segmentRegexpStr = `/(?<${pathName}>[^/]+)`;
 
-      groups[paramName] = "param";
+      groups[pathName] = "path";
     } else if (segmentStr.startsWith("*")) {
       const wildcardName = segmentStr.slice(1);
       if (!isValidParamName(wildcardName))
@@ -182,7 +182,7 @@ function parsePath(path: string) {
   return { groups, segmentsRegexpStr };
 }
 
-type GroupsType = Record<string, "param" | "wildcard">;
+type GroupsType = Record<string, "path" | "wildcard">;
 
 function removeLeadingSlash(path: string) {
   return path.replace(/^\//g, "");
@@ -205,7 +205,7 @@ function extractParams(result: RegExpExecArray, groupsType: GroupsType) {
   const groups = result.groups || {};
 
   for (const [name, type] of Object.entries(groupsType)) {
-    if (type === "param") {
+    if (type === "path") {
       params[name] = decodeURIComponent(groups[name]);
     } else {
       params[name] = groups[name].split("/").map(decodeURIComponent);
