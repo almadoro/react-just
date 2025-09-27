@@ -1,15 +1,14 @@
----
-outline: deep
-next:
-  text: App Component
-  link: /guide/app-component
----
-
 # Getting Started
+
+## Why React Just?
+
+React Server Components ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) are a specification designed for full-stack React frameworks. Frameworks like **Next.js** and **React Router** implement this specification, but they also add additional features and conventions that often make using **full-stack React more complex than it needs to be**.
+
+**React Just takes a different approach**: it focuses only on the RSC specification. No opinions, no extra conventions, no hidden features, just React Server Components in the simplest possible form. This keeps applications **easy to understand, easy to mantain and easy to deploy anywhere**.
 
 ## What is React Just?
 
-React Just is a [Vite](https://vite.dev/) plugin that enables React with **React Server Components** ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) support.
+React Just is a Vite plugin that easily enables React with React Server Components.
 
 ::: warning Early development
 React Just is in early development and doesn't support the `'use server'` directive. Support is planned for release by **late October 2025**.
@@ -24,47 +23,3 @@ You can try the JavaScript version below, but we recommend opening it in a separ
 ::: warning `start` command
 The `start` command may not work on StackBlitz, but it works correctly on a Node.js environment.
 :::
-
-## Start From Template
-
-Start from a template for JavaScript or TypeScript. Replace `my-project` with your desired directory name.
-
-### JavaScript
-
-::: code-group
-
-```bash [npm]
-$ npx degit almadoro/react-just/templates/node-js my-project
-```
-
-```bash [pnpm]
-$ pnpx degit almadoro/react-just/templates/node-js my-project
-```
-
-```bash [bun]
-$ bunx degit almadoro/react-just/templates/node-js my-project
-```
-
-:::
-
-### TypeScript
-
-::: code-group
-
-```bash [npm]
-$ npx degit almadoro/react-just/templates/node-ts my-project
-```
-
-```bash [pnpm]
-$ pnpx degit almadoro/react-just/templates/node-ts my-project
-```
-
-```bash [bun]
-$ bunx degit almadoro/react-just/templates/node-ts my-project
-```
-
-:::
-
-## Manual Setup
-
-If you prefer to set up your project manually, go to the [Manual Setup](/guide/manual-setup) page.

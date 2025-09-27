@@ -9,6 +9,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /guide/getting-started
+    - theme: alt
+      text: Reference
+      link: /reference
   image:
     src: /logo.svg
     alt: React Just Logo

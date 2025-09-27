@@ -1,8 +1,54 @@
-# Manual Setup
+---
+outline: [2, 3]
+---
 
-React Just is designed to work with minimal setup. Follow the steps below to set it up in your project.
+# Installation
 
-## Installation
+## Template Installation
+
+Start from a template for JavaScript or TypeScript. Replace `my-project` with your desired directory name.
+
+### JavaScript
+
+::: code-group
+
+```bash [npm]
+$ npx degit almadoro/react-just/templates/node-js my-project
+```
+
+```bash [pnpm]
+$ pnpx degit almadoro/react-just/templates/node-js my-project
+```
+
+```bash [bun]
+$ bunx degit almadoro/react-just/templates/node-js my-project
+```
+
+:::
+
+### TypeScript
+
+::: code-group
+
+```bash [npm]
+$ npx degit almadoro/react-just/templates/node-ts my-project
+```
+
+```bash [pnpm]
+$ pnpx degit almadoro/react-just/templates/node-ts my-project
+```
+
+```bash [bun]
+$ bunx degit almadoro/react-just/templates/node-ts my-project
+```
+
+:::
+
+## Manual Installation
+
+Follow the steps below to manually install React Just in your project.
+
+### Packages Installation
 
 Install React packages:
 
@@ -44,7 +90,7 @@ $ bun add -D vite@7 react-just
 
 :::
 
-## TypeScript Configuration (Optional)
+### TypeScript Configuration (Optional)
 
 For a minimal TypeScript setup, use the following configuration:
 
@@ -58,7 +104,7 @@ For a minimal TypeScript setup, use the following configuration:
 }
 ```
 
-## Vite Configuration
+### Vite Configuration
 
 Create a Vite config file that uses the React Just plugin:
 
@@ -75,7 +121,7 @@ export default defineConfig({
 
 :::
 
-## Minimal App Component
+### Minimal App Component
 
 For a working project, you need to add an [App Component](/guide/app-component). Add a minimal version.
 
@@ -112,7 +158,7 @@ export default function App(props) {
 
 :::
 
-## Development Server
+### Development Server
 
 Start the development server with the `vite` command. For convenience, add the following script to your `package.json`:
 

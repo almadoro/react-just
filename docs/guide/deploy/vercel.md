@@ -65,3 +65,5 @@ $ bun run build
 :::
 
 The build process generates a `.vercel/output` directory following Vercel's [Build Output API](https://vercel.com/docs/build-output-api) specification.
+
+For details about the adapter and its output format, see the [Vercel adapter reference](/reference/platforms/vercel).

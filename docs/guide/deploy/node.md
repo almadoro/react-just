@@ -1,7 +1,3 @@
----
-outline: [2, 3]
----
-
 # Node.js Deployment
 
 Deploy your React Just app using a Node.js environment.
@@ -111,34 +107,6 @@ By default, this will:
 - Statically serve the files in the `dist/static` directory.
 - Listen on port `3000`, making your app available at [`http://localhost:3000`](http://localhost:3000).
 
-### CLI Custom Options
-
-You can customize the build output path, the port, and whether to serve static files:
-
-::: code-group
-
-```bash [npm]
-$ npx react-just-node [build] -p [port] [--no-static]
-```
-
-```bash [pnpm]
-$ pnpm react-just-node [build] -p [port] [--no-static]
-```
-
-```bash [bun]
-$ bun react-just-node [build] -p [port] [--no-static]
-```
-
-:::
-
-#### Parameters
-
-- `build` (optional): Path to the build output folder. Defaults to `dist`.
-- `-p` or `--port` (optional): Port to run the server on. Defaults to `3000`.
-- `--no-static` (optional): Disables serving static files.
-
----
-
 ### Add a Script
 
 For convenience, add a `start` script to your `package.json`:
@@ -168,3 +136,5 @@ $ bun start
 ```
 
 :::
+
+For details about the adapter and CLI options, see the [Node.js adapter reference](/reference/platforms/node).

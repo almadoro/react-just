@@ -11,38 +11,97 @@ export default defineConfig({
   themeConfig: {
     logo: "/logo.svg",
     nav: [
-      { text: "Home", link: "/" },
       { text: "Guide", link: "/guide/getting-started" },
+      { text: "Reference", link: "/reference" },
     ],
-    sidebar: [
-      {
-        text: "Introduction",
-        items: [
-          { text: "Getting Started", link: "/guide/getting-started" },
-          { text: "Manual Setup", link: "/guide/manual-setup" },
-        ],
-      },
-      {
-        text: "Guide",
-        items: [
-          { text: "App Component", link: "/guide/app-component" },
-          {
-            text: "Client And Server Components",
-            link: "/guide/client-and-server-components",
-          },
-          { text: "Routing", link: "/guide/routing" },
-          { text: "Deployment", link: "/guide/deployment" },
-        ],
-      },
-      {
-        text: "Platforms",
-        items: [
-          { text: "Node.js", link: "/platforms/node" },
-          { text: "Vercel", link: "/platforms/vercel" },
-          { text: "Custom", link: "/platforms/custom" },
-        ],
-      },
-    ],
+    sidebar: {
+      "/guide": [
+        {
+          text: "Getting Started",
+          link: "/guide/getting-started",
+          items: [
+            { text: "Installation", link: "/guide/installation" },
+            { text: "App Component", link: "/guide/app-component" },
+            {
+              text: "Client & Server Components",
+              link: "/guide/client-and-server-components",
+            },
+            { text: "Routing", link: "/guide/routing" },
+          ],
+        },
+        {
+          text: "Deploy",
+          link: "/guide/deploy",
+          items: [
+            { text: "Node.js", link: "/guide/deploy/node" },
+            {
+              text: "Vercel",
+              link: "/guide/deploy/vercel",
+            },
+          ],
+        },
+      ],
+      "/reference": [
+        {
+          text: "Core",
+          link: "/reference/core",
+          items: [
+            {
+              text: "Low Level APIs",
+              link: "/reference/core/low-level-apis",
+            },
+          ],
+        },
+        {
+          text: "Router",
+          link: "/reference/router",
+          items: [
+            {
+              text: "Link",
+              link: "/reference/router/link",
+            },
+            {
+              text: "Route",
+              link: "/reference/router/route",
+            },
+            {
+              text: "RouteComponentProps",
+              link: "/reference/router/route-component-props",
+            },
+            {
+              text: "Router",
+              link: "/reference/router/router",
+            },
+            {
+              text: "useNavigate",
+              link: "/reference/router/use-navigate",
+            },
+            {
+              text: "useParams",
+              link: "/reference/router/use-params",
+            },
+            {
+              text: "usePathname",
+              link: "/reference/router/use-pathname",
+            },
+            {
+              text: "useSearchParams",
+              link: "/reference/router/use-search-params",
+            },
+          ],
+        },
+        {
+          text: "Platforms",
+          items: [
+            { text: "Node.js", link: "/reference/platforms/node" },
+            {
+              text: "Vercel",
+              link: "/reference/platforms/vercel",
+            },
+          ],
+        },
+      ],
+    },
     socialLinks: [
       { icon: "github", link: "https://github.com/almadoro/react-just" },
     ],

@@ -1,32 +1,19 @@
 # App Component
 
-The App Component serves as the main entry point of your application.
-
-## Module Path
-
-By default, React Just looks for one of the following files in your project root to use as the module containing the App Component:
+The App Component serves as the main entry point of your application. By default, React Just looks for the following files in your project root to use as the module containing the App Component:
 
 - `src/index.tsx`
 - `src/index.jsx`
 - `src/index.ts`
 - `src/index.js`
 
-You can override this behavior with the `app` property in the plugin options.
-
-```js [vite.config.js]
-import react from "react-just/vite";
-import { defineConfig } from "vite";
-
-export default defineConfig({
-  plugins: [react({ app: "src/app.tsx" })],
-});
-```
+You can override this behavior with the `app` property in the [plugin options](/reference/core).
 
 ## Structure
 
 It **must** be a [Server Component](https://react.dev/reference/rsc/server-components), exported as `default` from its module, and always return at least the `html` and `body` tags.
 
-```tsx [src/index.tsx] {1-4,6-9}
+```tsx [src/index.tsx] {1,3,4,6,7}
 export default function App() {
   return (
     <html>
@@ -40,27 +27,9 @@ export default function App() {
 
 ## Props
 
-The App Component receives the following props:
+The App Component receives a `req` prop: a standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object. You can use these to implement routing, validate authentication, and more.
 
-- `req`: A standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object.
-
-```tsx [src/index.tsx] {1,3}
-import type { AppProps } from "react-just";
-
-export default function App({ req }: AppProps) {
-  return (
-    <html>
-      <body>
-        <h1>Hello World</h1>
-      </body>
-    </html>
-  );
-}
-```
-
-You can use these to implement routing, validate authentication, and more.
-
-```tsx [src/index.tsx] {2,3,5-7,12-24}
+```tsx [src/index.tsx] {1,5-7}
 import type { AppProps } from "react-just";
 import getPage from "./getPage";
 import getUser from "./getUser";
