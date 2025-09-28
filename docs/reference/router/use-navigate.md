@@ -55,7 +55,7 @@ The hook must be used within a [Router](/reference/router/router) component. Oth
 
 ## Examples
 
-### Navigate to another route
+### Navigate to Another Route
 
 ```tsx
 "use client";
@@ -78,7 +78,7 @@ export default function Home() {
 }
 ```
 
-### Navigate back and forward in history
+### Navigate Back and Forward in History
 
 ```tsx
 "use client";
@@ -98,7 +98,7 @@ export default function Navigation() {
 }
 ```
 
-### Navigate with replace option
+### Navigate with Replace Option
 
 ```tsx
 "use client";
