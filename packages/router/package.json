@@ -1,6 +1,6 @@
 {
   "name": "@react-just/router",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Router for React Just",
   "license": "MIT",
