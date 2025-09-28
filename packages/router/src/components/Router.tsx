@@ -189,7 +189,7 @@ function removeLeadingSlash(path: string) {
 }
 
 function isValidParamName(name: string) {
-  return /^[a-zA-Z0-9_]+$/.test(name);
+  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name);
 }
 
 function isValidStaticSegment(str: string) {
