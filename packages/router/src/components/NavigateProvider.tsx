@@ -4,12 +4,26 @@ import { Navigate } from "@/types";
 import { ReactNode, useCallback, useEffect } from "react";
 import { createFromRscFetch, render, RSC_MIME_TYPE } from "react-just/client";
 import NavigateContext from "../context/navigate";
+import { removeTrailingSlashes } from "../utils";
 
 interface NavigateProviderProps {
   children: ReactNode;
+  trailingSlashes: "remove";
 }
 
-export default function NavigateProvider({ children }: NavigateProviderProps) {
+export default function NavigateProvider({
+  children,
+  trailingSlashes,
+}: NavigateProviderProps) {
+  useEffect(() => {
+    if (trailingSlashes === "remove")
+      window.history.replaceState(
+        null,
+        "",
+        removeTrailingSlashes(new URL(window.location.href)),
+      );
+  }, [trailingSlashes]);
+
   useEffect(() => {
     const originalPushState = window.history.pushState;
     const originalReplaceState = window.history.replaceState;
@@ -33,19 +47,25 @@ export default function NavigateProvider({ children }: NavigateProviderProps) {
     };
   }, []);
 
-  const navigate = useCallback<Navigate>((hrefOrDelta, options) => {
-    if (typeof hrefOrDelta === "number") {
-      window.history.go(hrefOrDelta);
-      return;
-    }
+  const navigate = useCallback<Navigate>(
+    (hrefOrDelta, options) => {
+      if (typeof hrefOrDelta === "number") {
+        window.history.go(hrefOrDelta);
+        return;
+      }
 
-    if (options?.replace) {
-      window.history.replaceState(null, "", hrefOrDelta);
-      return;
-    }
+      let url = new URL(hrefOrDelta, window.location.href);
 
-    window.history.pushState(null, "", hrefOrDelta);
-  }, []);
+      if (trailingSlashes === "remove") url = removeTrailingSlashes(url);
+
+      if (options?.replace) {
+        window.history.replaceState(null, "", url);
+      } else {
+        window.history.pushState(null, "", url);
+      }
+    },
+    [trailingSlashes],
+  );
 
   return <NavigateContext value={navigate}>{children}</NavigateContext>;
 }

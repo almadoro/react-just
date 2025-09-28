@@ -5,11 +5,17 @@ import {
   RouterProps,
 } from "@/types";
 import { ComponentType, ReactNode } from "react";
+import { removeTrailingSlashes } from "../utils";
 import LocationProvider from "./LocationProvider";
 import NavigateProvider from "./NavigateProvider";
 import Route from "./Route";
 
-export default function Router({ url, children }: RouterProps): ReactNode {
+export default function Router({
+  url: inputUrl,
+  children,
+}: RouterProps): ReactNode {
+  const url = removeTrailingSlashes(inputUrl);
+
   const route = matchRoute(url.pathname, children);
 
   if (!route) return null;
@@ -17,7 +23,7 @@ export default function Router({ url, children }: RouterProps): ReactNode {
   const { component: Component, params } = route;
 
   return (
-    <NavigateProvider>
+    <NavigateProvider trailingSlashes="remove">
       <LocationProvider url={url.href} params={params}>
         <Component
           params={params}
@@ -31,8 +37,6 @@ export default function Router({ url, children }: RouterProps): ReactNode {
 }
 
 function matchRoute(path: string, children: RouteChildren) {
-  path = removeTrailingSlash(path);
-
   for (const { paths, component } of flatRouteChildren(children)) {
     const { regexp, groups } = parsePaths(paths);
     const result = regexp.exec(path);
@@ -40,10 +44,6 @@ function matchRoute(path: string, children: RouteChildren) {
   }
 
   return null;
-}
-
-function removeTrailingSlash(path: string) {
-  return path.replace(/\/$/, "");
 }
 
 interface AggregateRoute {
