@@ -23,12 +23,15 @@ export function createHandle({
 
     const isRscRequest = req.headers.accept?.includes(RSC_MIME_TYPE);
 
+    res.statusCode = 200;
+    // Indicate the browser to use different cache based on the accept header.
+    res.setHeader("vary", "accept");
+
     if (isRscRequest) {
-      res.statusCode = 200;
       res.setHeader("content-type", RSC_MIME_TYPE);
+      res.setHeader("cache-control", "public, max-age=0, must-revalidate");
       rscStream.pipe(res);
     } else {
-      res.statusCode = 200;
       res.setHeader("content-type", "text/html");
       const htmlStream = renderToPipeableHtmlStream(rscStream);
       htmlStream.pipe(res);

@@ -137,7 +137,11 @@ function getServerHmrCode() {
     `  import.meta.hot.on("${TREE_RELOAD_HOT_EVENT}", ({ eventId }) => {` +
     `    lastEventId = eventId;` +
     `    const headers = { accept: RSC_MIME_TYPE };` +
-    `    createFromRscFetch(fetch(window.location.href, { headers })).then(async (tree) => {` +
+    // Don't use exactly the same URL as the one we're trying to load to avoid
+    // sharing cache between the RSC and the HTML.
+    `    const url = new URL(window.location.href);` +
+    `    url.searchParams.set("__rsc__", "1");` +
+    `    createFromRscFetch(fetch(url, { headers })).then(async (tree) => {` +
     // Add a timestamp to trigger modules reload on the browser.
     `      await import(/* @vite-ignore */ "${CLIENT_MODULES}?t=" + Date.now());` +
     `      await import(/* @vite-ignore */ "${CSS_MODULES}?t=" + Date.now());` +
