@@ -11,7 +11,7 @@ React Server Components ([server components](https://react.dev/reference/rsc/ser
 React Just is a Vite plugin that easily enables React with React Server Components.
 
 ::: warning Early development
-React Just is in early development and doesn't support the `'use server'` directive. Support is planned for release by **late October 2025**.
+React Just is in early development and doesn't support the `'use server'` directive. Support is planned for release by **mid October 2025**.
 :::
 
 ## Try It Out Online
