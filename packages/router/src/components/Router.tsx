@@ -121,8 +121,11 @@ function parsePaths(paths: string[]) {
     }
   }
 
+  // The root pattern ("/") won't generate any segments.
+  const pattern = segmentsRegexpStr.join("") || "/";
+
   return {
-    regexp: new RegExp(`^${segmentsRegexpStr.join("")}$`),
+    regexp: new RegExp(`^${pattern}$`),
     groups,
   };
 }
