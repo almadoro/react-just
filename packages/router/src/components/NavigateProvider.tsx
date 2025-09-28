@@ -55,8 +55,13 @@ let currentNavId = 0;
 function onNavigation() {
   const navId = ++currentNavId;
 
+  // Don't use exactly the same URL as the one we're trying to load to avoid
+  // sharing cache between the RSC and the HTML.
+  const url = new URL(window.location.href);
+  url.searchParams.set("__rsc__", "1");
+
   createFromRscFetch<React.ReactNode>(
-    fetch(window.location.href, { headers: { accept: RSC_MIME_TYPE } }),
+    fetch(url, { headers: { accept: RSC_MIME_TYPE } }),
   ).then((tree) => {
     // Avoid race conditions between multiple navigation events. Render only the latest one.
     if (currentNavId === navId) render(tree);
