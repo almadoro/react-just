@@ -4,14 +4,9 @@ import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.nod
 import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
 import { AppProps } from "./index";
 
-export type ReactJustOptions = {
-  /**
-   * Specify the app entry file (relative to project root)
-   *
-   * @default `src/index.(tsx|jsx|ts|js)`
-   */
+export interface ReactJustOptions {
   app?: string;
-};
+}
 
 export default function react(options?: ReactJustOptions): PluginOption;
 
