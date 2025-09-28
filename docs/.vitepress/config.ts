@@ -56,6 +56,10 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "Guides",
+          items: [{ text: "Tailwind CSS", link: "/guide/tailwindcss" }],
+        },
       ],
       "/reference": [
         {
