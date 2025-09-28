@@ -33,7 +33,7 @@ interface LinkProps extends React.DOMAttributes<HTMLAnchorElement> {
 }
 ```
 
-- `href` (required): The URL path to navigate to. Can be a relative or absolute URL.
+- `href`: The URL path to navigate to. Can be a relative or absolute URL.
 - `replace` (optional): Replace the current entry in the history stack instead of pushing a new one. Defaults to `false`.
 - All standard anchor element attributes and event handlers are supported.
 
