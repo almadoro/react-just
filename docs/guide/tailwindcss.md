@@ -59,11 +59,13 @@ import "./index.css";
 
 export default function App() {
   return (
-    <div className="min-h-screen w-full bg-gray-[#16181d]">
-      <h1 className="text-4xl font-bold text-center py-8 text-[#00a67d]">
-        Hello React Just with Tailwind!
-      </h1>
-    </div>
+    <html>
+      <body className="min-h-screen">
+        <h1 className="w-full py-8 text-4xl font-bold text-center">
+          Hello React Just with Tailwind!
+        </h1>
+      </body>
+    </html>
   );
 }
 ```
