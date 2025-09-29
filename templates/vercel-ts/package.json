@@ -7,10 +7,10 @@
     "@react-just/vercel": "^0.2.0",
     "react": "~19.1",
     "react-dom": "~19.1",
-    "react-just": "^0.3.1"
+    "react-just": "^0.3.1",
+    "vite": "^7.1.7"
   },
   "devDependencies": {
-    "@types/react": "~19.1",
-    "vite": "^7.1.7"
+    "@types/react": "~19.1"
   }
 }
