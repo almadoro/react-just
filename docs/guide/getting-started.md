@@ -1,17 +1,11 @@
 # Getting Started
 
-## Why React Just?
-
-React Server Components ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)) are a specification designed for full-stack React frameworks. Frameworks like **Next.js** and **React Router** implement this specification, but they also add additional features and conventions that often make using **full-stack React more complex than it needs to be**.
-
-**React Just takes a different approach**: it focuses only on the RSC specification. No opinions, no extra conventions, no hidden features, just React Server Components in the simplest possible form. This keeps applications **easy to understand, easy to mantain and easy to deploy anywhere**.
-
 ## What is React Just?
 
-React Just is a Vite plugin that easily enables React with React Server Components.
+React Just is the simplest way to use React with React Server Components ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)).
 
 ::: warning Early development
-React Just is in early development and doesn't support the `'use server'` directive. Support is planned for release by **mid October 2025**.
+React Just is still in early development. The `'use server'` directive support is planned for release by **mid October 2025**.
 :::
 
 ## Try It Out Online
@@ -23,3 +17,9 @@ You can try the JavaScript version below, but we recommend opening it in a separ
 ::: warning `start` command
 The `start` command may not work on StackBlitz, but it works correctly on a Node.js environment.
 :::
+
+## Why React Just?
+
+React Server Components are a specification designed for full-stack React frameworks. Frameworks like **Next.js** and **React Router** implement this specification, but they also add additional features and conventions that often make using **full-stack React more complex than it needs to be**.
+
+**React Just takes a different approach**: it focuses only on the RSC specification. No opinions, no extra conventions, no hidden features, just React Server Components in the simplest possible form. This keeps applications **easy to understand, easy to mantain and easy to deploy anywhere**.

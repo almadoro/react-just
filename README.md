@@ -2,7 +2,7 @@
 
 **Vite plugin to enable React with React Server Components support.**
 
-Use React Server Components without a framework. It integrates directly with Vite and requires minimal setup.
+The simplest way to use React Server Components. It's a Vite plugin and requires minimal setup.
 
 ## Getting Started
 
