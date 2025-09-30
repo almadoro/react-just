@@ -3,8 +3,8 @@ layout: Home
 
 hero:
   name: "React Just"
-  text: "React Server Components made simple"
-  tagline: A Vite plugin to enable React Server Components with minimal setup
+  text: "React Server Components without a Framework"
+  tagline: Vite plugin to enable React Server Components
   actions:
     - theme: brand
       text: Get Started
