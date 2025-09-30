@@ -24,7 +24,7 @@ $ bun add tailwindcss @tailwindcss/vite
 
 ## Configuration
 
-Ensure your `package.json` has `type: "module"` specified to be able ti import the Tailwind CSS plugin:
+Ensure your `package.json` has `type: "module"` specified to be able to import the Tailwind CSS plugin:
 
 ```json [package.json] {2}
 {
