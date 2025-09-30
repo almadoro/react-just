@@ -5,6 +5,12 @@
   --vp-c-brand-soft: #00bc8d;
   --vp-button-brand-bg: #00a67d;
   --vp-button-brand-hover-bg: #00bc8d;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    -120deg,
+    #00a67d,
+    #00ffbf
+  );
 }
 
 .dark {
@@ -18,6 +24,11 @@
   --vp-c-bg-alt: #111316;
   --vp-c-divider: #343a46;
   --vp-c-gutter: #343a46;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    -120deg,
+    #00a67d,
+    #1ab680
+  );
 }
 
 html {

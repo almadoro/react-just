@@ -1,5 +1,5 @@
 ---
-layout: home
+layout: Home
 
 hero:
   name: "React Just"
@@ -13,8 +13,8 @@ hero:
       text: Reference
       link: /reference
   image:
-    src: /logo.svg
-    alt: React Just Logo
+    src: /images/hero-snippet.png
+    alt: React Just App Component
 
 features:
   - title: Just React
