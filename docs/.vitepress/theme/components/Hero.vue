@@ -50,7 +50,14 @@ defineProps<{
       </div>
 
       <slot name="home-hero-image">
-        <VPImage v-if="image" class="image" :image />
+        <div>
+          <a title="About the App Component" href="/guide/app-component">
+            <VPImage v-if="image" class="image" :image />
+          </a>
+          <div class="app-component-link">
+            <a href="/guide/app-component"> About the App Component </a>
+          </div>
+        </div>
       </slot>
     </div>
   </div>
@@ -235,14 +242,39 @@ defineProps<{
 }
 
 :deep(.image) {
-  width: 100%;
+  max-width: 100%;
   max-height: 380px;
-  object-fit: contain;
+  margin: 0 auto;
+  transition: box-shadow 0.3s;
+  border-radius: 24px;
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+:deep(.image):hover {
+  box-shadow:
+    0 10px 15px -3px color-mix(in srgb, var(--vp-c-brand-1) 70%, transparent),
+    0 4px 6px -4px color-mix(in srgb, var(--vp-c-brand-1) 70%, transparent);
 }
 
 @media (min-width: 960px) {
   :deep(.image) {
     max-height: unset;
+  }
+}
+
+.app-component-link {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+@media (min-width: 960px) {
+  .app-component-link {
+    margin-top: 12px;
   }
 }
 </style>
