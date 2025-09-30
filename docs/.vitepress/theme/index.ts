@@ -1,7 +1,7 @@
 import "virtual:group-icons.css";
 import { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import Card from "../../components/Card.vue";
+import Card from "./components/Card.vue";
 import Home from "./components/Home.vue";
 import "./custom.css";
 
