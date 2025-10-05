@@ -2,18 +2,23 @@ import { generate } from "astring";
 import type { Plugin as EsbuildPlugin } from "esbuild";
 import fs from "node:fs/promises";
 import { OutputBundle } from "rollup";
-import { DevEnvironment, Plugin } from "vite";
+import {
+  DevEnvironment,
+  parseAstAsync,
+  Plugin,
+  transformWithEsbuild,
+} from "vite";
 import {
   ENVIRONMENTS,
   isClientLikeEnvironment,
   isFlightEnvironment,
 } from "../environments";
+import { cleanId } from "../utils";
 import ClientModules, {
   OPTIMIZED_CLIENT_MODULES,
   OPTIMIZED_CLIENT_MODULES_DIR,
 } from "./client-modules";
 import { getTransformOptions } from "./environments";
-import parse from "./parse";
 import transform from "./transform";
 
 export default function useClient(): Plugin {
@@ -108,10 +113,12 @@ export default function useClient(): Plugin {
       }
     },
     async transform(code, id) {
-      if (!EXTENSIONS_REGEX.test(id)) return;
+      const moduleId = cleanId(id);
+
+      if (!EXTENSIONS_REGEX.test(moduleId)) return;
 
       if (isClientLikeEnvironment(this.environment.name)) {
-        const isEntry = clientModules.has(id);
+        const isEntry = clientModules.has(moduleId);
         // We can skip transformation of "use client" annotated modules that
         // are not used as entry points.
         if (!isEntry) return;
@@ -119,9 +126,7 @@ export default function useClient(): Plugin {
 
       const isDev = this.environment.config.mode === "development";
 
-      const program = await parse(code, id, { jsxDev: isDev });
-
-      const moduleId = cleanId(id);
+      const program = await parse(code, moduleId, { jsxDev: isDev });
 
       const transformOptions = getTransformOptions({
         environment: this.environment.name,
@@ -162,6 +167,9 @@ export default function useClient(): Plugin {
     },
   };
 }
+
+export const CLIENT_MODULES = "/virtual:react-just/client-modules";
+export const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;
 
 function shouldApply(environment: string) {
   return Object.values(ENVIRONMENTS).includes(environment);
@@ -214,12 +222,20 @@ function getEsbuildPlugin(
 
 const PLUGIN_NAME = "react-just:use-client";
 
-// Vite will use query params like `?v=` sometimes.
-const EXTENSIONS_REGEX = /\.(js|jsx|mjs|ts|tsx|mts)(\?[^\/]+)?$/;
+const EXTENSIONS_REGEX = /\.(js|jsx|mjs|ts|tsx|mts)$/;
 
-function cleanId(id: string) {
-  return id.split("?")[0];
+async function parse(code: string, id: string, options?: { jsxDev: boolean }) {
+  const shouldTransform = /\.(jsx|ts|tsx|mts)$/.test(id);
+
+  if (shouldTransform) {
+    const { code: transformedCode } = await transformWithEsbuild(code, id, {
+      jsx: "automatic",
+      jsxImportSource: "react",
+      jsxDev: options?.jsxDev,
+    });
+
+    return parseAstAsync(transformedCode);
+  }
+
+  return parseAstAsync(code);
 }
-
-export const CLIENT_MODULES = "/virtual:react-just/client-modules";
-export const RESOLVED_CLIENT_MODULES = "\0" + CLIENT_MODULES;

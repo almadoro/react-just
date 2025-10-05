@@ -1,5 +1,10 @@
 import { DevEnvironment, EnvironmentModuleNode } from "vite";
 
+// Vite will use query params like `?v=` sometimes.
+export function cleanId(id: string) {
+  return id.split("?")[0];
+}
+
 export async function optimizeDeps(env: DevEnvironment) {
   const { depsOptimizer } = env;
 
