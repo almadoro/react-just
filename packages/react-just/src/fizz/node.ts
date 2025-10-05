@@ -2,7 +2,10 @@ import { PipeableStream } from "@/types/shared";
 import { PassThrough, Readable, Transform, Writable } from "node:stream";
 import React, { use } from "react";
 import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server.node";
-import { createFromNodeStream } from "react-server-dom-webpack/client.node";
+import {
+  createFromNodeStream,
+  createServerReference,
+} from "react-server-dom-webpack/client.node";
 import { registerModuleExport } from "../modules";
 import {
   BinaryDataChunk,
@@ -19,6 +22,12 @@ export function registerClientReference(
 ): unknown {
   registerModuleExport(implementation, moduleId, exportName);
   return implementation;
+}
+
+export function registerServerReference(id: string): unknown {
+  return createServerReference(id, () => {
+    // no-op since we shouldn't be calling server action in fizz.
+  });
 }
 
 export function renderToPipeableStream(

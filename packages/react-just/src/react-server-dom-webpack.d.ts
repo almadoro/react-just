@@ -9,6 +9,14 @@ declare module "react-server-dom-webpack/client.browser" {
     options?: Options,
   ): Thenable<T>;
 
+  function createServerReference<TArgs extends Array<unknown>, TReturn>(
+    id: string,
+    callServer: CallServerCallback,
+    encodeFormAction?: EncodeFormActionCallback,
+    findSourceMapURL?: FindSourceMapURLCallback,
+    functionName?: string,
+  ): (...args: TArgs) => Promise<TReturn>;
+
   type Options = {
     callServer?: CallServerCallback;
     temporaryReferences?: TemporaryReferenceSet;
@@ -17,7 +25,10 @@ declare module "react-server-dom-webpack/client.browser" {
     environmentName?: string;
   };
 
-  type CallServerCallback = unknown;
+  type CallServerCallback<TArgs = unknown[], TReturn = unknown> = (
+    id: string,
+    args: TArgs,
+  ) => Promise<TReturn>;
   type TemporaryReferenceSet = unknown;
   type FindSourceMapURLCallback = unknown;
 }
@@ -48,8 +59,6 @@ declare module "react-server-dom-webpack/client.node" {
     crossOrigin?: "use-credentials" | "";
   };
 
-  type ServerManifest = void;
-
   type Options = {
     nonce?: string;
     encodeFormAction?: EncodeFormActionCallback;
@@ -58,24 +67,10 @@ declare module "react-server-dom-webpack/client.node" {
     environmentName?: string;
   };
 
-  type EncodeFormActionCallback = (
-    id: any,
-    args: Promise<any>,
-  ) => ReactCustomFormAction;
-
-  type ReactCustomFormAction = {
-    name?: string;
-    action?: string;
-    encType?: string;
-    method?: string;
-    target?: string;
-    data?: null | FormData;
-  };
-
-  type FindSourceMapURLCallback = (
-    fileName: string,
-    environmentName: string,
-  ) => null | string;
+  function createServerReference<TArgs extends Array<unknown>, TReturn>(
+    id: string,
+    callServer: unknown,
+  ): (...args: TArgs) => Promise<TReturn>;
 }
 
 declare module "react-server-dom-webpack/server.node" {
@@ -123,6 +118,12 @@ declare module "react-server-dom-webpack/server.node" {
     $$id: string;
     $$async: boolean;
   };
+
+  function registerServerReference<T extends Function>(
+    reference: T,
+    id: string,
+    exportName: null | string,
+  ): T;
 }
 
 type Thenable<T> =
@@ -166,3 +167,52 @@ type ImportManifestEntry = {
   name: string;
   async?: boolean;
 };
+
+type EncodeFormActionCallback = (
+  id: any,
+  args: Promise<any>,
+) => ReactCustomFormAction;
+
+type ReactCustomFormAction = {
+  name?: string;
+  action?: string;
+  encType?: string;
+  method?: string;
+  target?: string;
+  data?: null | FormData;
+};
+
+type FindSourceMapURLCallback = (
+  fileName: string,
+  environmentName: string,
+) => null | string;
+
+// Serializable values
+type ReactServerValue =
+  // References are passed by their value
+  | ServerReference<any>
+  // The rest are passed as is. Sub-types can be passed in but lose their
+  // subtype, so the receiver can only accept once of these.
+  | string
+  | boolean
+  | number
+  | null
+  | void
+  | bigint
+  | AsyncIterable<ReactServerValue, ReactServerValue, void>
+  | AsyncIterator<ReactServerValue, ReactServerValue, void>
+  | Iterable<ReactServerValue>
+  | Iterator<ReactServerValue>
+  | Array<ReactServerValue>
+  | Map<ReactServerValue, ReactServerValue>
+  | Set<ReactServerValue>
+  | FormData
+  | Date
+  | ReactServerObject
+  | Promise<ReactServerValue>; // Thenable<ReactServerValue>
+
+type ServerReference<T> = T;
+
+type ReactServerObject = { [key: string]: ReactServerValue };
+
+type ServerManifest = null;

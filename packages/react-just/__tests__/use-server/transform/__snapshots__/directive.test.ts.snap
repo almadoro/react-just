@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`'use server' module level directive > doesn't transform when the directive is not at the top of the file 1`] = `
+"export default a;
+export {b};
+export * from "pkg";
+"use server";
+"
+`;
+
+exports[`'use server' module level directive > doesn't transform when there is no directive 1`] = `
+"export default a;
+export {b};
+export * from "pkg";
+"
+`;
+
+exports[`'use server' module level directive > transforms when the directive is found at the top of the file 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just";
+const $$Ref$$default = $$registerServerReference$$("default");
+export {$$Ref$$default as default};
+const $$Ref$$b = $$registerServerReference$$("b");
+export {$$Ref$$b as b};
+"
+`;

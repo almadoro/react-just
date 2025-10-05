@@ -1,0 +1,277 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > class declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+class A extends Function {}
+const $$Ref$$default = $$registerServerReference$$(A, "action:default", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > function declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+function $$default$$() {}
+const $$Ref$$default = $$registerServerReference$$($$default$$, "action:default", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > identifier 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let a;
+const $$Ref$$default = $$registerServerReference$$(a, "action:default", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export default declarations > value declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+const $$default$$ = () => {};
+const $$Ref$$default = $$registerServerReference$$($$default$$, "action:default", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > array pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let [a, {b}, [c], d = 1, , ...e] = [];
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$(b, "action:b", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerServerReference$$(c, "action:c", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerServerReference$$(d, "action:d", "d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerServerReference$$(e, "action:e", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > assignment pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let [a = 1, {b} = c, [d] = e] = [];
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$(b, "action:b", "b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerServerReference$$(d, "action:d", "d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > class 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+class A extends Function {}
+const $$Ref$$A = $$registerServerReference$$(A, "action:A", "A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > function 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+function a() {}
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > identifier 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let a;
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > object pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let {a, b: {c}, d: [e], f = 1, ...g} = {};
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$(c, "action:c", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerServerReference$$(e, "action:e", "e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerServerReference$$(f, "action:f", "f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerServerReference$$(g, "action:g", "g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named declarations > rest element 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let [...a] = [];
+let [...[b, c]] = [];
+let [...{d: e}] = [];
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$(b, "action:b", "b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerServerReference$$(c, "action:c", "c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerServerReference$$(e, "action:e", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named from source 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+import {a as $$a$$, b as $$c$$, b as $$d$$, default as $$default$$, default as $$e$$} from "pkg";
+let c = 1;
+const $$Ref$$a = $$registerServerReference$$($$a$$, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$($$c$$, "action:c", "c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerServerReference$$($$d$$, "action:d", "d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerServerReference$$($$default$$, "action:default", "default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerServerReference$$($$e$$, "action:e", "e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a no-treeshake environment > export named specifiers 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/no-treeshake";
+let a;
+let b;
+let d;
+const $$Ref$$a = $$registerServerReference$$(a, "action:a", "a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$(b, "action:c", "c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerServerReference$$(d, "action:default", "default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > class declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > function declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > identifier 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export default declarations > value declarations 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > array pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$("action:b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerServerReference$$("action:c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerServerReference$$("action:d");
+export {$$Ref$$d as d};
+const $$Ref$$e = $$registerServerReference$$("action:e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > assignment pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$("action:b");
+export {$$Ref$$b as b};
+const $$Ref$$d = $$registerServerReference$$("action:d");
+export {$$Ref$$d as d};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > class 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$A = $$registerServerReference$$("action:A");
+export {$$Ref$$A as A};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > function 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > identifier 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > object pattern 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$("action:c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerServerReference$$("action:e");
+export {$$Ref$$e as e};
+const $$Ref$$f = $$registerServerReference$$("action:f");
+export {$$Ref$$f as f};
+const $$Ref$$g = $$registerServerReference$$("action:g");
+export {$$Ref$$g as g};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named declarations > rest element 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$b = $$registerServerReference$$("action:b");
+export {$$Ref$$b as b};
+const $$Ref$$c = $$registerServerReference$$("action:c");
+export {$$Ref$$c as c};
+const $$Ref$$e = $$registerServerReference$$("action:e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named from source 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$("action:c");
+export {$$Ref$$c as c};
+const $$Ref$$d = $$registerServerReference$$("action:d");
+export {$$Ref$$d as d};
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+const $$Ref$$e = $$registerServerReference$$("action:e");
+export {$$Ref$$e as e};
+"
+`;
+
+exports[`transforms exports on a treeshake environment > export named specifiers 1`] = `
+"import {registerServerReference as $$registerServerReference$$} from "react-just/treeshake";
+const $$Ref$$a = $$registerServerReference$$("action:a");
+export {$$Ref$$a as a};
+const $$Ref$$c = $$registerServerReference$$("action:c");
+export {$$Ref$$c as c};
+const $$Ref$$default = $$registerServerReference$$("action:default");
+export {$$Ref$$default as default};
+"
+`;

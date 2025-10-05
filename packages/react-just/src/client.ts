@@ -13,6 +13,7 @@ import { hydrateRoot } from "react-dom/client";
 import {
   createFromFetch,
   createFromReadableStream,
+  createServerReference,
 } from "react-server-dom-webpack/client.browser";
 import { RSC_MIME_TYPE } from "./constants";
 import { registerModuleExport } from "./modules";
@@ -58,6 +59,12 @@ export function registerClientReference(
 ): unknown {
   registerModuleExport(implementation, moduleId, exportName);
   return implementation;
+}
+
+export function registerServerReference<TArgs extends unknown[], TReturn>(
+  id: string,
+): (...args: TArgs) => Promise<TReturn> {
+  return createServerReference(id, callServer);
 }
 
 export function render(tree: ReactNode): void {

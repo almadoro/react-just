@@ -6,6 +6,8 @@ export function registerClientReference(
   exportName: string | number,
 ): unknown;
 
+export function registerServerReference(id: string): unknown;
+
 export function renderToPipeableStream(
   rscStream: PipeableStream,
 ): PipeableStream;
