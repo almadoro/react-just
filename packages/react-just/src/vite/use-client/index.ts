@@ -73,7 +73,7 @@ export default function useClient(): Plugin {
     configEnvironment(environment) {
       if (!shouldApply(environment)) return;
 
-      async function onModuleTransformed(ids: string[]) {
+      async function onEnd(ids: string[]) {
         // Track only client modules that are referenced from the flight
         // environment since these are the ones that serve as entry points.
         if (isFlightEnvironment(environment))
@@ -94,7 +94,7 @@ export default function useClient(): Plugin {
           force: isFlightEnvironment(environment),
           include,
           esbuildOptions: {
-            plugins: [getEsbuildPlugin(environment, onModuleTransformed)],
+            plugins: [getEsbuildPlugin(environment, onEnd)],
           },
         },
       };

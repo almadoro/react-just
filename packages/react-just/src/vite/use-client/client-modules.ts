@@ -10,8 +10,6 @@ export default class ClientModules {
   private initHash: string | null = null;
   private environmentsHashes = new Map<Environment, string>();
 
-  constructor() {}
-
   public addNonOptimized(...ids: string[]) {
     for (const id of ids) {
       this.nonOptimizedModuleIds.add(id);
