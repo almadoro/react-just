@@ -56,14 +56,15 @@ export default function transform(program: Program, options: TransformOptions) {
     FunctionExpression: FunctionLike,
   });
 
-  if (!useServerModuleDirective) return { transformed: false };
+  if (!useServerModuleDirective)
+    return { transformed: false, level: null } as const;
 
   module.unshift(generator.createRegisterFunctionImport());
 
   if (treeshakeImplementation)
     program.body = generator.createTreeshakedBody(program.body);
 
-  return { transformed: true };
+  return { transformed: true, level: "module" } as const;
 }
 
 export type TransformOptions = {

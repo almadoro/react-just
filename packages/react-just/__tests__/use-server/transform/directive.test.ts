@@ -9,27 +9,32 @@ import { describe, expect, test } from "vitest";
 
 describe("'use server' module level directive", () => {
   test("doesn't transform when there is no directive", async () => {
-    const { transformed, code } = await transform("directive/no-directive.js");
+    const { transformed, code, level } = await transform(
+      "directive/no-directive.js",
+    );
 
     expect(transformed).toBe(false);
+    expect(level).toBe(null);
     expect(code).toMatchSnapshot();
   });
 
   test("transforms when the directive is found at the top of the file", async () => {
-    const { transformed, code } = await transform(
+    const { transformed, code, level } = await transform(
       "directive/valid-module-level.js",
     );
 
     expect(transformed).toBe(true);
+    expect(level).toBe("module");
     expect(code).toMatchSnapshot();
   });
 
   test("doesn't transform when the directive is not at the top of the file", async () => {
-    const { transformed, code } = await transform(
+    const { transformed, code, level } = await transform(
       "directive/invalid-module-level.js",
     );
 
     expect(transformed).toBe(false);
+    expect(level).toBe(null);
     expect(code).toMatchSnapshot();
   });
 });
@@ -42,7 +47,7 @@ async function transform(filepath: string) {
 
   const ast = parseAst(code);
 
-  const { transformed } = baseTransform(ast, {
+  const { transformed, level } = baseTransform(ast, {
     generator: new Generator({
       getRegisterArguments: ({ exportName }) => [builders.literal(exportName)],
       registerServerReferenceSource: "react-just",
@@ -50,5 +55,5 @@ async function transform(filepath: string) {
     treeshakeImplementation: false,
   });
 
-  return { transformed, code: generate(ast) };
+  return { transformed, code: generate(ast), level };
 }
