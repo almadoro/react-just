@@ -38,6 +38,16 @@ export function getTransformOptions(options: {
         }),
         treeshakeImplementation: true,
       };
+    case ENVIRONMENTS.SCAN_USE_CLIENT_MODULES:
+      return {
+        generator: new Generator({
+          // We are interested only in keeping the exports. We don't expect
+          // this to be executed so no need for register arguments.
+          getRegisterArguments: () => [],
+          registerClientReferenceSource: "react-just/flight.node",
+        }),
+        treeshakeImplementation: true,
+      };
     default:
       throw new Error(`Unexpected environment: ${environment}`);
   }

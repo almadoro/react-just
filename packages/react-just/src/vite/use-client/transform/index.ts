@@ -1,5 +1,6 @@
 import { Program } from "estree";
 import { traverse } from "estree-toolkit";
+import { getUseClientDirective } from "../directive";
 import transformExportDefaultDeclaration from "./export-default-declaration";
 import transformExportNamedDeclaration from "./export-named-declaration";
 import transformExportNamedFromSource from "./export-named-from-source";
@@ -52,20 +53,3 @@ export type TransformOptions = {
   generator: Generator;
   treeshakeImplementation: boolean;
 };
-
-const USE_CLIENT_DIRECTIVE = "use client";
-
-function getUseClientDirective(program: Program) {
-  // The "use client" directive must be the first node in the file.
-  const firstNode = program.body[0];
-
-  if (
-    firstNode &&
-    firstNode.type === "ExpressionStatement" &&
-    firstNode.expression.type === "Literal" &&
-    firstNode.expression.value === USE_CLIENT_DIRECTIVE
-  )
-    return firstNode;
-
-  return null;
-}

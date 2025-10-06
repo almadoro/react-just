@@ -11,27 +11,26 @@ import {
 import {
   ENVIRONMENTS,
   isClientLikeEnvironment,
-  isFlightEnvironment,
+  isScanUseClientModulesEnvironment,
 } from "../environments";
 import { cleanId } from "../utils";
 import ClientModules, {
   OPTIMIZED_CLIENT_MODULES,
   OPTIMIZED_CLIENT_MODULES_DIR,
 } from "./client-modules";
+import { isUseClientModule } from "./directive";
 import { getTransformOptions } from "./environments";
 import transform from "./transform";
 
 export default function useClient(): Plugin {
-  const flightDevEnvironments: DevEnvironment[] = [];
-  const flightBuildBundles: OutputBundle[] = [];
+  const scanUseClientModulesDevEnvironments: DevEnvironment[] = [];
+  const scanUseClientModulesBuildBundles: OutputBundle[] = [];
   const clientModules = new ClientModules();
 
   function removeUnusedClientModules() {
-    // NOTE: Currently, there is no trivial way to remove client modules under
-    // optimized dependencies. This only affects development.
     const usedModulesIds = new Set<string>();
 
-    for (const environment of flightDevEnvironments) {
+    for (const environment of scanUseClientModulesDevEnvironments) {
       for (const module of environment.moduleGraph.idToModuleMap.values()) {
         if (module.importers.size !== 0) usedModulesIds.add(module.id!);
         // Invalidate the module to force it to be transformed next time it's
@@ -40,7 +39,7 @@ export default function useClient(): Plugin {
       }
     }
 
-    for (const bundle of flightBuildBundles) {
+    for (const bundle of scanUseClientModulesBuildBundles) {
       for (const key in bundle) {
         const file = bundle[key];
         if (file.type === "asset") continue;
@@ -51,9 +50,8 @@ export default function useClient(): Plugin {
       }
     }
 
-    for (const moduleId of clientModules.nonOptimizedModuleIdsIterator()) {
-      if (!usedModulesIds.has(moduleId))
-        clientModules.removeNonOptimized(moduleId);
+    for (const moduleId of clientModules) {
+      if (!usedModulesIds.has(moduleId)) clientModules.delete(moduleId);
     }
   }
 
@@ -78,13 +76,6 @@ export default function useClient(): Plugin {
     configEnvironment(environment) {
       if (!shouldApply(environment)) return;
 
-      async function onEnd(ids: string[]) {
-        // Track only client modules that are referenced from the flight
-        // environment since these are the ones that serve as entry points.
-        if (isFlightEnvironment(environment))
-          clientModules.addOptimized(...ids);
-      }
-
       const include: string[] = [];
 
       if (isClientLikeEnvironment(environment))
@@ -92,24 +83,17 @@ export default function useClient(): Plugin {
 
       return {
         optimizeDeps: {
-          // We need to force reoptimization to catch client modules
-          // on optimized dependencies.
-          // OPTIMIZE: Cache the client modules on optimized
-          // dependencies to avoid reoptimization on restart.
-          force: isFlightEnvironment(environment),
           include,
           esbuildOptions: {
-            plugins: [getEsbuildPlugin(environment, onEnd)],
+            plugins: [getEsbuildPlugin(environment)],
           },
         },
       };
     },
     configureServer(server) {
       for (const environment of Object.values(server.environments)) {
-        if (isFlightEnvironment(environment.name))
-          flightDevEnvironments.push(environment);
-        else if (isClientLikeEnvironment(environment.name))
-          clientModules.addClientLikeEnvironment(environment);
+        if (isScanUseClientModulesEnvironment(environment.name))
+          scanUseClientModulesDevEnvironments.push(environment);
       }
     },
     async transform(code, id) {
@@ -126,7 +110,19 @@ export default function useClient(): Plugin {
 
       const isDev = this.environment.config.mode === "development";
 
+      // TODO: transform only when possibly a use client module.
       const program = await parse(code, moduleId, { jsxDev: isDev });
+
+      if (isScanUseClientModulesEnvironment(this.environment.name)) {
+        if (!isUseClientModule(program)) {
+          // Is possible that the module changed from client-only to
+          // unspecified. In that case, we need to remove it.
+          clientModules.delete(moduleId);
+          return;
+        } else {
+          clientModules.add(moduleId);
+        }
+      }
 
       const transformOptions = getTransformOptions({
         environment: this.environment.name,
@@ -136,25 +132,13 @@ export default function useClient(): Plugin {
 
       const { transformed } = transform(program, transformOptions);
 
-      // Track only client modules that are referenced from the flight
-      // environment since these are the ones that serve as entry points.
-      if (isFlightEnvironment(this.environment.name)) {
-        if (!transformed) {
-          // Is possible that the module changed from client-only to
-          // unspecified. In that case, we need to remove it.
-          clientModules.removeNonOptimized(moduleId);
-        } else {
-          clientModules.addNonOptimized(moduleId);
-        }
-      }
-
       if (!transformed) return;
 
       return generate(program);
     },
     generateBundle(_, bundle) {
-      if (isFlightEnvironment(this.environment.name))
-        flightBuildBundles.push(bundle);
+      if (isScanUseClientModulesEnvironment(this.environment.name))
+        scanUseClientModulesBuildBundles.push(bundle);
     },
     resolveId(id) {
       if (id === CLIENT_MODULES) return RESOLVED_CLIENT_MODULES;
@@ -175,19 +159,10 @@ function shouldApply(environment: string) {
   return Object.values(ENVIRONMENTS).includes(environment);
 }
 
-function getEsbuildPlugin(
-  environment: string,
-  onEnd: (moduleIds: string[]) => Promise<void>,
-): EsbuildPlugin {
+function getEsbuildPlugin(environment: string): EsbuildPlugin {
   return {
     name: PLUGIN_NAME,
     setup(build) {
-      const isDepPrebundle = build.initialOptions.plugins?.some(
-        (p) => p.name === "vite:dep-pre-bundle",
-      );
-
-      const moduleIds = new Set<string>();
-
       build.onLoad(
         { filter: EXTENSIONS_REGEX, namespace: "file" },
         async ({ path }) => {
@@ -207,15 +182,9 @@ function getEsbuildPlugin(
 
           if (!transformed) return;
 
-          moduleIds.add(path);
-
           return { contents: generate(program), loader: "js" };
         },
       );
-
-      // We are interested in the modules on prebundled dependencies.
-      // Ignore when used in scan environment.
-      if (isDepPrebundle) build.onEnd(() => onEnd([...moduleIds]));
     },
   };
 }

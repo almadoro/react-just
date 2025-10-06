@@ -64,6 +64,8 @@ export default function entries(options: EntriesOptions): Plugin {
     },
     resolveId(id) {
       switch (id) {
+        case APP_ENTRY:
+          return appEntryId;
         case FLIGHT_ENTRY_NODE:
           return RESOLVED_FLIGHT_ENTRY_NODE;
         case FIZZ_ENTRY_NODE:
@@ -75,7 +77,7 @@ export default function entries(options: EntriesOptions): Plugin {
     async load(id) {
       switch (id) {
         case RESOLVED_FLIGHT_ENTRY_NODE:
-          return getFlightEntry(appEntryId);
+          return getFlightEntry();
         case RESOLVED_FIZZ_ENTRY_NODE:
           return getFizzEntry();
         case RESOLVED_CLIENT_ENTRY:
@@ -113,14 +115,16 @@ const APP_ENTRY_PATHS = [
   "src/index.js",
 ];
 
+export const APP_ENTRY = "/virtual:react-just/app-entry";
+
 export const FLIGHT_ENTRY_NODE = "/virtual:react-just/flight-entry.node";
 const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 
-function getFlightEntry(appEntryModuleId: string) {
+function getFlightEntry() {
   return (
     `import React from "react";` +
     `import { renderToPipeableStream } from "react-just/flight.node";` +
-    `import App from "${appEntryModuleId}";` +
+    `import App from "${APP_ENTRY}";` +
     `export { App, renderToPipeableStream, React };`
   );
 }

@@ -10,28 +10,34 @@ export default class ClientModules {
   private initHash: string | null = null;
   private environmentsHashes = new Map<Environment, string>();
 
-  public addNonOptimized(...ids: string[]) {
-    for (const id of ids) {
-      this.nonOptimizedModuleIds.add(id);
-    }
+  public [Symbol.iterator]() {
+    return [...this.nonOptimizedModuleIds, ...this.optimizedModuleIds][
+      Symbol.iterator
+    ]();
   }
 
-  public addOptimized(...ids: string[]) {
-    for (const id of ids) {
-      this.optimizedModuleIds.add(id);
-    }
+  public add(id: string) {
+    if (id.includes("node_modules/")) this.optimizedModuleIds.add(id);
+    else this.nonOptimizedModuleIds.add(id);
   }
 
-  public addClientLikeEnvironment(environment: DevEnvironment) {
-    if (this.initHash) this.environmentsHashes.set(environment, this.initHash);
+  public delete(id: string) {
+    this.optimizedModuleIds.delete(id);
+    this.nonOptimizedModuleIds.delete(id);
   }
 
   public async getEntryCode(environment: Environment) {
-    let code = "";
+    let code = `import "${OPTIMIZED_CLIENT_MODULES}";`;
+
+    const currentHash =
+      this.environmentsHashes.get(environment) ?? this.initHash;
+    const newHash = await writeOptimizedClientModules(this.optimizedModuleIds);
+    this.environmentsHashes.set(environment, newHash);
 
     if (environment instanceof DevEnvironment) {
-      code += `import "${OPTIMIZED_CLIENT_MODULES}";`;
-      await this.optimizeEnvironment(environment);
+      // Some scan environments don't have a deps optimizer.
+      if (environment.depsOptimizer && currentHash !== newHash)
+        await optimizeDeps(environment);
       // Some modules could have been used as non-client module. Invalidate them
       // to force them to be re-imported and transformed.
       invalidateModules(environment, ...this.nonOptimizedModuleIds);
@@ -45,26 +51,13 @@ export default class ClientModules {
   }
 
   public has(id: string) {
-    return this.nonOptimizedModuleIds.has(id);
+    return (
+      this.nonOptimizedModuleIds.has(id) || this.optimizedModuleIds.has(id)
+    );
   }
 
   public async initOptimized() {
     this.initHash = await initOptimizedClientModules();
-  }
-
-  public nonOptimizedModuleIdsIterator() {
-    return this.nonOptimizedModuleIds[Symbol.iterator]();
-  }
-
-  public removeNonOptimized(id: string) {
-    this.nonOptimizedModuleIds.delete(id);
-  }
-
-  private async optimizeEnvironment(environment: DevEnvironment) {
-    const currentHash = this.environmentsHashes.get(environment);
-    const newHash = await writeOptimizedClientModules(this.optimizedModuleIds);
-    this.environmentsHashes.set(environment, newHash);
-    if (currentHash !== newHash) await optimizeDeps(environment);
   }
 }
 

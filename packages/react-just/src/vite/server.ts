@@ -3,13 +3,14 @@ import { Plugin, RunnableDevEnvironment } from "vite";
 import { createHandle } from "../handle/node";
 import { RESOLVED_CSS_MODULES } from "./css";
 import {
+  APP_ENTRY,
   CLIENT_ENTRY,
   FIZZ_ENTRY_NODE,
   FizzEntryNodeModule,
   FLIGHT_ENTRY_NODE,
   FlightEntryNodeModule,
 } from "./entries";
-import { ENVIRONMENTS } from "./environments";
+import { ENVIRONMENTS, ScanEnvironment } from "./environments";
 import { RESOLVED_CLIENT_MODULES } from "./use-client";
 import { invalidateModules } from "./utils";
 
@@ -27,24 +28,27 @@ export default function server(): Plugin {
       const client = server.environments[
         ENVIRONMENTS.CLIENT
       ] as RunnableDevEnvironment;
+      const scanUseClient = server.environments[
+        ENVIRONMENTS.SCAN_USE_CLIENT_MODULES
+      ] as ScanEnvironment;
 
       return () =>
         server.middlewares.use(async (req, res, next) => {
           try {
-            const {
-              App,
-              renderToPipeableStream: renderToPipeableRscStream,
-              React,
-            } = await importFlightEntry(flight);
+            await scanUseClient.scan(APP_ENTRY);
 
-            // Loading the flight entry module can trigger changes on the client
-            // modules module and css modules module.
             invalidateModules(fizz, RESOLVED_CLIENT_MODULES);
             invalidateModules(
               client,
               RESOLVED_CLIENT_MODULES,
               RESOLVED_CSS_MODULES,
             );
+
+            const {
+              App,
+              renderToPipeableStream: renderToPipeableRscStream,
+              React,
+            } = await importFlightEntry(flight);
 
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
