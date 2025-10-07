@@ -2,21 +2,17 @@ import { HandleOptions } from "@/types/handle.node";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
-import { RSC_MIME_TYPE } from "../constants";
+import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "../constants";
+import { getServerFunction } from "../server-functions";
 
 export function createHandle({
   App,
+  decodePayloadIncomingMessage,
   React,
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
 }: HandleOptions) {
-  return (req: IncomingMessage, res: ServerResponse) => {
-    if (req.method !== "GET") {
-      res.statusCode = 405;
-      res.end();
-      return;
-    }
-
+  function handleGet(req: IncomingMessage, res: ServerResponse) {
     const rscStream = renderToPipeableRscStream(
       React.createElement(App, { req: incomingMessageToRequest(req) }),
     );
@@ -29,13 +25,47 @@ export function createHandle({
 
     if (isRscRequest) {
       res.setHeader("content-type", RSC_MIME_TYPE);
-      res.setHeader("cache-control", "public, max-age=0, must-revalidate");
       rscStream.pipe(res);
     } else {
       res.setHeader("content-type", "text/html");
       const htmlStream = renderToPipeableHtmlStream(rscStream);
       htmlStream.pipe(res);
     }
+  }
+
+  async function handlePost(req: IncomingMessage, res: ServerResponse) {
+    const payload = await decodePayloadIncomingMessage<unknown[]>(req);
+
+    const fnId = req.headers[RSC_FUNCTION_ID_HEADER];
+
+    if (typeof fnId !== "string") {
+      res.statusCode = 400;
+      res.setHeader("content-type", "text/plain");
+      res.end("Function ID required");
+      return;
+    }
+
+    const fn = getServerFunction(fnId);
+
+    if (!fn) {
+      res.statusCode = 404;
+      res.setHeader("content-type", "text/plain");
+      res.end(`Function not found: ${fnId}`);
+      return;
+    }
+
+    const result = await fn.apply(null, payload);
+    const rscStream = renderToPipeableRscStream(result);
+    res.statusCode = 200;
+    rscStream.pipe(res);
+  }
+
+  return (req: IncomingMessage, res: ServerResponse) => {
+    if (req.method === "GET") return handleGet(req, res);
+    if (req.method === "POST") return handlePost(req, res);
+
+    res.statusCode = 405;
+    res.end();
   };
 }
 

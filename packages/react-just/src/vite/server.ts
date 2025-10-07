@@ -56,6 +56,7 @@ export default function server(): Plugin {
 
             const {
               App,
+              decodePayloadIncomingMessage,
               renderToPipeableStream: renderToPipeableRscStream,
               React,
             } = await importFlightEntry(flight);
@@ -77,6 +78,7 @@ export default function server(): Plugin {
 
             const handle = createHandle({
               App: Root,
+              decodePayloadIncomingMessage,
               React,
               renderToPipeableHtmlStream,
               renderToPipeableRscStream,

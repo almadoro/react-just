@@ -17,6 +17,14 @@ declare module "react-server-dom-webpack/client.browser" {
     functionName?: string,
   ): (...args: TArgs) => Promise<TReturn>;
 
+  function encodeReply(
+    value: ReactServerValue,
+    options?: {
+      temporaryReferences?: TemporaryReferenceSet;
+      signal?: AbortSignal;
+    },
+  ): Promise<string | URLSearchParams | FormData>;
+
   type Options = {
     callServer?: CallServerCallback;
     temporaryReferences?: TemporaryReferenceSet;
@@ -75,6 +83,18 @@ declare module "react-server-dom-webpack/client.node" {
 
 declare module "react-server-dom-webpack/server.node" {
   import { Writable } from "node:stream";
+
+  function decodeReply<T>(
+    body: string | FormData,
+    webpackMap: ServerManifest,
+    options?: { temporaryReferences?: TemporaryReferenceSet },
+  ): Thenable<T>;
+
+  function decodeReplyFromBusboy<T>(
+    busboyStream: import("busboy").Busboy,
+    webpackMap: ServerManifest,
+    options?: { temporaryReferences?: TemporaryReferenceSet },
+  ): Thenable<T>;
 
   type PipeableStream = {
     abort(reason: unknown): void;

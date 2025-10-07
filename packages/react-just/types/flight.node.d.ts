@@ -1,5 +1,10 @@
+import { IncomingMessage } from "node:http";
 import { ReactNode } from "react";
 import { PipeableStream } from "./shared";
+
+export function decodePayloadIncomingMessage<T>(
+  req: IncomingMessage,
+): Promise<T>;
 
 export function registerClientReference(
   moduleId: string | number,

@@ -1,10 +1,37 @@
 import { PipeableStream } from "@/types/shared";
+import busboy from "busboy";
+import { IncomingMessage } from "node:http";
 import {
   registerClientReference as baseRegisterClientReference,
   registerServerReference as baseRegisterServerReference,
   renderToPipeableStream as baseRenderToPipeableStream,
+  decodeReply,
+  decodeReplyFromBusboy,
 } from "react-server-dom-webpack/server.node";
-import { registerAction } from "../actions";
+import { registerServerFunction } from "../server-functions";
+
+export async function decodePayloadIncomingMessage<T>(
+  req: IncomingMessage,
+): Promise<T> {
+  const contentType = req.headers["content-type"];
+
+  if (contentType?.startsWith("multipart/form-data")) {
+    const bb = busboy({ headers: req.headers });
+    bb.pipe(req as unknown as NodeJS.WritableStream);
+    const payload = await decodeReplyFromBusboy<T>(bb, null);
+    return payload;
+  }
+
+  const chunks: Buffer[] = [];
+  await new Promise((resolve, reject) => {
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", resolve);
+    req.on("error", reject);
+  });
+  const buffer = Buffer.concat(chunks);
+  const payload = await decodeReply<T>(buffer.toString("utf-8"), null);
+  return payload;
+}
 
 /* @__NO_SIDE_EFFECTS__ */
 export function registerClientReference(
@@ -23,7 +50,7 @@ export function registerServerReference<T extends Function>(
   id: string,
   exportName: null | string,
 ): T {
-  registerAction(id, reference);
+  registerServerFunction(id, reference);
   return baseRegisterServerReference(reference, id, exportName);
 }
 

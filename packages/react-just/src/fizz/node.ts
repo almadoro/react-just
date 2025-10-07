@@ -26,7 +26,7 @@ export function registerClientReference(
 
 export function registerServerReference(id: string): unknown {
   return createServerReference(id, () => {
-    // no-op since we shouldn't be calling server action in fizz.
+    // no-op since we shouldn't be calling server functions in fizz.
   });
 }
 

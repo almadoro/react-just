@@ -14,8 +14,9 @@ import {
   createFromFetch,
   createFromReadableStream,
   createServerReference,
+  encodeReply,
 } from "react-server-dom-webpack/client.browser";
-import { RSC_MIME_TYPE } from "./constants";
+import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "./constants";
 import { registerModuleExport } from "./modules";
 import {
   RSC_STREAM_BINARY_DATA,
@@ -111,4 +112,14 @@ function createRscReadableStream() {
       document.addEventListener("DOMContentLoaded", () => controller.close());
     },
   });
+}
+
+async function callServer(id: string, args: unknown[]) {
+  return createFromFetch(
+    fetch(window.location.href, {
+      method: "POST",
+      body: await encodeReply(args),
+      headers: { [RSC_FUNCTION_ID_HEADER]: id },
+    }),
+  );
 }

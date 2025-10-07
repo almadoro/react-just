@@ -96,7 +96,7 @@ function getId(relativePath: string, exportName: string) {
 }
 
 function hash(id: string) {
-  // Using deterministic ID to avoid actions breaking between
+  // Using deterministic ID to avoid server functions breaking between
   // deployments.
   return crypto
     .createHash("sha256")
