@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`'use server' module level directive > doesn't transform when the directive is not at the top of the file 1`] = `
+exports[`'use server' module level directive > throws an error when the directive is not at the top of the file and doesn't modify the program 1`] = `
 "export default a;
 export {b};
 export * from "pkg";
@@ -8,7 +8,7 @@ export * from "pkg";
 "
 `;
 
-exports[`'use server' module level directive > doesn't transform when there is no directive 1`] = `
+exports[`'use server' module level directive > throws an error when there is no directive and doesn't modify the program 1`] = `
 "export default a;
 export {b};
 export * from "pkg";
