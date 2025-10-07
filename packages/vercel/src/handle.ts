@@ -5,6 +5,7 @@ import { createHandle as baseCreateHandle } from "react-just/handle.node";
 export function createHandle(options: HandleOptions): HandleFunction {
   const {
     App,
+    decodePayloadIncomingMessage,
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
@@ -35,6 +36,7 @@ export function createHandle(options: HandleOptions): HandleFunction {
 
   return baseCreateHandle({
     App: Root,
+    decodePayloadIncomingMessage,
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,

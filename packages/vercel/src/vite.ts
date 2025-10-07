@@ -165,11 +165,12 @@ function getFunctionEntryCode(
   const flightEntry = path.resolve(root, outDirs.flight, flightChunk.file);
 
   return (
-    `import { App, React, renderToPipeableStream as renderToPipeableRscStream } from "${toJsPath(flightEntry)}";\n` +
+    `import { App, decodePayloadIncomingMessage, React, renderToPipeableStream as renderToPipeableRscStream } from "${toJsPath(flightEntry)}";\n` +
     `import { renderToPipeableStream as renderToPipeableHtmlStream } from "${toJsPath(fizzEntry)}";\n` +
     `import { createHandle } from "@react-just/vercel/handle"\n` +
     `export default createHandle({\n` +
     `  App,\n` +
+    `  decodePayloadIncomingMessage,\n` +
     `  React,\n` +
     `  renderToPipeableRscStream,\n` +
     `  renderToPipeableHtmlStream,\n` +
