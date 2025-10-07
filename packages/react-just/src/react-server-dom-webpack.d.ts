@@ -17,6 +17,8 @@ declare module "react-server-dom-webpack/client.browser" {
     functionName?: string,
   ): (...args: TArgs) => Promise<TReturn>;
 
+  function createTemporaryReferenceSet(): TemporaryReferenceSet;
+
   function encodeReply(
     value: ReactServerValue,
     options?: {
@@ -37,8 +39,12 @@ declare module "react-server-dom-webpack/client.browser" {
     id: string,
     args: TArgs,
   ) => Promise<TReturn>;
-  type TemporaryReferenceSet = unknown;
+
+  type TemporaryReferenceSet = Map<string, Reference | symbol>;
+
   type FindSourceMapURLCallback = unknown;
+
+  interface Reference {}
 }
 
 declare module "react-server-dom-webpack/client.node" {

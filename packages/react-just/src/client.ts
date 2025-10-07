@@ -14,6 +14,7 @@ import {
   createFromFetch,
   createFromReadableStream,
   createServerReference,
+  createTemporaryReferenceSet,
   encodeReply,
 } from "react-server-dom-webpack/client.browser";
 import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "./constants";
@@ -116,11 +117,14 @@ function createRscReadableStream() {
 }
 
 async function callServer(id: string, args: unknown[]) {
+  const temporaryReferences = createTemporaryReferenceSet();
+
   return createFromFetch(
     fetch(window.location.href, {
       method: "POST",
-      body: await encodeReply(args),
+      body: await encodeReply(args, { temporaryReferences }),
       headers: { [RSC_FUNCTION_ID_HEADER]: id },
     }),
+    { temporaryReferences },
   );
 }
