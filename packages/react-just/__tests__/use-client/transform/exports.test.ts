@@ -1,10 +1,10 @@
-import baseTransform, { TransformOptions } from "@/vite/use-client/transform";
+import transform, { TransformOptions } from "@/vite/use-client/transform";
 import Generator from "@/vite/use-client/transform/generator";
 import { generate } from "astring";
 import { builders } from "estree-toolkit";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { parseAst } from "vite";
+import { parseAstAsync } from "vite";
 import { describe, expect, test } from "vitest";
 
 const MODULE_ID = "module.js";
@@ -108,10 +108,12 @@ function exportsTests(options: TransformOptions) {
       transformTest("export-named-specifiers.js"),
     );
 
-    test("throws when there is an export all declaration", () => {
-      expect(() =>
-        transform("'use client'; export * from 'pkg';"),
-      ).toThrowError();
+    test("throws when there is an export all declaration", async () => {
+      const code = "'use client'; export * from 'pkg'";
+
+      const program = await parseAstAsync(code);
+
+      expect(() => transform(program, options)).toThrowError();
     });
   };
 
@@ -122,17 +124,13 @@ function exportsTests(options: TransformOptions) {
         "utf-8",
       );
 
-      const output = transform(code);
+      const program = await parseAstAsync(code);
+
+      transform(program, options);
+
+      const output = generate(program);
 
       expect(output).toMatchSnapshot();
     };
-  }
-
-  function transform(code: string) {
-    const ast = parseAst(code);
-
-    baseTransform(ast, options);
-
-    return generate(ast);
   }
 }

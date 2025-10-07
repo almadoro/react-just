@@ -15,7 +15,8 @@ export default function transform(program: Program, options: TransformOptions) {
 
   const useClientDirective = getUseClientDirective(program);
 
-  if (!useClientDirective) return { transformed: false };
+  if (!useClientDirective)
+    throw new Error('Expected "use client" directive to exist');
 
   module.remove(useClientDirective);
 
@@ -45,8 +46,6 @@ export default function transform(program: Program, options: TransformOptions) {
 
   if (treeshakeImplementation)
     program.body = generator.createTreeshakedBody(program.body);
-
-  return { transformed: true };
 }
 
 export type TransformOptions = {

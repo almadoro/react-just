@@ -18,7 +18,7 @@ import ClientModules, {
   OPTIMIZED_CLIENT_MODULES,
   OPTIMIZED_CLIENT_MODULES_DIR,
 } from "./client-modules";
-import { isUseClientModule } from "./directive";
+import { couldBeUseClientModule, getIsUseClientModule } from "./directive";
 import { getTransformOptions } from "./environments";
 import transform from "./transform";
 
@@ -110,19 +110,23 @@ export default function useClient(): Plugin {
 
       const isDev = this.environment.config.mode === "development";
 
-      // TODO: transform only when possibly a use client module.
-      const program = await parse(code, moduleId, { jsxDev: isDev });
+      const program =
+        couldBeUseClientModule(code) &&
+        (await parse(code, moduleId, { jsxDev: isDev }));
+
+      const isUseClientModule = program && getIsUseClientModule(program);
 
       if (isScanUseClientModulesEnvironment(this.environment.name)) {
-        if (!isUseClientModule(program)) {
+        if (!isUseClientModule) {
           // Is possible that the module changed from client-only to
           // unspecified. In that case, we need to remove it.
           clientModules.delete(moduleId);
-          return;
         } else {
           clientModules.add(moduleId);
         }
       }
+
+      if (!isUseClientModule) return;
 
       const transformOptions = getTransformOptions({
         environment: this.environment.name,
@@ -130,9 +134,7 @@ export default function useClient(): Plugin {
         minimizeIds: !isDev,
       });
 
-      const { transformed } = transform(program, transformOptions);
-
-      if (!transformed) return;
+      transform(program, transformOptions);
 
       return generate(program);
     },
@@ -176,11 +178,14 @@ function getEsbuildPlugin(environment: string): EsbuildPlugin {
 
           const code = await fs.readFile(path, "utf-8");
 
-          const program = await parse(code, path);
+          const program =
+            couldBeUseClientModule(code) && (await parse(code, path));
 
-          const { transformed } = transform(program, transformOptions);
+          const isUseClientModule = program && getIsUseClientModule(program);
 
-          if (!transformed) return;
+          if (!isUseClientModule) return;
+
+          transform(program, transformOptions);
 
           return { contents: generate(program), loader: "js" };
         },
