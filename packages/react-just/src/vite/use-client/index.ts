@@ -98,16 +98,16 @@ export default function useClient(): Plugin {
       }
     },
     async transform(code, id) {
+      if (isScanUseServerModulesEnvironment(this.environment.name)) return;
+
       const moduleId = cleanId(id);
 
       if (!EXTENSIONS_REGEX.test(moduleId)) return;
 
-      if (isScanUseServerModulesEnvironment(this.environment.name)) return;
-
+      // We can skip transformation of "use client" annotated modules that
+      // are not used as entry points.
       if (isClientLikeEnvironment(this.environment.name)) {
         const isEntry = clientModules.has(moduleId);
-        // We can skip transformation of "use client" annotated modules that
-        // are not used as entry points.
         if (!isEntry) return;
       }
 
@@ -126,6 +126,11 @@ export default function useClient(): Plugin {
           clientModules.delete(moduleId);
         } else {
           clientModules.add(moduleId);
+
+          // On development, the scan environment runner doesn't care about
+          // the exports. We can take advantage of it and skip transformations
+          // to improve performance.
+          if (this.environment instanceof DevEnvironment) return "export {}";
         }
       }
 
