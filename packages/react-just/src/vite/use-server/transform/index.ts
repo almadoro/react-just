@@ -2,10 +2,13 @@ import {
   ArrowFunctionExpression,
   FunctionDeclaration,
   FunctionExpression,
-  Node,
   Program,
 } from "estree";
 import { NodePath, traverse } from "estree-toolkit";
+import {
+  getIsUseServerDirective,
+  getUseServerModuleDirective,
+} from "../directive";
 import transformExportDefaultDeclaration from "./export-default-declaration";
 import transformExportNamedDeclaration from "./export-named-declaration";
 import transformExportNamedFromSource from "./export-named-from-source";
@@ -57,40 +60,18 @@ export default function transform(program: Program, options: TransformOptions) {
   });
 
   if (!useServerModuleDirective)
-    return { transformed: false, level: null } as const;
+    throw new Error('Expected "use server" directive to exist');
 
   module.unshift(generator.createRegisterFunctionImport());
 
   if (treeshakeImplementation)
     program.body = generator.createTreeshakedBody(program.body);
-
-  return { transformed: true, level: "module" } as const;
 }
 
 export type TransformOptions = {
   generator: Generator;
   treeshakeImplementation: boolean;
 };
-
-function getUseServerModuleDirective(program: Program) {
-  // The "use server" directive is the first node in the file.
-  const firstNode = program.body[0];
-
-  if (getIsUseServerDirective(firstNode)) return firstNode;
-
-  return null;
-}
-
-const USE_SERVER_DIRECTIVE = "use server";
-
-function getIsUseServerDirective(node: Node) {
-  return (
-    node &&
-    node.type === "ExpressionStatement" &&
-    node.expression.type === "Literal" &&
-    node.expression.value === USE_SERVER_DIRECTIVE
-  );
-}
 
 function FunctionLike(
   path: NodePath<

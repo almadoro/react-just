@@ -64,6 +64,22 @@ export default function environments(): Plugin {
               },
             },
           },
+          [ENVIRONMENTS.SCAN_USE_SERVER_MODULES]: {
+            consumer: "server",
+            resolve: {
+              // Since the "use server" directive won't appear in dependencies,
+              // we can treat them as external.
+              external: true,
+            },
+            optimizeDeps: {
+              noDiscovery: true,
+            },
+            dev: {
+              createEnvironment(name, config) {
+                return new ScanEnvironment(name, config);
+              },
+            },
+          },
         },
       };
     },
@@ -75,6 +91,7 @@ export const ENVIRONMENTS = {
   FIZZ_NODE: "fizz_node",
   FLIGHT_NODE: "flight_node",
   SCAN_USE_CLIENT_MODULES: "scan_use_client_modules",
+  SCAN_USE_SERVER_MODULES: "scan_use_server_modules",
 };
 
 /**
@@ -90,6 +107,10 @@ export function isFlightEnvironment(environment: string) {
 
 export function isScanUseClientModulesEnvironment(environment: string) {
   return environment === ENVIRONMENTS.SCAN_USE_CLIENT_MODULES;
+}
+
+export function isScanUseServerModulesEnvironment(environment: string) {
+  return environment === ENVIRONMENTS.SCAN_USE_SERVER_MODULES;
 }
 
 function isFizzEnvironment(environment: string) {

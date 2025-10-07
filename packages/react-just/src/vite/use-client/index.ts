@@ -12,6 +12,7 @@ import {
   ENVIRONMENTS,
   isClientLikeEnvironment,
   isScanUseClientModulesEnvironment,
+  isScanUseServerModulesEnvironment,
 } from "../environments";
 import { cleanId } from "../utils";
 import ClientModules, {
@@ -100,6 +101,8 @@ export default function useClient(): Plugin {
       const moduleId = cleanId(id);
 
       if (!EXTENSIONS_REGEX.test(moduleId)) return;
+
+      if (isScanUseServerModulesEnvironment(this.environment.name)) return;
 
       if (isClientLikeEnvironment(this.environment.name)) {
         const isEntry = clientModules.has(moduleId);

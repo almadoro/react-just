@@ -3,15 +3,17 @@ import { Plugin, RunnableDevEnvironment } from "vite";
 import { createHandle } from "../handle/node";
 import { RESOLVED_CSS_MODULES } from "./css";
 import {
-  APP_ENTRY,
   CLIENT_ENTRY,
   FIZZ_ENTRY_NODE,
   FizzEntryNodeModule,
   FLIGHT_ENTRY_NODE,
   FlightEntryNodeModule,
+  SCAN_USE_CLIENT_ENTRY,
+  SCAN_USE_SERVER_ENTRY,
 } from "./entries";
 import { ENVIRONMENTS, ScanEnvironment } from "./environments";
 import { RESOLVED_CLIENT_MODULES } from "./use-client";
+import { RESOLVED_SERVER_FUNCTIONS_MODULES } from "./use-server";
 import { invalidateModules } from "./utils";
 
 export default function server(): Plugin {
@@ -31,12 +33,20 @@ export default function server(): Plugin {
       const scanUseClient = server.environments[
         ENVIRONMENTS.SCAN_USE_CLIENT_MODULES
       ] as ScanEnvironment;
+      const scanUseServer = server.environments[
+        ENVIRONMENTS.SCAN_USE_SERVER_MODULES
+      ] as ScanEnvironment;
 
       return () =>
         server.middlewares.use(async (req, res, next) => {
           try {
-            await scanUseClient.scan(APP_ENTRY);
+            // The use client scan must be executed first because the use server scan
+            // depends on a dynamic module that changes with the use client scan.
+            await scanUseClient.scan(SCAN_USE_CLIENT_ENTRY);
+            await scanUseServer.scan(SCAN_USE_SERVER_ENTRY);
 
+            // Invalide modules that are mutated by the scan environments.
+            invalidateModules(flight, RESOLVED_SERVER_FUNCTIONS_MODULES);
             invalidateModules(fizz, RESOLVED_CLIENT_MODULES);
             invalidateModules(
               client,

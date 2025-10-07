@@ -9,7 +9,8 @@ import { Plugin } from "vite";
 import { CLIENT_HOT_MODULES } from "./client-hot";
 import { CSS_MODULES } from "./css";
 import { ENVIRONMENTS } from "./environments";
-import { CLIENT_MODULES } from "./use-client";
+import { CLIENT_MODULES, RESOLVED_CLIENT_MODULES } from "./use-client";
+import { SERVER_FUNCTIONS_MODULES } from "./use-server";
 
 type EntriesOptions = {
   app?: string;
@@ -64,20 +65,22 @@ export default function entries(options: EntriesOptions): Plugin {
     },
     resolveId(id) {
       switch (id) {
-        case APP_ENTRY:
-          return appEntryId;
         case FLIGHT_ENTRY_NODE:
           return RESOLVED_FLIGHT_ENTRY_NODE;
         case FIZZ_ENTRY_NODE:
           return RESOLVED_FIZZ_ENTRY_NODE;
         case CLIENT_ENTRY:
           return RESOLVED_CLIENT_ENTRY;
+        case SCAN_USE_CLIENT_ENTRY:
+          return appEntryId;
+        case SCAN_USE_SERVER_ENTRY:
+          return RESOLVED_CLIENT_MODULES;
       }
     },
     async load(id) {
       switch (id) {
         case RESOLVED_FLIGHT_ENTRY_NODE:
-          return getFlightEntry();
+          return getFlightEntry(appEntryId);
         case RESOLVED_FIZZ_ENTRY_NODE:
           return getFizzEntry();
         case RESOLVED_CLIENT_ENTRY:
@@ -115,16 +118,15 @@ const APP_ENTRY_PATHS = [
   "src/index.js",
 ];
 
-export const APP_ENTRY = "/virtual:react-just/app-entry";
-
 export const FLIGHT_ENTRY_NODE = "/virtual:react-just/flight-entry.node";
 const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 
-function getFlightEntry() {
+function getFlightEntry(appEntryId: string) {
   return (
     `import React from "react";` +
     `import { renderToPipeableStream } from "react-just/flight.node";` +
-    `import App from "${APP_ENTRY}";` +
+    `import App from "${appEntryId}";` +
+    `import "${SERVER_FUNCTIONS_MODULES}";` +
     `export { App, renderToPipeableStream, React };`
   );
 }
@@ -162,3 +164,8 @@ function getClientEntry() {
     `hydrateFromWindowStream();`
   );
 }
+
+export const SCAN_USE_CLIENT_ENTRY =
+  "/virtual:react-just/scan-use-client-entry";
+export const SCAN_USE_SERVER_ENTRY =
+  "/virtual:react-just/scan-use-server-entry";
