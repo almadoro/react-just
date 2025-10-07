@@ -5,7 +5,7 @@ export function getServerFunction(id: string): Function | null {
 }
 
 export function registerServerFunction(id: string, reference: Function) {
-  if (reference instanceof AsyncFunction)
+  if (!(reference instanceof AsyncFunction))
     throw new Error(`Server functions must be async functions: ${id}`);
 
   globalThis.__RJ_SERVER_FUNCTIONS__[id] = reference;
