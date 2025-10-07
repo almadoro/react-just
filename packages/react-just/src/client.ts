@@ -62,6 +62,7 @@ export function registerClientReference(
   return implementation;
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 export function registerServerReference<TArgs extends unknown[], TReturn>(
   id: string,
 ): (...args: TArgs) => Promise<TReturn> {
