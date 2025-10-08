@@ -1,6 +1,5 @@
 import { IncomingMessage } from "node:http";
-import { ReactNode } from "react";
-import { PipeableStream } from "./shared";
+import { PipeableStream, ReactClientValue } from "./shared";
 
 export function decodePayloadIncomingMessage<T>(
   req: IncomingMessage,
@@ -16,4 +15,4 @@ export function registerServerReference<T extends Function>(
   id: string,
 ): T;
 
-export function renderToPipeableStream(model: ReactNode): PipeableStream;
+export function renderToPipeableStream(value: ReactClientValue): PipeableStream;

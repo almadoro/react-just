@@ -1,4 +1,5 @@
 import { HandleOptions } from "@/types/handle.node";
+import { RscPayload } from "@/types/shared";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
@@ -13,9 +14,10 @@ export function createHandle({
   renderToPipeableRscStream,
 }: HandleOptions) {
   function handleGet(req: IncomingMessage, res: ServerResponse) {
-    const rscStream = renderToPipeableRscStream(
-      React.createElement(App, { req: incomingMessageToRequest(req) }),
-    );
+    const rscStream = renderToPipeableRscStream({
+      formState: null,
+      tree: React.createElement(App, { req: incomingMessageToRequest(req) }),
+    } satisfies RscPayload);
 
     const isRscRequest = req.headers.accept?.includes(RSC_MIME_TYPE);
 

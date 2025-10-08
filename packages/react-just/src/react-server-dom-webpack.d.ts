@@ -113,9 +113,6 @@ declare module "react-server-dom-webpack/server.node" {
     options?: Options,
   ): PipeableStream;
 
-  // Serializable values
-  type ReactClientValue = any;
-
   type ClientManifest = {
     [id: string]: ClientReferenceManifestEntry;
   };
@@ -214,6 +211,33 @@ type FindSourceMapURLCallback = (
 ) => null | string;
 
 // Serializable values
+type ReactClientValue =
+  | import("react").ReactNode
+  | string
+  | boolean
+  | number
+  | symbol
+  | null
+  | void
+  | bigint
+  | ReadableStream
+  | AsyncIterable<ReactClientValue, ReactClientValue, void>
+  | AsyncIterator<ReactClientValue, ReactClientValue, void>
+  | Iterable<ReactClientValue>
+  | Iterator<ReactClientValue>
+  | Array<ReactClientValue>
+  | Map<ReactClientValue, ReactClientValue>
+  | Set<ReactClientValue>
+  | FormData
+  | ArrayBufferView
+  | ArrayBuffer
+  | Date
+  | ReactClientObject
+  | Promise<ReactClientValue>; // Thenable<ReactClientValue>
+
+type ReactClientObject = { [key: string]: ReactClientValue };
+
+// Serializable values
 type ReactServerValue =
   // References are passed by their value
   | ServerReference<any>
@@ -242,3 +266,5 @@ type ServerReference<T> = T;
 type ReactServerObject = { [key: string]: ReactServerValue };
 
 type ServerManifest = null;
+
+type ReactFormState<S, ReferenceId> = [S, string, ReferenceId, number];

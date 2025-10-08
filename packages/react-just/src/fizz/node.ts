@@ -1,4 +1,4 @@
-import { PipeableStream } from "@/types/shared";
+import { PipeableStream, RscPayload } from "@/types/shared";
 import { PassThrough, Readable, Transform, Writable } from "node:stream";
 import React, { use } from "react";
 import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server.node";
@@ -78,13 +78,13 @@ function duplicateStream(stream: PipeableStream) {
 }
 
 function transformRscToHtmlStream(stream: Readable) {
-  const thenable = createFromNodeStream(stream, {
+  const thenable = createFromNodeStream<RscPayload>(stream, {
     moduleMap: serverMap,
     serverModuleMap: null,
     moduleLoading: null,
   });
 
-  const Component = () => use(thenable) as React.ReactNode;
+  const Component = () => use(thenable).tree;
 
   return baseRenderToPipeableStream(React.createElement(Component));
 }

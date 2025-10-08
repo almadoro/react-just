@@ -1,4 +1,4 @@
-import { PipeableStream } from "@/types/shared";
+import { PipeableStream, ReactClientValue } from "@/types/shared";
 import busboy from "busboy";
 import { IncomingMessage } from "node:http";
 import {
@@ -53,8 +53,10 @@ export function registerServerReference<T extends Function>(
   return baseRegisterServerReference(reference, id, null);
 }
 
-export function renderToPipeableStream(model: React.ReactNode): PipeableStream {
-  return baseRenderToPipeableStream(model, clientMap);
+export function renderToPipeableStream(
+  value: ReactClientValue,
+): PipeableStream {
+  return baseRenderToPipeableStream(value, clientMap);
 }
 
 const clientMap = new Proxy(

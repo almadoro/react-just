@@ -2,6 +2,7 @@
 // react-server-dom-webpack imports.
 import "./modules";
 
+import { RscPayload } from "@/types/shared";
 import {
   createElement,
   ReactNode,
@@ -32,16 +33,17 @@ export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T> {
 
 export async function hydrateFromWindowStream(): Promise<void> {
   const stream = createRscReadableStream();
-  const initialTree = await createFromReadableStream<ReactNode>(stream, {
-    callServer,
-  });
+  const { formState, tree: initialTree } =
+    await createFromReadableStream<RscPayload>(stream, {
+      callServer,
+    });
 
   function Root() {
     const [tree, setTree] = useState<ReactNode>(initialTree);
 
     useEffect(() => {
       const previousRender = _render;
-      _render = (tree: ReactNode) => startTransition(() => setTree(tree));
+      _render = (tree) => startTransition(() => setTree(tree));
 
       return () => {
         _render = previousRender;
@@ -52,7 +54,10 @@ export async function hydrateFromWindowStream(): Promise<void> {
   }
 
   startTransition(() => {
-    hydrateRoot(document, createElement(Root));
+    hydrateRoot(document, createElement(Root), {
+      // @ts-expect-error - react types don't match the ones on webpack package
+      formState,
+    });
   });
 }
 
