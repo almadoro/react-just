@@ -1,7 +1,13 @@
-import { PipeableStream, ReactClientValue } from "@/types/shared";
+import {
+  PipeableStream,
+  ReactClientValue,
+  ReactFormState,
+} from "@/types/shared";
 import busboy from "busboy";
 import { IncomingMessage } from "node:http";
 import {
+  decodeAction as baseDecodeAction,
+  decodeFormState as baseDecodeFormState,
   registerClientReference as baseRegisterClientReference,
   registerServerReference as baseRegisterServerReference,
   renderToPipeableStream as baseRenderToPipeableStream,
@@ -9,6 +15,17 @@ import {
   decodeReplyFromBusboy,
 } from "react-server-dom-webpack/server.node";
 import { registerServerFunction } from "../server-functions";
+
+export function decodeAction<T>(body: FormData): Promise<() => T> | null {
+  return baseDecodeAction(body, serverMap);
+}
+
+export function decodeFormState<S>(
+  actionResult: S,
+  body: FormData,
+): Promise<ReactFormState | null> {
+  return baseDecodeFormState<S>(actionResult, body, serverMap);
+}
 
 export async function decodePayloadIncomingMessage<T>(
   req: IncomingMessage,
@@ -18,7 +35,7 @@ export async function decodePayloadIncomingMessage<T>(
   if (contentType?.startsWith("multipart/form-data")) {
     const bb = busboy({ headers: req.headers });
     req.pipe(bb);
-    const payload = await decodeReplyFromBusboy<T>(bb, null);
+    const payload = await decodeReplyFromBusboy<T>(bb, serverMap);
     return payload;
   }
 
@@ -29,7 +46,7 @@ export async function decodePayloadIncomingMessage<T>(
     req.on("error", reject);
   });
   const buffer = Buffer.concat(chunks);
-  const payload = await decodeReply<T>(buffer.toString("utf-8"), null);
+  const payload = await decodeReply<T>(buffer.toString("utf-8"), serverMap);
   return payload;
 }
 
@@ -60,6 +77,17 @@ export function renderToPipeableStream(
 }
 
 const clientMap = new Proxy(
+  {},
+  {
+    get(_, prop) {
+      if (typeof prop !== "string") return null;
+      const [, name] = prop.split("#");
+      return { id: prop, chunks: [], name, async: false };
+    },
+  },
+);
+
+const serverMap = new Proxy(
   {},
   {
     get(_, prop) {

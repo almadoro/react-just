@@ -1,6 +1,8 @@
 import { AppProps } from "@/types";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
 import {
+  decodeAction,
+  decodeFormState,
   decodePayloadIncomingMessage,
   renderToPipeableStream as renderToPipeableRscStream,
 } from "@/types/flight.node";
@@ -127,15 +129,17 @@ const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 function getFlightEntry(appEntryId: string) {
   return (
     `import React from "react";` +
-    `import { decodePayloadIncomingMessage, renderToPipeableStream } from "react-just/flight.node";` +
+    `import { decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream } from "react-just/flight.node";` +
     `import App from "${appEntryId}";` +
     `import "${SERVER_FUNCTIONS_MODULES}";` +
-    `export { App, decodePayloadIncomingMessage, renderToPipeableStream, React };`
+    `export { App, decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, React };`
   );
 }
 
 export type FlightEntryNodeModule = {
   App: ComponentType<AppProps>;
+  decodeAction: typeof decodeAction;
+  decodeFormState: typeof decodeFormState;
   decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;

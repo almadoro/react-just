@@ -7,9 +7,11 @@ export type PipeableStream = {
 };
 
 export type RscPayload = {
-  formState: [ReactClientValue, string, string, number] | null;
+  formState: ReactFormState | null;
   tree: ReactNode;
 };
+
+export type ReactFormState = [ReactClientValue, string, string, number];
 
 // Serializable values
 export type ReactClientValue =

@@ -1,5 +1,12 @@
 import { IncomingMessage } from "node:http";
-import { PipeableStream, ReactClientValue } from "./shared";
+import { PipeableStream, ReactClientValue, ReactFormState } from "./shared";
+
+export function decodeAction<T>(body: FormData): Promise<() => T> | null;
+
+export function decodeFormState<S>(
+  actionResult: S,
+  body: FormData,
+): Promise<ReactFormState | null>;
 
 export function decodePayloadIncomingMessage<T>(
   req: IncomingMessage,

@@ -8,6 +8,8 @@ import { getServerFunction } from "../server-functions";
 
 export function createHandle({
   App,
+  decodeAction,
+  decodeFormState,
   decodePayloadIncomingMessage,
   React,
   renderToPipeableHtmlStream,

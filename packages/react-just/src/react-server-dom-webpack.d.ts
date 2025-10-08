@@ -90,6 +90,17 @@ declare module "react-server-dom-webpack/client.node" {
 declare module "react-server-dom-webpack/server.node" {
   import { Writable } from "node:stream";
 
+  function decodeAction<T>(
+    body: FormData,
+    serverManifest: ServerManifest,
+  ): Promise<() => T> | null;
+
+  function decodeFormState<S>(
+    actionResult: S,
+    body: FormData,
+    serverManifest: ServerManifest,
+  ): Promise<ReactFormState | null>;
+
   function decodeReply<T>(
     body: string | FormData,
     webpackMap: ServerManifest,
@@ -181,6 +192,10 @@ interface RejectedThenable<T> extends ThenableImpl<T> {
 
 type ReactDebugInfo = unknown;
 
+type ServerManifest = {
+  [id: string]: ImportManifestEntry;
+};
+
 type ClientReferenceManifestEntry = ImportManifestEntry;
 
 type ImportManifestEntry = {
@@ -265,6 +280,4 @@ type ServerReference<T> = T;
 
 type ReactServerObject = { [key: string]: ReactServerValue };
 
-type ServerManifest = null;
-
-type ReactFormState<S, ReferenceId> = [S, string, ReferenceId, number];
+type ReactFormState = [ReactClientValue, string, string, number];

@@ -56,6 +56,8 @@ export default function server(): Plugin {
 
             const {
               App,
+              decodeAction,
+              decodeFormState,
               decodePayloadIncomingMessage,
               renderToPipeableStream: renderToPipeableRscStream,
               React,
@@ -78,6 +80,8 @@ export default function server(): Plugin {
 
             const handle = createHandle({
               App: Root,
+              decodeAction,
+              decodeFormState,
               decodePayloadIncomingMessage,
               React,
               renderToPipeableHtmlStream,
