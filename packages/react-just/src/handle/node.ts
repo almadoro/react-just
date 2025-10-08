@@ -57,7 +57,7 @@ export function createHandle({
     if (typeof fnId !== "string") {
       const formData = await request.formData();
       const fn = (await decodeAction(formData)) ?? (() => null);
-      const result = fn.apply(null, []);
+      const result = await fn.apply(null, []);
       const formState = await decodeFormState<ReactClientValue>(
         // @ts-ignore
         result,
