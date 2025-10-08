@@ -1,5 +1,11 @@
 import { IncomingMessage } from "node:http";
-import { PipeableStream, ReactClientValue, ReactFormState } from "./shared";
+import {
+  JustRequest,
+  JustResponse,
+  PipeableStream,
+  ReactClientValue,
+  ReactFormState,
+} from "./shared";
 
 export function decodeAction<T>(body: FormData): Promise<() => T> | null;
 
@@ -26,6 +32,7 @@ export function renderToPipeableStream(value: ReactClientValue): PipeableStream;
 
 export function runWithContext(context: Context, fn: () => void): Promise<void>;
 
-interface Context {
-  req: Request;
+export interface Context {
+  req: JustRequest;
+  res: JustResponse;
 }

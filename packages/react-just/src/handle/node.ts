@@ -1,6 +1,17 @@
+import { Context } from "@/types/flight.node";
 import { HandleOptions } from "@/types/handle.node";
-import { ReactClientValue, ReactFormState, RscPayload } from "@/types/shared";
-import { IncomingMessage, ServerResponse } from "node:http";
+import {
+  JustRequest,
+  JustResponse,
+  ReactClientValue,
+  ReactFormState,
+  RscPayload,
+} from "@/types/shared";
+import {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
 import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "../constants";
@@ -17,16 +28,16 @@ export function createHandle({
   runWithContext,
 }: HandleOptions) {
   function render(
-    req: Request,
     res: ServerResponse,
+    ctx: Context,
     formState: ReactFormState | null,
   ) {
     const rscStream = renderToPipeableRscStream({
       formState,
-      tree: React.createElement(App, { req }),
+      tree: React.createElement(App),
     } satisfies RscPayload);
 
-    const isRscRequest = req.headers.get("accept")?.includes(RSC_MIME_TYPE);
+    const isRscRequest = ctx.req.headers.get("accept")?.includes(RSC_MIME_TYPE);
 
     res.statusCode = 200;
     // Indicate the browser to use different cache based on the accept header.
@@ -42,20 +53,20 @@ export function createHandle({
     }
   }
 
-  function handleGet(request: Request, res: ServerResponse) {
-    return render(request, res, null);
+  function handleGet(res: ServerResponse, ctx: Context) {
+    return render(res, ctx, null);
   }
 
   async function handlePost(
-    request: Request,
     req: IncomingMessage,
     res: ServerResponse,
+    ctx: Context,
   ) {
     const fnId = req.headers[RSC_FUNCTION_ID_HEADER];
 
     // The form was submitted before hydration.
     if (typeof fnId !== "string") {
-      const formData = await request.formData();
+      const formData = await incomingMessageToRequest(req).formData();
       const fn = (await decodeAction(formData)) ?? (() => null);
       const result = await fn.apply(null, []);
       const formState = await decodeFormState<ReactClientValue>(
@@ -63,7 +74,7 @@ export function createHandle({
         result,
         formData,
       );
-      return render(request, res, formState);
+      return render(res, ctx, formState);
     }
 
     const fn = getImplementation(fnId) as Function;
@@ -83,49 +94,73 @@ export function createHandle({
   }
 
   return (req: IncomingMessage, res: ServerResponse) => {
-    const request = incomingMessageToRequest(req);
-    const context = { req: request };
+    const request = incomingMessageToJustRequest(req);
+    const response: JustResponse = { headers: new Headers() };
+    const ctx: Context = { req: request, res: response };
+
     if (req.method === "GET")
-      return runWithContext(context, () => handleGet(request, res));
+      return runWithContext(ctx, () => handleGet(res, ctx));
+
     if (req.method === "POST")
-      return runWithContext(context, () => handlePost(request, req, res));
+      return runWithContext(ctx, () => handlePost(req, res, ctx));
 
     res.statusCode = 405;
     res.end();
   };
 }
 
+function incomingMessageToJustRequest(
+  incomingMessage: IncomingMessage,
+): JustRequest {
+  const headers = new Headers();
+  copyIncomingMessageHeaders(incomingMessage.headers, headers);
+  return {
+    headers,
+    method: incomingMessage.method!,
+    url: getIncomingMessageUrl(incomingMessage),
+  };
+}
+
 function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
-  const { method, headers: rawHeaders, url = "" } = incomingMessage;
+  const { method } = incomingMessage;
 
   const headers = new Headers();
-  for (const [key, value] of Object.entries(rawHeaders)) {
-    if (Array.isArray(value)) {
-      for (const v of value) {
-        headers.append(key, v);
-      }
-    } else if (typeof value === "string") {
-      headers.set(key, value);
-    }
-  }
-
-  const isHttps =
-    incomingMessage.socket instanceof TLSSocket ||
-    rawHeaders["x-forwarded-proto"] === "https";
-
-  const protocol = isHttps ? "https" : "http";
-
-  const host = rawHeaders["x-forwarded-host"] || headers.get("host");
+  copyIncomingMessageHeaders(incomingMessage.headers, headers);
 
   let body: BodyInit | undefined = undefined;
   if (method !== "GET" && method !== "HEAD")
     body = Readable.toWeb(incomingMessage) as ReadableStream;
 
-  return new Request(new URL(url, `${protocol}://${host}`), {
+  return new Request(getIncomingMessageUrl(incomingMessage), {
     method,
     headers,
     body,
     // @ts-expect-error - This is a valid property only on Node.js
     duplex: "half",
   });
+}
+
+function getIncomingMessageUrl(incomingMessage: IncomingMessage) {
+  const isHttps =
+    incomingMessage.socket instanceof TLSSocket ||
+    incomingMessage.headers["x-forwarded-proto"] === "https";
+
+  const protocol = isHttps ? "https" : "http";
+
+  const host =
+    incomingMessage.headers["x-forwarded-host"] ||
+    incomingMessage.headers["host"];
+  return new URL(incomingMessage.url ?? "", `${protocol}://${host}`).href;
+}
+
+function copyIncomingMessageHeaders(from: IncomingHttpHeaders, to: Headers) {
+  for (const [key, value] of Object.entries(from)) {
+    if (Array.isArray(value)) {
+      for (const v of value) {
+        to.append(key, v);
+      }
+    } else if (typeof value === "string") {
+      to.set(key, value);
+    }
+  }
 }

@@ -8,10 +8,9 @@ import {
   renderToPipeableStream as renderToPipeableRscStream,
   runWithContext,
 } from "./flight.node";
-import { AppProps } from "./index";
 
 export interface HandleOptions {
-  App: ComponentType<AppProps>;
+  App: ComponentType;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
   decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;

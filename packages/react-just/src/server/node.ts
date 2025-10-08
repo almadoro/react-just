@@ -1,3 +1,1 @@
-import { request } from "../async-store/node";
-
-export { request };
+export { request, response } from "../async-store/node";

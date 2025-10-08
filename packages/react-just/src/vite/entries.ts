@@ -1,4 +1,3 @@
-import { AppProps } from "@/types";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
 import {
   decodeAction,
@@ -138,7 +137,7 @@ function getFlightEntry(appEntryId: string) {
 }
 
 export type FlightEntryNodeModule = {
-  App: ComponentType<AppProps>;
+  App: ComponentType;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
   decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;

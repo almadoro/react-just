@@ -26,9 +26,6 @@
     "types"
   ],
   "exports": {
-    ".": {
-      "types": "./types/index.d.ts"
-    },
     "./client": {
       "types": "./types/client.d.ts",
       "import": "./dist/client.mjs",

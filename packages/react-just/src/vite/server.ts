@@ -1,4 +1,3 @@
-import { AppProps } from "@/types";
 import { Plugin, RunnableDevEnvironment } from "vite";
 import { createHandle } from "../handle/node";
 import { RESOLVED_CSS_MODULES } from "./css";
@@ -67,7 +66,7 @@ export default function server(): Plugin {
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
               await importFizzEntry(fizz);
 
-            const Root = (props: AppProps) =>
+            const Root = () =>
               React.createElement(
                 React.Fragment,
                 null,
@@ -76,7 +75,7 @@ export default function server(): Plugin {
                   type: "module",
                   src: CLIENT_ENTRY,
                 }),
-                React.createElement(App, props),
+                React.createElement(App),
               );
 
             const handle = createHandle({

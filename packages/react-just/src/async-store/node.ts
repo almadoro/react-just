@@ -1,8 +1,5 @@
+import { Context } from "@/types/flight.node";
 import { AsyncLocalStorage } from "node:async_hooks";
-
-interface Context {
-  req: Request;
-}
 
 const asyncLocalStorage = new AsyncLocalStorage<Context>();
 
@@ -13,6 +10,15 @@ export function request() {
     throw new Error("request must be called within a request context");
 
   return store.req;
+}
+
+export function response() {
+  const store = asyncLocalStorage.getStore();
+
+  if (!store)
+    throw new Error("response must be called within a request context");
+
+  return store.res;
 }
 
 export async function runWithContext(
