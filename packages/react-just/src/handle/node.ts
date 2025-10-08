@@ -1,5 +1,5 @@
 import { HandleOptions } from "@/types/handle.node";
-import { RscPayload } from "@/types/shared";
+import { ReactClientValue, ReactFormState, RscPayload } from "@/types/shared";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
@@ -15,13 +15,17 @@ export function createHandle({
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
 }: HandleOptions) {
-  function handleGet(req: IncomingMessage, res: ServerResponse) {
+  function render(
+    req: Request,
+    res: ServerResponse,
+    formState: ReactFormState | null,
+  ) {
     const rscStream = renderToPipeableRscStream({
-      formState: null,
-      tree: React.createElement(App, { req: incomingMessageToRequest(req) }),
+      formState,
+      tree: React.createElement(App, { req }),
     } satisfies RscPayload);
 
-    const isRscRequest = req.headers.accept?.includes(RSC_MIME_TYPE);
+    const isRscRequest = req.headers.get("accept")?.includes(RSC_MIME_TYPE);
 
     res.statusCode = 200;
     // Indicate the browser to use different cache based on the accept header.
@@ -32,21 +36,32 @@ export function createHandle({
       rscStream.pipe(res);
     } else {
       res.setHeader("content-type", "text/html");
-      const htmlStream = renderToPipeableHtmlStream(rscStream);
+      const htmlStream = renderToPipeableHtmlStream(rscStream, { formState });
       htmlStream.pipe(res);
     }
   }
 
+  function handleGet(req: IncomingMessage, res: ServerResponse) {
+    const request = incomingMessageToRequest(req);
+    return render(request, res, null);
+  }
+
   async function handlePost(req: IncomingMessage, res: ServerResponse) {
-    const payload = await decodePayloadIncomingMessage<unknown[]>(req);
+    const request = incomingMessageToRequest(req);
 
     const fnId = req.headers[RSC_FUNCTION_ID_HEADER];
 
+    // The form was submitted before hydration.
     if (typeof fnId !== "string") {
-      res.statusCode = 400;
-      res.setHeader("content-type", "text/plain");
-      res.end("Function ID required");
-      return;
+      const formData = await request.formData();
+      const fn = (await decodeAction(formData)) ?? (() => null);
+      const result = fn.apply(null, []);
+      const formState = await decodeFormState<ReactClientValue>(
+        // @ts-ignore
+        result,
+        formData,
+      );
+      return render(request, res, formState);
     }
 
     const fn = getImplementation(fnId) as Function;
@@ -58,6 +73,7 @@ export function createHandle({
       return;
     }
 
+    const payload = await decodePayloadIncomingMessage<unknown[]>(req);
     const result = await fn.apply(null, payload);
     const rscStream = renderToPipeableRscStream(result);
     res.statusCode = 200;
@@ -99,5 +115,11 @@ function incomingMessageToRequest(incomingMessage: IncomingMessage): Request {
   if (method !== "GET" && method !== "HEAD")
     body = Readable.toWeb(incomingMessage) as ReadableStream;
 
-  return new Request(new URL(url, `${protocol}://${host}`), { headers, body });
+  return new Request(new URL(url, `${protocol}://${host}`), {
+    method,
+    headers,
+    body,
+    // @ts-expect-error - This is a valid property only on Node.js
+    duplex: "half",
+  });
 }

@@ -1,4 +1,5 @@
-import { PipeableStream, RscPayload } from "@/types/shared";
+import { RenderToPipeableStreamOptions } from "@/types/fizz.node";
+import { PipeableStream, ReactFormState, RscPayload } from "@/types/shared";
 import { PassThrough, Readable, Transform, Writable } from "node:stream";
 import React, { use } from "react";
 import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server.node";
@@ -36,10 +37,14 @@ export function registerServerReference(id: string): unknown {
 
 export function renderToPipeableStream(
   rscStream: PipeableStream,
+  options: RenderToPipeableStreamOptions,
 ): PipeableStream {
   const [rscReadable1, rscReadable2] = duplicateStream(rscStream);
 
-  const htmlStream = transformRscToHtmlStream(rscReadable1);
+  const htmlStream = transformRscToHtmlStream(
+    rscReadable1,
+    options?.formState ?? null,
+  );
 
   const transformStream = createRscStreamHtmlInjectionTransform(rscReadable2);
 
@@ -80,17 +85,34 @@ function duplicateStream(stream: PipeableStream) {
   return [stream1, stream2];
 }
 
-function transformRscToHtmlStream(stream: Readable) {
+function transformRscToHtmlStream(
+  stream: Readable,
+  formState: ReactFormState | null,
+) {
   const thenable = createFromNodeStream<RscPayload>(stream, {
-    moduleMap: serverMap,
-    serverModuleMap: null,
+    moduleMap: clientMap,
+    serverModuleMap: serverMap,
     moduleLoading: null,
   });
 
   const Component = () => use(thenable).tree;
 
-  return baseRenderToPipeableStream(React.createElement(Component));
+  return baseRenderToPipeableStream(React.createElement(Component), {
+    // @ts-expect-error - react types don't match the ones on webpack package
+    formState,
+  });
 }
+
+const clientMap = new Proxy(
+  {},
+  {
+    get(_, prop) {
+      if (typeof prop !== "string") return null;
+      const name = IMPLEMENTATION_EXPORT_NAME;
+      return { [name]: { id: prop, chunks: [], name, async: false } };
+    },
+  },
+);
 
 const serverMap = new Proxy(
   {},
