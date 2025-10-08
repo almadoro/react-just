@@ -141,7 +141,7 @@ function getServerHmrCode() {
     // sharing cache between the RSC and the HTML.
     `    const url = new URL(window.location.href);` +
     `    url.searchParams.set("__rsc__", "1");` +
-    `    createFromRscFetch(fetch(url, { headers })).then(async (tree) => {` +
+    `    createFromRscFetch(fetch(url, { headers })).then(async ({ tree }) => {` +
     // Add a timestamp to trigger modules reload on the browser.
     `      await import(/* @vite-ignore */ "${CLIENT_MODULES}?t=" + Date.now());` +
     `      await import(/* @vite-ignore */ "${CSS_MODULES}?t=" + Date.now());` +
