@@ -83,7 +83,6 @@ class FlightGenerator extends Generator {
         return [
           builders.identifier(implementationIdentifier),
           builders.literal(registerId),
-          builders.literal(exportName),
         ];
       },
       registerServerReferenceSource: options.registerServerReferenceSource,

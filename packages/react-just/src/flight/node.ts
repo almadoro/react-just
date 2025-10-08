@@ -17,7 +17,7 @@ export async function decodePayloadIncomingMessage<T>(
 
   if (contentType?.startsWith("multipart/form-data")) {
     const bb = busboy({ headers: req.headers });
-    bb.pipe(req as unknown as NodeJS.WritableStream);
+    req.pipe(bb);
     const payload = await decodeReplyFromBusboy<T>(bb, null);
     return payload;
   }
@@ -48,10 +48,9 @@ export function registerClientReference(
 export function registerServerReference<T extends Function>(
   reference: T,
   id: string,
-  exportName: null | string,
 ): T {
   registerServerFunction(id, reference);
-  return baseRegisterServerReference(reference, id, exportName);
+  return baseRegisterServerReference(reference, id, null);
 }
 
 export function renderToPipeableStream(model: React.ReactNode): PipeableStream {

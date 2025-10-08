@@ -27,12 +27,14 @@ import {
 } from "./rsc-stream";
 
 export function createFromRscFetch<T>(res: Promise<Response>): PromiseLike<T> {
-  return createFromFetch(res);
+  return createFromFetch(res, { callServer });
 }
 
 export async function hydrateFromWindowStream(): Promise<void> {
   const stream = createRscReadableStream();
-  const initialTree = await createFromReadableStream<ReactNode>(stream);
+  const initialTree = await createFromReadableStream<ReactNode>(stream, {
+    callServer,
+  });
 
   function Root() {
     const [tree, setTree] = useState<ReactNode>(initialTree);

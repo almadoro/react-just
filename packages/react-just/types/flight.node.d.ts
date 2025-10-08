@@ -14,7 +14,6 @@ export function registerClientReference(
 export function registerServerReference<T extends Function>(
   reference: T,
   id: string,
-  exportName: null | string,
 ): T;
 
 export function renderToPipeableStream(model: ReactNode): PipeableStream;
