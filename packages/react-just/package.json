@@ -49,6 +49,17 @@
       "import": "./dist/handle.node.mjs",
       "require": "./dist/handle.node.cjs"
     },
+    "./server": {
+      "types": "./types/server.d.ts",
+      "import": {
+        "react-server": "./dist/server.node.mjs",
+        "default": "./dist/server.error.mjs"
+      },
+      "require": {
+        "react-server": "./dist/server.node.cjs",
+        "default": "./dist/server.error.cjs"
+      }
+    },
     "./vite": {
       "types": "./types/vite.d.ts",
       "import": "./dist/vite.mjs",

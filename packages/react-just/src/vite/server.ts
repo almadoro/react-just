@@ -61,6 +61,7 @@ export default function server(): Plugin {
               decodePayloadIncomingMessage,
               renderToPipeableStream: renderToPipeableRscStream,
               React,
+              runWithContext,
             } = await importFlightEntry(flight);
 
             const { renderToPipeableStream: renderToPipeableHtmlStream } =
@@ -86,6 +87,7 @@ export default function server(): Plugin {
               React,
               renderToPipeableHtmlStream,
               renderToPipeableRscStream,
+              runWithContext,
             });
 
             // Vite rewrites the url path. Use the original url to get the

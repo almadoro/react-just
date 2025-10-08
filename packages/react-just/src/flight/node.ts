@@ -14,6 +14,7 @@ import {
   decodeReply,
   decodeReplyFromBusboy,
 } from "react-server-dom-webpack/server.node";
+import { runWithContext } from "../async-store/node";
 import {
   IMPLEMENTATION_EXPORT_NAME,
   registerImplementation,
@@ -82,6 +83,8 @@ export function renderToPipeableStream(
 ): PipeableStream {
   return baseRenderToPipeableStream(value, clientMap);
 }
+
+export { runWithContext };
 
 const AsyncFunction = (async () => {}).constructor;
 

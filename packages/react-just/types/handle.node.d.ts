@@ -6,6 +6,7 @@ import {
   decodeFormState,
   decodePayloadIncomingMessage,
   renderToPipeableStream as renderToPipeableRscStream,
+  runWithContext,
 } from "./flight.node";
 import { AppProps } from "./index";
 
@@ -17,6 +18,7 @@ export interface HandleOptions {
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
+  runWithContext: typeof runWithContext;
 }
 
 export function createHandle(

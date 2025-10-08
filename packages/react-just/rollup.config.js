@@ -8,6 +8,8 @@ export default defineConfig({
     "fizz.node": "src/fizz/node.ts",
     "flight.node": "src/flight/node.ts",
     "handle.node": "src/handle/node.ts",
+    "server.error": "src/server/error.ts",
+    "server.node": "src/server/node.ts",
     vite: "src/vite/index.ts",
   },
   output: [

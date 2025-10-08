@@ -14,6 +14,7 @@ export function createHandle({
   React,
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
+  runWithContext,
 }: HandleOptions) {
   function render(
     req: Request,
@@ -41,14 +42,15 @@ export function createHandle({
     }
   }
 
-  function handleGet(req: IncomingMessage, res: ServerResponse) {
-    const request = incomingMessageToRequest(req);
+  function handleGet(request: Request, res: ServerResponse) {
     return render(request, res, null);
   }
 
-  async function handlePost(req: IncomingMessage, res: ServerResponse) {
-    const request = incomingMessageToRequest(req);
-
+  async function handlePost(
+    request: Request,
+    req: IncomingMessage,
+    res: ServerResponse,
+  ) {
     const fnId = req.headers[RSC_FUNCTION_ID_HEADER];
 
     // The form was submitted before hydration.
@@ -81,8 +83,12 @@ export function createHandle({
   }
 
   return (req: IncomingMessage, res: ServerResponse) => {
-    if (req.method === "GET") return handleGet(req, res);
-    if (req.method === "POST") return handlePost(req, res);
+    const request = incomingMessageToRequest(req);
+    const context = { req: request };
+    if (req.method === "GET")
+      return runWithContext(context, () => handleGet(request, res));
+    if (req.method === "POST")
+      return runWithContext(context, () => handlePost(request, req, res));
 
     res.statusCode = 405;
     res.end();

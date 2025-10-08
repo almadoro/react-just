@@ -23,3 +23,9 @@ export function registerServerReference<T extends Function>(
 ): T;
 
 export function renderToPipeableStream(value: ReactClientValue): PipeableStream;
+
+export function runWithContext(context: Context, fn: () => void): Promise<void>;
+
+interface Context {
+  req: Request;
+}

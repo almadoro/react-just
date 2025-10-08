@@ -5,6 +5,7 @@ import {
   decodeFormState,
   decodePayloadIncomingMessage,
   renderToPipeableStream as renderToPipeableRscStream,
+  runWithContext,
 } from "@/types/flight.node";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -129,10 +130,10 @@ const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 function getFlightEntry(appEntryId: string) {
   return (
     `import React from "react";` +
-    `import { decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream } from "react-just/flight.node";` +
+    `import { decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, runWithContext } from "react-just/flight.node";` +
     `import App from "${appEntryId}";` +
     `import "${SERVER_FUNCTIONS_MODULES}";` +
-    `export { App, decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, React };`
+    `export { App, decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, React, runWithContext };`
   );
 }
 
@@ -143,6 +144,7 @@ export type FlightEntryNodeModule = {
   decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
+  runWithContext: typeof runWithContext;
 };
 
 export const FIZZ_ENTRY_NODE = "/virtual:react-just/fizz-entry.node";
