@@ -1,6 +1,6 @@
 // module has side effects that are required to be executed before any
 // react-server-dom-webpack imports.
-import "./modules";
+import "./implementations";
 
 import { RscPayload } from "@/types/shared";
 import {
@@ -19,7 +19,7 @@ import {
   encodeReply,
 } from "react-server-dom-webpack/client.browser";
 import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "./constants";
-import { registerModuleExport } from "./modules";
+import { registerImplementation } from "./implementations";
 import {
   RSC_STREAM_BINARY_DATA,
   RSC_STREAM_STRING_DATA,
@@ -66,7 +66,7 @@ export function registerClientReference(
   moduleId: string | number,
   exportName: string | number,
 ): unknown {
-  registerModuleExport(implementation, moduleId, exportName);
+  registerImplementation(implementation, `${moduleId}#${exportName}`);
   return implementation;
 }
 

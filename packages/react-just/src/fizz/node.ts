@@ -6,7 +6,10 @@ import {
   createFromNodeStream,
   createServerReference,
 } from "react-server-dom-webpack/client.node";
-import { registerModuleExport } from "../modules";
+import {
+  IMPLEMENTATION_EXPORT_NAME,
+  registerImplementation,
+} from "../implementations";
 import {
   BinaryDataChunk,
   RSC_STREAM_BINARY_DATA,
@@ -20,7 +23,7 @@ export function registerClientReference(
   moduleId: string | number,
   exportName: string | number,
 ): unknown {
-  registerModuleExport(implementation, moduleId, exportName);
+  registerImplementation(implementation, `${moduleId}#${exportName}`);
   return implementation;
 }
 
@@ -94,7 +97,7 @@ const serverMap = new Proxy(
   {
     get(_, prop) {
       if (typeof prop !== "string") return null;
-      const [, name] = prop.split("#");
+      const name = IMPLEMENTATION_EXPORT_NAME;
       return { [name]: { id: prop, chunks: [], name, async: false } };
     },
   },

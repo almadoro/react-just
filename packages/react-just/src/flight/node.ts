@@ -14,7 +14,10 @@ import {
   decodeReply,
   decodeReplyFromBusboy,
 } from "react-server-dom-webpack/server.node";
-import { registerServerFunction } from "../server-functions";
+import {
+  IMPLEMENTATION_EXPORT_NAME,
+  registerImplementation,
+} from "../implementations";
 
 export function decodeAction<T>(body: FormData): Promise<() => T> | null {
   return baseDecodeAction(body, serverMap);
@@ -63,11 +66,15 @@ export function registerClientReference(
 }
 
 export function registerServerReference<T extends Function>(
-  reference: T,
+  implementation: T,
   id: string,
 ): T {
-  registerServerFunction(id, reference);
-  return baseRegisterServerReference(reference, id, null);
+  if (!(implementation instanceof AsyncFunction))
+    throw new Error(`Server functions must be async functions: ${id}`);
+
+  registerImplementation(implementation, id);
+
+  return baseRegisterServerReference(implementation, id, null);
 }
 
 export function renderToPipeableStream(
@@ -76,13 +83,19 @@ export function renderToPipeableStream(
   return baseRenderToPipeableStream(value, clientMap);
 }
 
+const AsyncFunction = (async () => {}).constructor;
+
 const clientMap = new Proxy(
   {},
   {
     get(_, prop) {
       if (typeof prop !== "string") return null;
-      const [, name] = prop.split("#");
-      return { id: prop, chunks: [], name, async: false };
+      return {
+        id: prop,
+        chunks: [],
+        name: IMPLEMENTATION_EXPORT_NAME,
+        async: false,
+      };
     },
   },
 );
@@ -92,8 +105,12 @@ const serverMap = new Proxy(
   {
     get(_, prop) {
       if (typeof prop !== "string") return null;
-      const [, name] = prop.split("#");
-      return { id: prop, chunks: [], name, async: false };
+      return {
+        id: prop,
+        chunks: [],
+        name: IMPLEMENTATION_EXPORT_NAME,
+        async: false,
+      };
     },
   },
 );

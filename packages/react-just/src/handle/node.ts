@@ -4,7 +4,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
 import { TLSSocket } from "node:tls";
 import { RSC_FUNCTION_ID_HEADER, RSC_MIME_TYPE } from "../constants";
-import { getServerFunction } from "../server-functions";
+import { getImplementation } from "../implementations";
 
 export function createHandle({
   App,
@@ -49,7 +49,7 @@ export function createHandle({
       return;
     }
 
-    const fn = getServerFunction(fnId);
+    const fn = getImplementation(fnId) as Function;
 
     if (!fn) {
       res.statusCode = 404;
