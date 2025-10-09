@@ -1,18 +1,21 @@
 import { HandleFunction, HandleOptions } from "@/types/handle";
-import type { AppProps } from "react-just";
 import { createHandle as baseCreateHandle } from "react-just/handle.node";
 
 export function createHandle(options: HandleOptions): HandleFunction {
   const {
     App,
-    decodePayloadIncomingMessage,
+    createTemporaryReferenceSet,
+    decodeAction,
+    decodeFormState,
+    decodeReply,
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
     resources,
+    runWithContext,
   } = options;
 
-  const Root = (props: AppProps) =>
+  const Root = () =>
     React.createElement(
       React.Fragment,
       null,
@@ -31,14 +34,18 @@ export function createHandle(options: HandleOptions): HandleFunction {
           precedence: "default",
         }),
       ),
-      React.createElement(App, props),
+      React.createElement(App),
     );
 
   return baseCreateHandle({
     App: Root,
-    decodePayloadIncomingMessage,
+    createTemporaryReferenceSet,
+    decodeAction,
+    decodeFormState,
+    decodeReply,
     React,
     renderToPipeableHtmlStream,
     renderToPipeableRscStream,
+    runWithContext,
   });
 }
