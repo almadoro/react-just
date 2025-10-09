@@ -87,6 +87,7 @@ export function createHandle({
       const formData = await incomingMessageToRequest(req).formData();
       const fn = (await decodeAction(formData)) ?? (() => null);
       const result = await fn.apply(null, []);
+      res.setHeaders(ctx.res.headers);
       const formState = await decodeFormState<ReactClientValue>(
         // @ts-ignore
         result,
@@ -107,6 +108,7 @@ export function createHandle({
     const temporaryReferences = createTemporaryReferenceSet();
     const payload = await decodeReply<unknown[]>(req, { temporaryReferences });
     const result = await fn.apply(null, payload);
+    res.setHeaders(ctx.res.headers);
     const rscStream = renderToPipeableRscStream(result, {
       temporaryReferences,
     });
