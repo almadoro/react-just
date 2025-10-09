@@ -1,8 +1,4 @@
-import React, { ComponentType } from "react";
 import { PluginOption } from "vite";
-import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
-import { renderToPipeableStream as renderToPipeableRscStream } from "./flight.node";
-import { AppProps } from "./index";
 
 export interface ReactJustOptions {
   app?: string;
@@ -21,13 +17,3 @@ export const ENTRIES: {
   FIZZ_NODE: string;
   FLIGHT_NODE: string;
 };
-
-export interface FlightEntryNodeModule {
-  App: ComponentType<AppProps>;
-  renderToPipeableStream: typeof renderToPipeableRscStream;
-  React: typeof React;
-}
-
-export interface FizzEntryNodeModule {
-  renderToPipeableStream: typeof renderToPipeableHtmlStream;
-}
