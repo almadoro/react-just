@@ -89,6 +89,7 @@ export default function server(): Plugin {
               renderToPipeableHtmlStream,
               renderToPipeableRscStream,
               runWithContext,
+              onShellError: next,
             });
 
             // Vite rewrites the url path. Use the original url to get the

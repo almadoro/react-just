@@ -27,35 +27,52 @@ export function createHandle({
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
   runWithContext,
+  onShellError,
 }: HandleOptions) {
   function render(
+    req: IncomingMessage,
     res: ServerResponse,
-    ctx: Context,
     formState: ReactFormState | null,
   ) {
-    const rscStream = renderToPipeableRscStream({
-      formState,
-      tree: React.createElement(App),
-    } satisfies RscPayload);
+    const isRscRequest = req.headers["accept"]?.includes(RSC_MIME_TYPE);
 
-    const isRscRequest = ctx.req.headers.get("accept")?.includes(RSC_MIME_TYPE);
-
-    res.statusCode = 200;
     // Indicate the browser to use different cache based on the accept header.
     res.setHeader("vary", "accept");
 
-    if (isRscRequest) {
-      res.setHeader("content-type", RSC_MIME_TYPE);
-      rscStream.pipe(res);
-    } else {
-      res.setHeader("content-type", "text/html");
-      const htmlStream = renderToPipeableHtmlStream(rscStream, { formState });
-      htmlStream.pipe(res);
-    }
+    if (isRscRequest) renderRsc(res, formState);
+    else renderHtml(res, formState);
   }
 
-  function handleGet(res: ServerResponse, ctx: Context) {
-    return render(res, ctx, null);
+  function renderRsc(res: ServerResponse, formState: ReactFormState | null) {
+    const rscStream = renderToPipeableRscStream(
+      { formState, tree: React.createElement(App) } satisfies RscPayload,
+      { temporaryReferences: createTemporaryReferenceSet() },
+    );
+
+    res.statusCode = 200;
+    res.setHeader("content-type", RSC_MIME_TYPE);
+    rscStream.pipe(res);
+  }
+
+  function renderHtml(res: ServerResponse, formState: ReactFormState | null) {
+    const rscStream = renderToPipeableRscStream(
+      { formState, tree: React.createElement(App) } satisfies RscPayload,
+      { temporaryReferences: createTemporaryReferenceSet() },
+    );
+
+    const htmlStream = renderToPipeableHtmlStream(rscStream, {
+      formState,
+      onShellReady: () => {
+        res.statusCode = 200;
+        res.setHeader("content-type", "text/html");
+        htmlStream.pipe(res);
+      },
+      onShellError: onShellError ?? (() => DEFAULT_ON_SHELL_ERROR(res)),
+    });
+  }
+
+  function handleGet(req: IncomingMessage, res: ServerResponse) {
+    return render(req, res, null);
   }
 
   async function handlePost(
@@ -75,7 +92,7 @@ export function createHandle({
         result,
         formData,
       );
-      return render(res, ctx, formState);
+      return render(req, res, formState);
     }
 
     const fn = getImplementation(fnId) as Function;
@@ -104,7 +121,7 @@ export function createHandle({
     const ctx: Context = { req: request, res: response };
 
     if (req.method === "GET")
-      return runWithContext(ctx, () => handleGet(res, ctx));
+      return runWithContext(ctx, () => handleGet(req, res));
 
     if (req.method === "POST")
       return runWithContext(ctx, () => handlePost(req, res, ctx));
@@ -169,3 +186,71 @@ function copyIncomingMessageHeaders(from: IncomingHttpHeaders, to: Headers) {
     }
   }
 }
+
+const DEFAULT_ON_SHELL_ERROR = (res: ServerResponse) => {
+  res.statusCode = 500;
+  res.setHeader("content-type", "text/html");
+  res.end(ERROR_HTML);
+};
+
+const ERROR_HTML = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Error</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      html {
+        height: 100%;
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: #fff;
+        color: #222;
+      }
+
+      h1 {
+        margin-bottom: 4px;
+        font-size: 3rem;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: #111;
+          color: #eee;
+        }
+
+        .subtitle {
+          color: #aaa;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>500</h1>
+      <p class="subtitle">Internal Server Error</p>
+    </div>
+  </body>
+</html>`;

@@ -1,5 +1,5 @@
 import { RenderToPipeableStreamOptions } from "@/types/fizz.node";
-import { PipeableStream, ReactFormState, RscPayload } from "@/types/shared";
+import { PipeableStream, RscPayload } from "@/types/shared";
 import { PassThrough, Readable, Transform, Writable } from "node:stream";
 import React, { use } from "react";
 import { renderToPipeableStream as baseRenderToPipeableStream } from "react-dom/server.node";
@@ -41,10 +41,7 @@ export function renderToPipeableStream(
 ): PipeableStream {
   const [rscReadable1, rscReadable2] = duplicateStream(rscStream);
 
-  const htmlStream = transformRscToHtmlStream(
-    rscReadable1,
-    options?.formState ?? null,
-  );
+  const htmlStream = transformRscToHtmlStream(rscReadable1, options);
 
   const transformStream = createRscStreamHtmlInjectionTransform(rscReadable2);
 
@@ -87,7 +84,7 @@ function duplicateStream(stream: PipeableStream) {
 
 function transformRscToHtmlStream(
   stream: Readable,
-  formState: ReactFormState | null,
+  options: RenderToPipeableStreamOptions,
 ) {
   const thenable = createFromNodeStream<RscPayload>(stream, {
     moduleMap: clientMap,
@@ -99,7 +96,9 @@ function transformRscToHtmlStream(
 
   return baseRenderToPipeableStream(React.createElement(Component), {
     // @ts-expect-error - react types don't match the ones on webpack package
-    formState,
+    formState: options.formState,
+    onShellError: options.onShellError,
+    onShellReady: options.onShellReady,
   });
 }
 

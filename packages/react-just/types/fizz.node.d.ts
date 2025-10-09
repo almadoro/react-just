@@ -14,5 +14,7 @@ export function renderToPipeableStream(
 ): PipeableStream;
 
 export interface RenderToPipeableStreamOptions {
-  formState?: ReactFormState | null;
+  formState: ReactFormState | null;
+  onShellError: (error: unknown) => void;
+  onShellReady: () => void;
 }

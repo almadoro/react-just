@@ -20,6 +20,7 @@ export interface HandleOptions {
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
   runWithContext: typeof runWithContext;
+  onShellError?: (error: unknown) => void;
 }
 
 export function createHandle(
