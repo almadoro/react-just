@@ -80,9 +80,9 @@ function onNavigation() {
   const url = new URL(window.location.href);
   url.searchParams.set("__rsc__", "1");
 
-  createFromRscFetch<React.ReactNode>(
+  createFromRscFetch<{ tree: ReactNode }>(
     fetch(url, { headers: { accept: RSC_MIME_TYPE } }),
-  ).then((tree) => {
+  ).then(({ tree }) => {
     // Avoid race conditions between multiple navigation events. Render only the latest one.
     if (currentNavId === navId) render(tree);
   });
