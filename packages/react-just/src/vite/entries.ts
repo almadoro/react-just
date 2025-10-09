@@ -2,7 +2,7 @@ import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fi
 import {
   decodeAction,
   decodeFormState,
-  decodePayloadIncomingMessage,
+  decodeReply,
   renderToPipeableStream as renderToPipeableRscStream,
   runWithContext,
 } from "@/types/flight.node";
@@ -129,10 +129,10 @@ const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 function getFlightEntry(appEntryId: string) {
   return (
     `import React from "react";` +
-    `import { decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, runWithContext } from "react-just/flight.node";` +
+    `import { decodeAction, decodeFormState, decodeReply, renderToPipeableStream, runWithContext } from "react-just/flight.node";` +
     `import App from "${appEntryId}";` +
     `import "${SERVER_FUNCTIONS_MODULES}";` +
-    `export { App, decodeAction, decodeFormState, decodePayloadIncomingMessage, renderToPipeableStream, React, runWithContext };`
+    `export { App, decodeAction, decodeFormState, decodeReply, renderToPipeableStream, React, runWithContext };`
   );
 }
 
@@ -140,7 +140,7 @@ export type FlightEntryNodeModule = {
   App: ComponentType;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
-  decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;
+  decodeReply: typeof decodeReply;
   renderToPipeableStream: typeof renderToPipeableRscStream;
   React: typeof React;
   runWithContext: typeof runWithContext;

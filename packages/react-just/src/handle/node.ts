@@ -21,7 +21,7 @@ export function createHandle({
   App,
   decodeAction,
   decodeFormState,
-  decodePayloadIncomingMessage,
+  decodeReply,
   React,
   renderToPipeableHtmlStream,
   renderToPipeableRscStream,
@@ -86,7 +86,7 @@ export function createHandle({
       return;
     }
 
-    const payload = await decodePayloadIncomingMessage<unknown[]>(req);
+    const payload = await decodeReply<unknown[]>(req);
     const result = await fn.apply(null, payload);
     const rscStream = renderToPipeableRscStream(result);
     res.statusCode = 200;

@@ -14,9 +14,7 @@ export function decodeFormState<S>(
   body: FormData,
 ): Promise<ReactFormState | null>;
 
-export function decodePayloadIncomingMessage<T>(
-  req: IncomingMessage,
-): Promise<T>;
+export function decodeReply<T>(req: IncomingMessage): Promise<T>;
 
 export function registerClientReference(
   moduleId: string | number,

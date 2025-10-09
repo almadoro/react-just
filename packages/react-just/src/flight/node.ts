@@ -8,10 +8,10 @@ import { IncomingMessage } from "node:http";
 import {
   decodeAction as baseDecodeAction,
   decodeFormState as baseDecodeFormState,
+  decodeReply as baseDecodeReply,
   registerClientReference as baseRegisterClientReference,
   registerServerReference as baseRegisterServerReference,
   renderToPipeableStream as baseRenderToPipeableStream,
-  decodeReply,
   decodeReplyFromBusboy,
 } from "react-server-dom-webpack/server.node";
 import { runWithContext } from "../async-store/node";
@@ -31,9 +31,7 @@ export function decodeFormState<S>(
   return baseDecodeFormState<S>(actionResult, body, serverMap);
 }
 
-export async function decodePayloadIncomingMessage<T>(
-  req: IncomingMessage,
-): Promise<T> {
+export async function decodeReply<T>(req: IncomingMessage): Promise<T> {
   const contentType = req.headers["content-type"];
 
   if (contentType?.startsWith("multipart/form-data")) {
@@ -50,7 +48,7 @@ export async function decodePayloadIncomingMessage<T>(
     req.on("error", reject);
   });
   const buffer = Buffer.concat(chunks);
-  const payload = await decodeReply<T>(buffer.toString("utf-8"), serverMap);
+  const payload = await baseDecodeReply<T>(buffer.toString("utf-8"), serverMap);
   return payload;
 }
 

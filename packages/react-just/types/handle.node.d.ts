@@ -4,7 +4,7 @@ import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.nod
 import {
   decodeAction,
   decodeFormState,
-  decodePayloadIncomingMessage,
+  decodeReply,
   renderToPipeableStream as renderToPipeableRscStream,
   runWithContext,
 } from "./flight.node";
@@ -13,7 +13,7 @@ export interface HandleOptions {
   App: ComponentType;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
-  decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;
+  decodeReply: typeof decodeReply;
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
