@@ -21,9 +21,9 @@ export function response() {
   return store.res;
 }
 
-export async function runWithContext(
+export async function runWithContext<T extends () => unknown>(
   context: Context,
-  fn: () => void,
+  fn: T,
 ): Promise<void> {
-  asyncLocalStorage.run(context, fn);
+  await asyncLocalStorage.run(context, fn);
 }
