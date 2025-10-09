@@ -1,15 +1,21 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import React, { ComponentType } from "react";
-import { AppProps } from "react-just";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "react-just/fizz.node";
 import {
-  decodePayloadIncomingMessage,
+  createTemporaryReferenceSet,
+  decodeAction,
+  decodeFormState,
+  decodeReply,
   renderToPipeableStream as renderToPipeableRscStream,
+  runWithContext,
 } from "react-just/flight.node";
 
 export interface HandleOptions {
-  App: ComponentType<AppProps>;
-  decodePayloadIncomingMessage: typeof decodePayloadIncomingMessage;
+  App: ComponentType;
+  createTemporaryReferenceSet: typeof createTemporaryReferenceSet;
+  decodeAction: typeof decodeAction;
+  decodeFormState: typeof decodeFormState;
+  decodeReply: typeof decodeReply;
   React: typeof React;
   renderToPipeableHtmlStream: typeof renderToPipeableHtmlStream;
   renderToPipeableRscStream: typeof renderToPipeableRscStream;
@@ -17,6 +23,7 @@ export interface HandleOptions {
     css: string[];
     js: string[];
   };
+  runWithContext: typeof runWithContext;
 }
 
 export function createHandle(options: HandleOptions): HandleFunction;
