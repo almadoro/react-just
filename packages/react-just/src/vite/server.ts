@@ -55,6 +55,7 @@ export default function server(): Plugin {
 
             const {
               App,
+              createTemporaryReferenceSet,
               decodeAction,
               decodeFormState,
               decodeReply,
@@ -80,6 +81,7 @@ export default function server(): Plugin {
 
             const handle = createHandle({
               App: Root,
+              createTemporaryReferenceSet,
               decodeAction,
               decodeFormState,
               decodeReply,

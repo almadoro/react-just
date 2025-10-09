@@ -90,6 +90,8 @@ declare module "react-server-dom-webpack/client.node" {
 declare module "react-server-dom-webpack/server.node" {
   import { Writable } from "node:stream";
 
+  function createTemporaryReferenceSet(): TemporaryReferenceSet;
+
   function decodeAction<T>(
     body: FormData,
     serverManifest: ServerManifest,

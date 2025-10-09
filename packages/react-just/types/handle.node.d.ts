@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import React, { ComponentType } from "react";
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "./fizz.node";
 import {
+  createTemporaryReferenceSet,
   decodeAction,
   decodeFormState,
   decodeReply,
@@ -11,6 +12,7 @@ import {
 
 export interface HandleOptions {
   App: ComponentType;
+  createTemporaryReferenceSet: typeof createTemporaryReferenceSet;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
   decodeReply: typeof decodeReply;

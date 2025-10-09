@@ -19,6 +19,7 @@ import { getImplementation } from "../implementations";
 
 export function createHandle({
   App,
+  createTemporaryReferenceSet,
   decodeAction,
   decodeFormState,
   decodeReply,
@@ -86,10 +87,14 @@ export function createHandle({
       return;
     }
 
-    const payload = await decodeReply<unknown[]>(req);
+    const temporaryReferences = createTemporaryReferenceSet();
+    const payload = await decodeReply<unknown[]>(req, { temporaryReferences });
     const result = await fn.apply(null, payload);
-    const rscStream = renderToPipeableRscStream(result);
+    const rscStream = renderToPipeableRscStream(result, {
+      temporaryReferences,
+    });
     res.statusCode = 200;
+    res.setHeader("content-type", RSC_MIME_TYPE);
     rscStream.pipe(res);
   }
 

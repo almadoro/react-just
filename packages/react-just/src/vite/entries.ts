@@ -1,5 +1,6 @@
 import { renderToPipeableStream as renderToPipeableHtmlStream } from "@/types/fizz.node";
 import {
+  createTemporaryReferenceSet,
   decodeAction,
   decodeFormState,
   decodeReply,
@@ -129,15 +130,16 @@ const RESOLVED_FLIGHT_ENTRY_NODE = "\0" + FLIGHT_ENTRY_NODE;
 function getFlightEntry(appEntryId: string) {
   return (
     `import React from "react";` +
-    `import { decodeAction, decodeFormState, decodeReply, renderToPipeableStream, runWithContext } from "react-just/flight.node";` +
+    `import { createTemporaryReferenceSet, decodeAction, decodeFormState, decodeReply, renderToPipeableStream, runWithContext } from "react-just/flight.node";` +
     `import App from "${appEntryId}";` +
     `import "${SERVER_FUNCTIONS_MODULES}";` +
-    `export { App, decodeAction, decodeFormState, decodeReply, renderToPipeableStream, React, runWithContext };`
+    `export { App, createTemporaryReferenceSet, decodeAction, decodeFormState, decodeReply, renderToPipeableStream, React, runWithContext };`
   );
 }
 
 export type FlightEntryNodeModule = {
   App: ComponentType;
+  createTemporaryReferenceSet: typeof createTemporaryReferenceSet;
   decodeAction: typeof decodeAction;
   decodeFormState: typeof decodeFormState;
   decodeReply: typeof decodeReply;
