@@ -117,16 +117,23 @@ export function createHandle({
     rscStream.pipe(res);
   }
 
-  return (req: IncomingMessage, res: ServerResponse) => {
+  return async (req: IncomingMessage, res: ServerResponse) => {
     const request = incomingMessageToJustRequest(req);
     const response: JustResponse = { headers: new Headers() };
     const ctx: Context = { req: request, res: response };
 
-    if (req.method === "GET")
-      return runWithContext(ctx, () => handleGet(req, res));
+    try {
+      if (req.method === "GET")
+        return await runWithContext(ctx, () => handleGet(req, res));
 
-    if (req.method === "POST")
-      return runWithContext(ctx, () => handlePost(req, res, ctx));
+      if (req.method === "POST")
+        return await runWithContext(ctx, () => handlePost(req, res, ctx));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.end();
+      return;
+    }
 
     res.statusCode = 405;
     res.end();
