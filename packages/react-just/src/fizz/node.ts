@@ -88,7 +88,7 @@ function transformRscToHtmlStream(
 ) {
   const thenable = createFromNodeStream<RscPayload>(stream, {
     moduleMap: clientMap,
-    serverModuleMap: serverMap,
+    serverModuleMap: null,
     moduleLoading: null,
   });
 
@@ -103,17 +103,6 @@ function transformRscToHtmlStream(
 }
 
 const clientMap = new Proxy(
-  {},
-  {
-    get(_, prop) {
-      if (typeof prop !== "string") return null;
-      const name = IMPLEMENTATION_EXPORT_NAME;
-      return { [name]: { id: prop, chunks: [], name, async: false } };
-    },
-  },
-);
-
-const serverMap = new Proxy(
   {},
   {
     get(_, prop) {
