@@ -6,7 +6,7 @@ React Just is the simplest way to use React with React Server Components ([serve
 
 ## Try It Out Online
 
-You can try the JavaScript version below, but we recommend opening it in a separate tab via the [JavaScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?file=src%2Findex.jsx&startScript=dev) or [TypeScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-ts?file=src%2Findex.jsx&startScript=dev) links.
+You can try the JavaScript version below, but we recommend opening it in a separate tab via the [JavaScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?file=src%2Findex.jsx&startScript=dev) or [TypeScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-ts?file=src%2Findex.tsx&startScript=dev) links.
 
 <iframe src="https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?ctl=1&embed=1&file=src%2Findex.jsx&startScript=dev&terminalHeight=18" width="100%" height="540px"></iframe>
 
