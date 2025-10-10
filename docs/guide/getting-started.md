@@ -2,7 +2,11 @@
 
 ## What is React Just?
 
-React Just is the simplest way to use React with React Server Components ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)).
+React Just is the simplest way to use React with React Server Components (Server Components and Server Functions).
+
+## Pre-requisite knowledge
+
+This documentation assumes you're somewhat familiar with React, [Server Components](https://react.dev/reference/rsc/server-components) and [Server Functions](https://react.dev/reference/rsc/server-functions).
 
 ## Try It Out Online
 
