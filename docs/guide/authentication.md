@@ -7,7 +7,7 @@ This guide demonstrates a simple pattern for implementing authentication in Reac
 - Use a session cookie named `session` that stores an opaque, randomly generated session ID.
 - On login, create the session and set the cookie.
 - On logout, delete the session and clear the cookie.
-- To read the current user in any Server Component or Server Function, call `getUser`, which parses the Cookie header to obtain the session ID.
+- To read the current user in any Server Component or Server Function, call `getUser`, which parses the Cookie header to obtain the session ID, and then the user data.
 
 ## What you need
 
