@@ -3,10 +3,7 @@ import "./index.css";
 import viteLogo from "./assets/vite.svg";
 import Button from "./Button";
 
-/**
- * @param {import('react-just').AppProps} props
- */
-export default function App(props) {
+export default function App() {
   return (
     <html>
       <head>
