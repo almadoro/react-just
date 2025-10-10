@@ -59,7 +59,7 @@ import LevelIndicator from "./LevelIndicator.vue";
                 <td class="TopicCol">RSC support</td>
                 <td>
                   <LevelIndicator level="medium" />
-                  use server directive with function-level support under
+                  Support for use server directive at function-level under
                   development
                 </td>
                 <td>
