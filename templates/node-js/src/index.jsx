@@ -1,9 +1,11 @@
 import "./index.css";
 
 import viteLogo from "./assets/vite.svg";
-import Button from "./Button";
+import ClientCounter from "./ClientCounter";
+import { getCount } from "./db";
+import ServerCounter from "./ServerCounter";
 
-export default function App() {
+export default async function App() {
   return (
     <html>
       <head>
@@ -22,8 +24,21 @@ export default function App() {
               alt="React Just"
             />
           </a>
-          <div>
-            <Button />
+          <div className="counters-container">
+            <div>
+              <p>
+                This is a client counter. If you refresh the page, the count
+                will reset.
+              </p>
+              <ClientCounter />
+            </div>
+            <div>
+              <p>
+                This is a server counter. If you refresh the page, the count
+                will not reset.
+              </p>
+              <ServerCounter initialCount={await getCount()} />
+            </div>
           </div>
           <p style={{ marginBottom: "32px" }}>
             Click on the React Just logo or{" "}
@@ -32,15 +47,17 @@ export default function App() {
             </a>{" "}
             to learn more
           </p>
-          <p>
-            Powered by{" "}
+          <div className="vite-section">
+            <p>
+              Powered by{" "}
+              <a href="https://vitejs.dev" target="_blank">
+                Vite
+              </a>
+            </p>
             <a href="https://vitejs.dev" target="_blank">
-              Vite
+              <img className="vite-logo" src={viteLogo} alt="Vite" />
             </a>
-          </p>
-          <a href="https://vitejs.dev" target="_blank">
-            <img className="vite-logo" src={viteLogo} alt="Vite" />
-          </a>
+          </div>
         </div>
       </body>
     </html>

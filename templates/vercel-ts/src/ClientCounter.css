@@ -1,0 +1,15 @@
+.client-counter {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  background-color: oklch(43.2% 0.095 166.913);
+  transition: background-color 0.25s;
+}
+
+.client-counter:hover {
+  background-color: oklch(48.2% 0.151 167.153);
+}

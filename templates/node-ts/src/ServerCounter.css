@@ -1,15 +1,15 @@
-button {
+.server-counter {
   border: none;
   border-radius: 8px;
   padding: 12px 20px;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   color: #ffffff;
-  background-color: #00a67d;
+  background-color: oklch(50% 0.134 242.749);
   transition: background-color 0.25s;
 }
 
-button:hover {
-  background-color: #00bc8d;
+.server-counter:hover {
+  background-color: oklch(55% 0.169 243.123);
 }

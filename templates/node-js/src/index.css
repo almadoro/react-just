@@ -48,7 +48,31 @@ a:hover {
   }
 }
 
+.vite-section p {
+  color: #999;
+  font-size: 0.9rem;
+}
+
 .vite-logo {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
+}
+
+.counters-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  max-width: 540px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 600px) {
+  .counters-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.counters-container p {
+  font-size: 0.85rem;
+  color: #999;
 }
