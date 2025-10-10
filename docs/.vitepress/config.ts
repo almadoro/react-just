@@ -60,7 +60,10 @@ export default defineConfig({
         },
         {
           text: "Guides",
-          items: [{ text: "Tailwind CSS", link: "/guide/tailwindcss" }],
+          items: [
+            { text: "Authentication", link: "/guide/authentication" },
+            { text: "Tailwind CSS", link: "/guide/tailwindcss" },
+          ],
         },
       ],
       "/reference": [
