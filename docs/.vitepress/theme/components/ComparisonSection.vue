@@ -1,16 +1,9 @@
 <script setup lang="ts">
+import nextIcon from "../icons/next.svg";
+import reactJustIcon from "../icons/react-just.svg";
+import reactRouterDarkIcon from "../icons/react-router-dark.svg";
+import reactRouterLightIcon from "../icons/react-router-light.svg";
 import LevelIndicator from "./LevelIndicator.vue";
-
-const reactJustIcon = new URL("../icons/react-just.svg", import.meta.url).href;
-const nextIcon = new URL("../icons/next.svg", import.meta.url).href;
-const reactRouterLightIcon = new URL(
-  "../icons/react-router-light.svg",
-  import.meta.url,
-).href;
-const reactRouterDarkIcon = new URL(
-  "../icons/react-router-dark.svg",
-  import.meta.url,
-).href;
 </script>
 
 <template>
