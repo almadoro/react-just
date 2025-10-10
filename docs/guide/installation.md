@@ -125,12 +125,8 @@ export default defineConfig({
 
 For a working project, you need to add an [App Component](/guide/app-component). Add a minimal version.
 
-::: code-group
-
 ```tsx [src/index.tsx]
-import { AppProps } from "react-just";
-
-export default function App(props: AppProps) {
+export default function App() {
   return (
     <html>
       <body>
@@ -140,23 +136,6 @@ export default function App(props: AppProps) {
   );
 }
 ```
-
-```jsx [src/index.jsx]
-/**
- * @param {import('react-just').AppProps} props
- */
-export default function App(props) {
-  return (
-    <html>
-      <body>
-        <h1>Hello, World!</h1>
-      </body>
-    </html>
-  );
-}
-```
-
-:::
 
 ### Development Server
 

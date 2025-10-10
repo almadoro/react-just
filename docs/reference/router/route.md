@@ -11,7 +11,7 @@ import { Route, Router } from "@react-just/router";
 import Home from "./Home";
 import NotFound from "./NotFound";
 
-export default async function Routes({ url }: { url: URL }) {
+function Routes({ url }: { url: URL }) {
   return (
     <Router url={url}>
       <Route path="/" component={Home} />

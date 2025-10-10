@@ -1,66 +1,37 @@
 ---
-outline: [2, 3]
+outline: false
 ---
 
-# Core
+# Core (`react-just`)
 
-These are the high-level APIs from the react-just package that most applications will use.
+<div :class="$style.grid">
+  <Card href="/reference/core/plugin" title="react-just/vite" details="The core Vite plugin." />
+</div>
 
-## Plugin (`react-just/vite`)
+## Server Utilities (`react-just/server`)
 
-This Vite plugin enables React with React Server Components (RSC) support and provides a development server.
+<div :class="$style.grid">
+  <Card href="/reference/core/server/request" title="request" details="Access information about the current server request." />
+  <Card href="/reference/core/server/response" title="response" details="Modify the current server response." />
+</div>
 
-### Usage
+## Low-Level APIs
 
-```ts [vite.config.ts] {1,5}
-import react from "react-just/vite";
-import { defineConfig } from "vite";
+<div :class="$style.grid">
+  <Card href="/reference/core/client" title="react-just/client" />
+</div>
 
-export default defineConfig({
-  plugins: [react()],
-});
-```
-
-### Options
-
-```ts
-react(options?: ReactJustOptions);
-
-interface ReactJustOptions = {
-  app?: string;
-};
-```
-
-The plugin accepts an _optional_ `options` object with the following properties:
-
-- `app`: Path to the module that exports the App Component. By default, first matching file among:
-  - `src/index.tsx`
-  - `src/index.jsx`
-  - `src/index.ts`
-  - `src/index.js`
-
-## Types (`react-just`)
-
-### `AppProps`
-
-The props received by the App Component:
-
-```tsx
-import type { AppProps } from "react-just";
-
-export default function App({ req }: AppProps) {
-  // ...
+<style module>
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 16px 0;
 }
-```
-
-#### Definition
-
-```ts
-interface AppProps {
-  req: Request;
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
 }
-```
-
-Where:
-
-- `req`: A standard [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) object representing the incoming HTTP request. Useful for routing, authentication, headers, etc.
+</style>

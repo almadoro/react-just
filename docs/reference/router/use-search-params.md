@@ -7,7 +7,7 @@
 
 import { useSearchParams } from "@react-just/router";
 
-export default function SearchBar() {
+function SomeComponent() {
   const searchParams = useSearchParams();
 
   const query = searchParams.get("q");

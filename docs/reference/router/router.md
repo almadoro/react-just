@@ -11,7 +11,7 @@ import { Router, Route } from "@react-just/router";
 import Home from "./components/Home";
 import About from "./components/About";
 
-export default function Routes({ url }: { url: URL }) {
+function Routes({ url }: { url: URL }) {
   return (
     <Router url={url}>
       <Route path="/" component={Home} />
@@ -50,15 +50,17 @@ type RouteChildren =
 
 ```tsx
 import { Router, Route } from "@react-just/router";
-import type { AppProps } from "react-just";
+import { request } from "react-just/server";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
 
-export default function App({ req }: AppProps) {
+function AppRoutes() {
+  const { url } = request();
+
   return (
-    <Router url={new URL(req.url)}>
+    <Router url={new URL(url)}>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
@@ -81,7 +83,7 @@ import FileExplorer from "./components/FileExplorer";
 import UserProfile from "./components/UserProfile";
 import UsersList from "./components/UsersList";
 
-export default function Routes({ url }: { url: URL }) {
+function Routes({ url }: { url: URL }) {
   return (
     <Router url={url}>
       <Route path="/admin" component={AdminLayout}>
@@ -102,7 +104,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import Home from "./components/Home";
 import UserDashboard from "./components/UserDashboard";
 
-export default function Routes({ url, user }: { url: URL; user: User }) {
+function Routes({ url, user }: { url: URL; user: User }) {
   return (
     <Router url={url}>
       <Route path="/" component={Home} />
@@ -112,4 +114,3 @@ export default function Routes({ url, user }: { url: URL; user: User }) {
   );
 }
 ```
-

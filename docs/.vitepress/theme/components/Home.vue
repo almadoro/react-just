@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useData } from "vitepress";
-import { VPHomeContent, VPHomeFeatures } from "vitepress/theme";
+import { VPHomeFeatures } from "vitepress/theme";
+import ComparisonSection from "./ComparisonSection.vue";
 import HomeHero from "./HomeHero.vue";
 
 const { frontmatter, theme } = useData();
@@ -33,10 +34,7 @@ const { frontmatter, theme } = useData();
     <VPHomeFeatures />
     <slot name="home-features-after" />
 
-    <VPHomeContent v-if="frontmatter.markdownStyles !== false">
-      <Content />
-    </VPHomeContent>
-    <Content v-else />
+    <ComparisonSection />
   </div>
 </template>
 

@@ -47,7 +47,7 @@ a.box:hover {
     <p class="title">
       {{ title }}
     </p>
-    <p class="details">
+    <p v-if="details" class="details">
       {{ details }}
     </p>
   </component>

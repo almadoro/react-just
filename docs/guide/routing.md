@@ -30,16 +30,17 @@ $ bun add @react-just/router
 
 ```tsx [src/index.tsx]
 import { Route, Router } from "@react-just/router";
-import type { AppProps } from "react-just";
+import { request } from "react-just/server";
 import Home from "./Home";
 import OrderDetail from "./OrderDetail";
 import OrdersLayout from "./OrdersLayout";
 
-export default async function App({ req }: AppProps) {
+export default async function App() {
+  const { url } = request();
   return (
     <html>
       <body>
-        <Router url={new URL(req.url)}>
+        <Router url={new URL(url)}>
           <Route path="/" component={Home} />
           <Route path="/orders" component={OrdersLayout}>
             <Route path="/:orderId" component={OrderDetail} />
@@ -93,8 +94,8 @@ import { createFromRscFetch, render, RSC_MIME_TYPE } from "react-just/client";
 function onNavigation() {
   createFromRscFetch(
     fetch(window.location.href, { headers: { accept: RSC_MIME_TYPE } }),
-  ).then((tree) => render(tree));
+  ).then(({ tree }) => render(tree));
 }
 ```
 
-Visit the [Low Level APIs reference](/reference/core/low-level-apis) for more information.
+Visit the [Low Level APIs reference](/reference/core) for more information.

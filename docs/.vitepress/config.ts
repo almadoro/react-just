@@ -42,6 +42,8 @@ export default defineConfig({
               text: "Client & Server Components",
               link: "/guide/client-and-server-components",
             },
+            { text: "Server Functions", link: "/guide/server-functions" },
+            { text: "Request & Response", link: "/guide/request-and-response" },
             { text: "Routing", link: "/guide/routing" },
           ],
         },
@@ -67,8 +69,31 @@ export default defineConfig({
           link: "/reference/core",
           items: [
             {
+              text: "Plugin",
+              link: "/reference/core/plugin",
+            },
+            {
+              text: "Server Utilities",
+              link: "/reference/core/server",
+              items: [
+                {
+                  text: "request",
+                  link: "/reference/core/server#request",
+                },
+                {
+                  text: "response",
+                  link: "/reference/core/server#response",
+                },
+              ],
+            },
+            {
               text: "Low Level APIs",
-              link: "/reference/core/low-level-apis",
+              items: [
+                {
+                  text: "Client",
+                  link: "/reference/core/client",
+                },
+              ],
             },
           ],
         },

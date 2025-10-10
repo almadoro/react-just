@@ -7,7 +7,7 @@
 
 import { useParams } from "@react-just/router";
 
-export default function SomeComponent() {
+function SomeComponent() {
   const params = useParams();
 
   // Route -> /items/:category/:itemId

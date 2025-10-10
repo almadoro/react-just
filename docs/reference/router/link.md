@@ -4,13 +4,9 @@ outline: [2, 3]
 
 # Link
 
-`Link` is a client component that provides declarative navigation between routes with optimized behavior for single-page applications.
-
-## Usage
+`Link` is a component that provides declarative navigation between routes with single-page application behavior.
 
 ```tsx
-"use client";
-
 import { Link } from "@react-just/router";
 
 function Navigation() {
@@ -53,7 +49,7 @@ The `Link` component renders as an anchor tag but intercepts clicks to provide c
 ```tsx
 import { Link } from "@react-just/router";
 
-export default function Navigation() {
+function Navigation() {
   // Current URL -> /shop/shirts/item3
   return (
     <nav>
@@ -71,7 +67,7 @@ export default function Navigation() {
 ```tsx
 import { Link } from "@react-just/router";
 
-export default function TabsHeader() {
+function TabsHeader() {
   return (
     <div>
       <Link href="?tab=overview" replace>

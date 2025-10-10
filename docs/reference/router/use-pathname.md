@@ -7,7 +7,7 @@
 
 import { usePathname } from "@react-just/router";
 
-export default function ExampleClientComponent() {
+function SomeComponent() {
   const pathname = usePathname();
 
   // URL -> /profile/settings

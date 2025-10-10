@@ -4,10 +4,6 @@
 
 React Just is the simplest way to use React with React Server Components ([server components](https://react.dev/reference/rsc/server-components) and [server functions](https://react.dev/reference/rsc/server-functions)).
 
-::: warning Early development
-React Just is still in early development. The `'use server'` directive support is planned for release by **mid October 2025**.
-:::
-
 ## Try It Out Online
 
 You can try the JavaScript version below, but we recommend opening it in a separate tab via the [JavaScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-js?file=src%2Findex.jsx&startScript=dev) or [TypeScript](https://stackblitz.com/github/almadoro/react-just/tree/main/templates/node-ts?file=src%2Findex.jsx&startScript=dev) links.

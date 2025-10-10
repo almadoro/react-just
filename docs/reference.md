@@ -5,7 +5,7 @@ outline: false
 # Reference
 
 <div :class="$style.grid">
-  <Card href="/reference/core" title="react-just" details="Core plugin, utility types and low-level APIs for React Just packages." />
+  <Card href="/reference/core" title="react-just" details="Core plugin, server utility functions and low-level APIs for React Just packages." />
   <Card href="/reference/router" title="@react-just/router" details="Official router with a simple, familiar API." />
 </div>
 

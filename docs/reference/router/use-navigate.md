@@ -62,7 +62,7 @@ The hook must be used within a [Router](/reference/router/router) component. Oth
 
 import { useNavigate } from "@react-just/router";
 
-export default function Home() {
+function Home() {
   const navigate = useNavigate();
 
   const goToAbout = () => navigate("/about");
@@ -85,7 +85,7 @@ export default function Home() {
 
 import { useNavigate } from "@react-just/router";
 
-export default function Navigation() {
+function Navigation() {
   const navigate = useNavigate();
 
   return (
@@ -105,7 +105,7 @@ export default function Navigation() {
 
 import { useNavigate, useSearchParams } from "@react-just/router";
 
-export default function Search() {
+function Search() {
   const navigate = useNavigate();
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
