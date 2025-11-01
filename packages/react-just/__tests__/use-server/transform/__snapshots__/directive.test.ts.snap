@@ -15,8 +15,9 @@ export * from "pkg";
 "
 `;
 
-exports[`'use server' module level directive > transforms when the directive is found at the top of the file 1`] = `
+exports[`'use server' module level directive > transforms when the directive is found at the top of the file or after other directives 1`] = `
 "import {registerServerReference as $$registerServerReference$$} from "react-just";
+"use strict";
 const $$Ref$$default = $$registerServerReference$$("default");
 export {$$Ref$$default as default};
 const $$Ref$$b = $$registerServerReference$$("b");

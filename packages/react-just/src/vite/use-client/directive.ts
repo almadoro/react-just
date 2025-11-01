@@ -1,4 +1,4 @@
-import { Program } from "estree";
+import { ExpressionStatement, Literal, Node, Program } from "estree";
 
 const USE_CLIENT_DIRECTIVE = "use client";
 
@@ -16,16 +16,25 @@ export function getIsUseClientModule(program: Program) {
 }
 
 export function getUseClientDirective(program: Program) {
-  // The "use client" directive must be the first node in the file.
-  const firstNode = program.body[0];
+  // The "use client" directive is at program body level.
+  // Can be after other directives but before any other type of node.
 
-  if (
-    firstNode &&
-    firstNode.type === "ExpressionStatement" &&
-    firstNode.expression.type === "Literal" &&
-    firstNode.expression.value === USE_CLIENT_DIRECTIVE
-  )
-    return firstNode;
+  for (const node of program.body) {
+    if (isDirective(node) && node.expression.value === USE_CLIENT_DIRECTIVE)
+      return node;
+
+    if (node.type !== "ExpressionStatement") break;
+  }
 
   return null;
+}
+
+function isDirective(
+  node: Node,
+): node is ExpressionStatement & { expression: Literal } {
+  return (
+    node.type === "ExpressionStatement" &&
+    node.expression.type === "Literal" &&
+    typeof node.expression.value === "string"
+  );
 }

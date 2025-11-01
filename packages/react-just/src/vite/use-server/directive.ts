@@ -1,4 +1,4 @@
-import { Node, Program } from "estree";
+import { ExpressionStatement, Literal, Node, Program } from "estree";
 import { traverse } from "estree-toolkit";
 
 const USE_SERVER_DIRECTIVE = "use server";
@@ -13,12 +13,7 @@ export function couldContainUseServerDirective(code: string) {
 }
 
 export function getIsUseServerDirective(node: Node) {
-  return (
-    node &&
-    node.type === "ExpressionStatement" &&
-    node.expression.type === "Literal" &&
-    node.expression.value === USE_SERVER_DIRECTIVE
-  );
+  return isDirective(node) && node.expression.value === USE_SERVER_DIRECTIVE;
 }
 
 export function getUseServerDirectiveScope(program: Program) {
@@ -40,10 +35,23 @@ export function getUseServerDirectiveScope(program: Program) {
 }
 
 export function getUseServerModuleDirective(program: Program) {
-  // The "use server" directive is the first node in the file.
-  const firstNode = program.body[0];
+  // The "use server" directive is at program body level.
+  // Can be after other directives but before any other type of node.
+  for (const node of program.body) {
+    if (getIsUseServerDirective(node)) return node;
 
-  if (getIsUseServerDirective(firstNode)) return firstNode;
+    if (node.type !== "ExpressionStatement") break;
+  }
 
   return null;
+}
+
+function isDirective(
+  node: Node,
+): node is ExpressionStatement & { expression: Literal } {
+  return (
+    node.type === "ExpressionStatement" &&
+    node.expression.type === "Literal" &&
+    typeof node.expression.value === "string"
+  );
 }

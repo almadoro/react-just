@@ -18,7 +18,7 @@ describe("'use server' module level directive", () => {
     expect(code).toMatchSnapshot();
   });
 
-  test("transforms when the directive is found at the top of the file", async () => {
+  test("transforms when the directive is found at the top of the file or after other directives", async () => {
     const program = await getProgram("directive/valid-module-level.js");
 
     transform(program, OPTIONS);

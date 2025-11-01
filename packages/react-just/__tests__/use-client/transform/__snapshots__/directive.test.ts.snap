@@ -11,8 +11,9 @@ exports[`'use client' directive > throws and error when there is no directive an
 "
 `;
 
-exports[`'use client' directive > transforms when the directive is found at the top of the file 1`] = `
+exports[`'use client' directive > transforms when the directive is found at the top of the file or after other directives 1`] = `
 "import {registerClientReference as $$registerClientReference$$} from "react-just";
+"use strict";
 const $$Ref$$default = $$registerClientReference$$("default");
 export {$$Ref$$default as default};
 "

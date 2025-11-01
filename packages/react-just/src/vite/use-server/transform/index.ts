@@ -84,7 +84,8 @@ function FunctionLike(
 
   const firstBlockNode = node.body.body[0];
 
-  const isUseServerDirective = getIsUseServerDirective(firstBlockNode);
+  const isUseServerDirective =
+    firstBlockNode && getIsUseServerDirective(firstBlockNode);
 
   if (!isUseServerDirective) return;
 

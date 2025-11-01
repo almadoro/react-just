@@ -18,7 +18,7 @@ describe("'use client' directive", () => {
     expect(code).toMatchSnapshot();
   });
 
-  test("transforms when the directive is found at the top of the file", async () => {
+  test("transforms when the directive is found at the top of the file or after other directives", async () => {
     const program = await getProgram("directive/valid.js");
 
     transform(program, OPTIONS);
