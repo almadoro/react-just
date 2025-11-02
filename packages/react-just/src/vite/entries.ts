@@ -11,7 +11,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type React from "react";
 import { ComponentType } from "react";
-import { Plugin } from "vite";
+import { normalizePath, Plugin } from "vite";
 import { CLIENT_HOT_MODULES } from "./client-hot";
 import { CSS_MODULES } from "./css";
 import { ENVIRONMENTS } from "./environments";
@@ -97,13 +97,13 @@ export default function entries(options: EntriesOptions): Plugin {
 }
 
 async function resolveAppEntryId(root: string, app?: string) {
-  if (app) return toJsPath(path.resolve(root, app));
+  if (app) return normalizePath(path.resolve(root, app));
 
   for (const entryPath of APP_ENTRY_PATHS) {
     const entry = path.resolve(root, entryPath);
     try {
       await fs.access(entry, fs.constants.F_OK);
-      return toJsPath(entry);
+      return normalizePath(entry);
     } catch {}
   }
 
@@ -111,10 +111,6 @@ async function resolveAppEntryId(root: string, app?: string) {
     `App entry not found. Specify the entry path with the "app" option or ` +
       `create a file named one of the following: ${APP_ENTRY_PATHS.join(", ")}`,
   );
-}
-
-function toJsPath(path: string) {
-  return path.replace(/\\/g, "/");
 }
 
 const APP_ENTRY_PATHS = [

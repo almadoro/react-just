@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ENTRIES, ENVIRONMENTS } from "react-just/vite";
-import { Manifest, Plugin, ViteBuilder } from "vite";
+import { Manifest, normalizePath, Plugin, ViteBuilder } from "vite";
 
 export default function vercel(): Plugin {
   let manifests: { client: Manifest; fizz: Manifest; flight: Manifest };
@@ -165,8 +165,8 @@ function getFunctionEntryCode(
   const flightEntry = path.resolve(root, outDirs.flight, flightChunk.file);
 
   return (
-    `import { App, createTemporaryReferenceSet, decodeAction, decodeFormState, decodeReply, React, renderToPipeableStream as renderToPipeableRscStream, runWithContext } from "${toJsPath(flightEntry)}";\n` +
-    `import { renderToPipeableStream as renderToPipeableHtmlStream } from "${toJsPath(fizzEntry)}";\n` +
+    `import { App, createTemporaryReferenceSet, decodeAction, decodeFormState, decodeReply, React, renderToPipeableStream as renderToPipeableRscStream, runWithContext } from "${normalizePath(flightEntry)}";\n` +
+    `import { renderToPipeableStream as renderToPipeableHtmlStream } from "${normalizePath(fizzEntry)}";\n` +
     `import { createHandle } from "@react-just/vercel/handle"\n` +
     `export default createHandle({\n` +
     `  App,\n` +
@@ -190,10 +190,6 @@ function findEntryChunk(manifest: Manifest) {
     }
   }
   throw new Error("Entry chunk not found in manifest");
-}
-
-function toJsPath(path: string) {
-  return path.replace(/\\/g, "/");
 }
 
 const RENDER_FN = "_render";
